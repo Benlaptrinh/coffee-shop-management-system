@@ -18,10 +18,6 @@ import AdminBudget from "./pages/admin/Budget"
 import AdminReport from "./pages/admin/Report"
 import AdminReports from "./pages/admin/Reports"
 import AdminSales from "./pages/admin/Sales"
-import AdminDataBackup from "./pages/admin/DataBackup"
-import AdminDataRestore from "./pages/admin/DataRestore"
-import AdminUsersList from "./pages/admin/UsersList"
-import AdminUserForm from "./pages/admin/UserForm"
 import StaffHome from "./pages/staff/Home"
 import StaffSales from "./pages/staff/Sales"
 import ProfileView from "./pages/profile/View"
@@ -55,6 +51,17 @@ function StaffShell() {
   )
 }
 
+function ProfileShell() {
+  const { user } = useAuth()
+  const sidebar = user?.roles.includes("ADMIN") ? <SidebarAdmin /> : <SidebarStaff />
+
+  return (
+    <AppLayout sidebar={sidebar}>
+      <Outlet />
+    </AppLayout>
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -64,8 +71,10 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route element={<RequireAuth />}>
             <Route path="/invoice/:id" element={<InvoicePrint />} />
-            <Route path="/profile" element={<ProfileView />} />
-            <Route path="/profile/edit" element={<ProfileEdit />} />
+            <Route element={<ProfileShell />}>
+              <Route path="/profile" element={<ProfileView />} />
+              <Route path="/profile/edit" element={<ProfileEdit />} />
+            </Route>
 
             <Route path="/admin" element={<AdminShell />}>
               <Route index element={<Navigate to="dashboard" replace />} />
@@ -81,11 +90,6 @@ export default function App() {
               <Route path="budget" element={<AdminBudget />} />
               <Route path="report" element={<AdminReport />} />
               <Route path="reports" element={<AdminReports />} />
-              <Route path="data/backup" element={<AdminDataBackup />} />
-              <Route path="data/restore" element={<AdminDataRestore />} />
-              <Route path="users" element={<AdminUsersList />} />
-              <Route path="users/create" element={<AdminUserForm mode="create" />} />
-              <Route path="users/:id/edit" element={<AdminUserForm mode="edit" />} />
             </Route>
 
             <Route path="/staff" element={<StaffShell />}>

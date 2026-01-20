@@ -41,9 +41,10 @@ async function requestUrl<T>(url: string, options: RequestOptions = {}): Promise
     data = txt
   }
   if (!res.ok) {
-    const error = new Error((data && data.message) || res.statusText)
+    const msg = (data && (data.message || data.error)) || res.statusText
+    const error = new Error(typeof msg === "string" ? msg : JSON.stringify(msg))
     ;(error as any).status = res.status
-    ;(error as any).body = data
+    ;(error as any).body = typeof data === "string" ? data : JSON.stringify(data)
     throw error
   }
   return data as T
@@ -138,6 +139,7 @@ export default {
   },
   chucvu: {
     list: () => request<Array<{ maChucVu: number; tenChucVu: string; luong?: string }>>("/chucvu"),
+    create: (payload: { tenChucVu: string }) => request("/chucvu", { method: "POST", body: payload }),
   },
   chitieu: {
     report: (from: string, to: string) =>

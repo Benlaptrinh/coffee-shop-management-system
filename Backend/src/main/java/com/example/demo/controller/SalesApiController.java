@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,6 +67,13 @@ public class SalesApiController {
         public List<InvoiceItemDto> items;
     }
 
+    public static class ReservationDto {
+        public Long maBan;
+        public String tenKhach;
+        public String sdt;
+        public LocalDateTime ngayGioDat;
+    }
+
     private static TableDto toTableDto(Ban b) {
         if (b == null) return null;
         TableDto d = new TableDto();
@@ -108,6 +116,16 @@ public class SalesApiController {
         return dto;
     }
 
+    private static ReservationDto toReservationDto(ChiTietDatBan res) {
+        if (res == null) return null;
+        ReservationDto dto = new ReservationDto();
+        dto.maBan = res.getBan() == null ? null : res.getBan().getMaBan();
+        dto.tenKhach = res.getTenKhach();
+        dto.sdt = res.getSdt();
+        dto.ngayGioDat = res.getNgayGioDat();
+        return dto;
+    }
+
     @GetMapping("/tables")
     public ResponseEntity<List<TableDto>> listTables() {
         List<TableDto> list = salesService.findAllTables().stream().map(SalesApiController::toTableDto).collect(Collectors.toList());
@@ -119,13 +137,13 @@ public class SalesApiController {
         Optional<Ban> b = salesService.findTableById(id);
         if (b.isEmpty()) return ResponseEntity.notFound().build();
         var table = toTableDto(b.get());
-        var reservation = salesService.findLatestReservation(id).orElse(null);
+        var reservation = toReservationDto(salesService.findLatestReservation(id).orElse(null));
         var invoice = salesService.findUnpaidInvoiceByTable(id).orElse(null);
-        return ResponseEntity.ok(Map.of(
-                "table", table,
-                "reservation", reservation,
-                "invoice", toInvoiceDto(invoice)
-        ));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("table", table);
+        body.put("reservation", reservation);
+        body.put("invoice", toInvoiceDto(invoice));
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/menu")
@@ -274,5 +292,3 @@ public class SalesApiController {
     }
 
 }
-
-

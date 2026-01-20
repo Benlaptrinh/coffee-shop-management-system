@@ -10,11 +10,14 @@ export default function ProfileEdit() {
   const [taiKhoanId, setTaiKhoanId] = useState<number | null>(null)
   const [chucVuId, setChucVuId] = useState<number | null>(null)
   const [enabled, setEnabled] = useState(true)
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null)
   const [form, setForm] = useState({
     hoTen: "",
     diaChi: "",
     soDienThoai: "",
   })
+  const [passwordCurrent, setPasswordCurrent] = useState("")
+  const [passwordNew, setPasswordNew] = useState("")
 
   useEffect(() => {
     let active = true
@@ -23,6 +26,7 @@ export default function ProfileEdit() {
       try {
         const me = await api.users.me()
         if (!active) return
+        setMe({ id: me.id, role: me.role })
         const list = await api.nhanvien.list()
         if (!active) return
         const match = list.find((nv) => nv.taiKhoanId === me.id)
@@ -57,6 +61,12 @@ export default function ProfileEdit() {
     event.preventDefault()
     if (!employeeId) return
     setError(null)
+    const wantsPasswordChange = passwordNew.trim().length > 0
+    const isAdmin = me?.role === "ADMIN"
+    if (wantsPasswordChange && !isAdmin && !passwordCurrent.trim()) {
+      setError("Current password is required to change password")
+      return
+    }
     const payload: any = {
       hoTen: form.hoTen.trim(),
       diaChi: form.diaChi.trim(),
@@ -67,6 +77,13 @@ export default function ProfileEdit() {
     if (taiKhoanId) payload.taiKhoan = { maTaiKhoan: taiKhoanId }
     try {
       await api.nhanvien.update(employeeId, payload)
+      if (wantsPasswordChange) {
+        if (isAdmin && me?.id) {
+          await api.users.update(me.id, { password: passwordNew.trim() })
+        } else {
+          await api.users.changePassword({ oldPassword: passwordCurrent.trim(), newPassword: passwordNew.trim() })
+        }
+      }
       navigate("/profile")
     } catch (err: any) {
       setError(err?.body || err?.message || "Save failed")
@@ -92,6 +109,24 @@ export default function ProfileEdit() {
           <input
             value={form.soDienThoai}
             onChange={(event) => setForm((prev) => ({ ...prev, soDienThoai: event.target.value.replace(/\\D/g, "") }))}
+          />
+        </div>
+        <div className="form-group">
+          <label>Mat khau hien tai</label>
+          <input
+            type="password"
+            value={passwordCurrent}
+            onChange={(event) => setPasswordCurrent(event.target.value)}
+            placeholder="Nhap neu muon doi mat khau"
+          />
+        </div>
+        <div className="form-group">
+          <label>Mat khau moi (bo trong neu khong doi)</label>
+          <input
+            type="password"
+            value={passwordNew}
+            onChange={(event) => setPasswordNew(event.target.value)}
+            placeholder="Nhap mat khau moi"
           />
         </div>
         <div className="form-actions form-actions--equal">

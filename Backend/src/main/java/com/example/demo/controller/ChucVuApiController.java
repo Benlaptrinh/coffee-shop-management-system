@@ -33,6 +33,7 @@ public class ChucVuApiController {
         public String tenChucVu;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<ChucVu>> list() {
         return ResponseEntity.ok(repo.findAll());

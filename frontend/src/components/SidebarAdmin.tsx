@@ -63,21 +63,6 @@ export default function SidebarAdmin() {
               Thong ke - bao cao
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/admin/data/backup" className={({ isActive }) => linkClass(isActive)}>
-              Data backup
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/admin/data/restore" className={({ isActive }) => linkClass(isActive)}>
-              Data restore
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/admin/users" className={({ isActive }) => linkClass(isActive)}>
-              User management
-            </NavLink>
-          </li>
         </ul>
       </nav>
       <div className="sidebar-logout">
