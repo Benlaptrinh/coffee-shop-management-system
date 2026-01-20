@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import api from "../../api"
 import { formatNumber, toDigits } from "../../utils/format"
+import Pagination from "../../components/Pagination"
 
 type MenuItem = {
   maThucDon: number
@@ -16,6 +17,9 @@ export default function AdminMenu() {
   const [error, setError] = useState<string | null>(null)
   const [editId, setEditId] = useState<number | null>(null)
   const [form, setForm] = useState({ tenMon: "", giaRaw: "" })
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const load = async (q?: string) => {
     setLoading(true)
@@ -34,14 +38,24 @@ export default function AdminMenu() {
     load(search)
   }, [search])
 
+  useEffect(() => {
+    setPage(1)
+  }, [search])
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize))
+    if (page > totalPages) setPage(totalPages)
+  }, [items.length, page, pageSize])
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError(null)
     const price = Number(form.giaRaw || 0)
-    if (!form.tenMon.trim() || !price) {
-      setError("Missing name or price")
-      return
-    }
+    const errors: Record<string, string> = {}
+    if (!form.tenMon.trim()) errors.tenMon = "Ten mon khong duoc de trong"
+    if (!price) errors.giaRaw = "Gia tien khong hop le"
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return
     try {
       if (editId) {
         await api.thucdon.update(editId, { tenMon: form.tenMon.trim(), giaHienTai: price })
@@ -50,6 +64,7 @@ export default function AdminMenu() {
       }
       setForm({ tenMon: "", giaRaw: "" })
       setEditId(null)
+      setFieldErrors({})
       await load(search)
     } catch (err: any) {
       setError(err?.body || err?.message || "Save failed")
@@ -59,6 +74,7 @@ export default function AdminMenu() {
   const onEdit = (item: MenuItem) => {
     setEditId(item.maThucDon)
     setForm({ tenMon: item.tenMon, giaRaw: toDigits(String(item.giaHienTai)) })
+    setFieldErrors({})
   }
 
   const onDelete = async (id: number) => {
@@ -74,6 +90,7 @@ export default function AdminMenu() {
   const onResetForm = () => {
     setEditId(null)
     setForm({ tenMon: "", giaRaw: "" })
+    setFieldErrors({})
   }
 
   return (
@@ -86,15 +103,26 @@ export default function AdminMenu() {
         <form onSubmit={onSubmit} noValidate>
           <div className="form-group">
             <label>Ten mon</label>
-            <input value={form.tenMon} onChange={(event) => setForm((prev) => ({ ...prev, tenMon: event.target.value }))} />
+            <input
+              value={form.tenMon}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, tenMon: event.target.value }))
+                if (fieldErrors.tenMon) setFieldErrors((prev) => ({ ...prev, tenMon: "" }))
+              }}
+            />
+            {fieldErrors.tenMon ? <div className="field-error">{fieldErrors.tenMon}</div> : null}
           </div>
           <div className="form-group">
             <label>Gia tien</label>
             <input
               value={formatNumber(form.giaRaw)}
               inputMode="numeric"
-              onChange={(event) => setForm((prev) => ({ ...prev, giaRaw: toDigits(event.target.value) }))}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, giaRaw: toDigits(event.target.value) }))
+                if (fieldErrors.giaRaw) setFieldErrors((prev) => ({ ...prev, giaRaw: "" }))
+              }}
             />
+            {fieldErrors.giaRaw ? <div className="field-error">{fieldErrors.giaRaw}</div> : null}
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
@@ -140,9 +168,9 @@ export default function AdminMenu() {
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
+            {items.slice((page - 1) * pageSize, page * pageSize).map((item, index) => (
               <tr key={item.maThucDon}>
-                <td>{index + 1}</td>
+                <td>{(page - 1) * pageSize + index + 1}</td>
                 <td>{item.tenMon}</td>
                 <td className="text-right">{formatNumber(item.giaHienTai)}</td>
                 <td className="action-buttons">
@@ -165,6 +193,7 @@ export default function AdminMenu() {
           </tbody>
         </table>
       )}
+      {items.length > 0 ? <Pagination page={page} pageSize={pageSize} total={items.length} onPageChange={setPage} /> : null}
     </div>
   )
 }

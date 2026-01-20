@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
 import { formatDate } from "../../utils/format"
+import Pagination from "../../components/Pagination"
 
 type Promotion = {
   maKhuyenMai: number
@@ -22,6 +23,9 @@ export default function AdminMarketing() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const load = async () => {
     setLoading(true)
@@ -46,6 +50,15 @@ export default function AdminMarketing() {
     return items.filter((item) => item.tenKhuyenMai.toLowerCase().includes(lower))
   }, [items, keyword])
 
+  useEffect(() => {
+    setPage(1)
+  }, [keyword])
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize))
+    if (page > totalPages) setPage(totalPages)
+  }, [filteredItems.length, page, pageSize])
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError(null)
@@ -55,15 +68,30 @@ export default function AdminMarketing() {
       ngayKetThuc: form.ngayKetThuc,
       giaTriGiam: Number(form.giaTriGiam || 0),
     }
-    if (!payload.tenKhuyenMai || !payload.ngayBatDau || !payload.ngayKetThuc || !payload.giaTriGiam) {
-      setError("Missing required fields")
-      return
+    const errors: Record<string, string> = {}
+    if (!payload.tenKhuyenMai) errors.tenKhuyenMai = "Ten khuyen mai khong duoc de trong"
+    if (!payload.ngayBatDau) errors.ngayBatDau = "Ngay bat dau khong duoc de trong"
+    if (!payload.ngayKetThuc) errors.ngayKetThuc = "Ngay ket thuc khong duoc de trong"
+    if (!payload.giaTriGiam) {
+      errors.giaTriGiam = "Phan tram giam gia khong hop le"
+    } else if (payload.giaTriGiam < 1 || payload.giaTriGiam > 100) {
+      errors.giaTriGiam = "Phan tram giam gia tu 1 den 100"
     }
+    if (payload.ngayBatDau && payload.ngayKetThuc) {
+      const from = new Date(payload.ngayBatDau)
+      const to = new Date(payload.ngayKetThuc)
+      if (!Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime()) && from > to) {
+        errors.ngayKetThuc = "Ngay ket thuc khong duoc truoc ngay bat dau"
+      }
+    }
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return
     try {
       if (editId) await api.khuyenmai.update(editId, payload)
       else await api.khuyenmai.create(payload)
       setEditId(null)
       setForm({ tenKhuyenMai: "", ngayBatDau: "", ngayKetThuc: "", giaTriGiam: "" })
+      setFieldErrors({})
       await load()
     } catch (err: any) {
       setError(err?.body || err?.message || "Save failed")
@@ -78,11 +106,28 @@ export default function AdminMarketing() {
       ngayKetThuc: item.ngayKetThuc,
       giaTriGiam: String(item.giaTriGiam),
     })
+    setFieldErrors({})
+  }
+
+  const onDelete = async (item: Promotion) => {
+    if (!window.confirm(`Xoa khuyen mai "${item.tenKhuyenMai}"?`)) return
+    setError(null)
+    try {
+      await api.khuyenmai.delete(item.maKhuyenMai)
+      if (editId === item.maKhuyenMai) {
+        setEditId(null)
+        setForm({ tenKhuyenMai: "", ngayBatDau: "", ngayKetThuc: "", giaTriGiam: "" })
+      }
+      await load()
+    } catch (err: any) {
+      setError(err?.body || err?.message || "Delete failed")
+    }
   }
 
   const onReset = () => {
     setEditId(null)
     setForm({ tenKhuyenMai: "", ngayBatDau: "", ngayKetThuc: "", giaTriGiam: "" })
+    setFieldErrors({})
   }
 
   return (
@@ -95,15 +140,38 @@ export default function AdminMarketing() {
         <form onSubmit={onSubmit} noValidate>
           <div className="form-group">
             <label>Ten khuyen mai</label>
-            <input value={form.tenKhuyenMai} onChange={(event) => setForm((prev) => ({ ...prev, tenKhuyenMai: event.target.value }))} />
+            <input
+              value={form.tenKhuyenMai}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, tenKhuyenMai: event.target.value }))
+                if (fieldErrors.tenKhuyenMai) setFieldErrors((prev) => ({ ...prev, tenKhuyenMai: "" }))
+              }}
+            />
+            {fieldErrors.tenKhuyenMai ? <div className="field-error">{fieldErrors.tenKhuyenMai}</div> : null}
           </div>
           <div className="form-group">
             <label>Ngay bat dau</label>
-            <input type="date" value={form.ngayBatDau} onChange={(event) => setForm((prev) => ({ ...prev, ngayBatDau: event.target.value }))} />
+            <input
+              type="date"
+              value={form.ngayBatDau}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, ngayBatDau: event.target.value }))
+                if (fieldErrors.ngayBatDau) setFieldErrors((prev) => ({ ...prev, ngayBatDau: "" }))
+              }}
+            />
+            {fieldErrors.ngayBatDau ? <div className="field-error">{fieldErrors.ngayBatDau}</div> : null}
           </div>
           <div className="form-group">
             <label>Ngay ket thuc</label>
-            <input type="date" value={form.ngayKetThuc} onChange={(event) => setForm((prev) => ({ ...prev, ngayKetThuc: event.target.value }))} />
+            <input
+              type="date"
+              value={form.ngayKetThuc}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, ngayKetThuc: event.target.value }))
+                if (fieldErrors.ngayKetThuc) setFieldErrors((prev) => ({ ...prev, ngayKetThuc: "" }))
+              }}
+            />
+            {fieldErrors.ngayKetThuc ? <div className="field-error">{fieldErrors.ngayKetThuc}</div> : null}
           </div>
           <div className="form-group">
             <label>% giam gia</label>
@@ -112,8 +180,12 @@ export default function AdminMarketing() {
               min={1}
               max={100}
               value={form.giaTriGiam}
-              onChange={(event) => setForm((prev) => ({ ...prev, giaTriGiam: event.target.value }))}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, giaTriGiam: event.target.value }))
+                if (fieldErrors.giaTriGiam) setFieldErrors((prev) => ({ ...prev, giaTriGiam: "" }))
+              }}
             />
+            {fieldErrors.giaTriGiam ? <div className="field-error">{fieldErrors.giaTriGiam}</div> : null}
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
@@ -160,7 +232,7 @@ export default function AdminMarketing() {
             </tr>
           </thead>
           <tbody>
-            {filteredItems.map((km) => (
+            {filteredItems.slice((page - 1) * pageSize, page * pageSize).map((km) => (
               <tr key={km.maKhuyenMai}>
                 <td>{km.tenKhuyenMai}</td>
                 <td>{formatDate(km.ngayBatDau)}</td>
@@ -169,6 +241,9 @@ export default function AdminMarketing() {
                 <td className="action-buttons">
                   <button type="button" className="btn btn-sm btn-edit" onClick={() => onEdit(km)}>
                     Sua
+                  </button>
+                  <button type="button" className="btn btn-sm btn-delete" onClick={() => onDelete(km)}>
+                    Xoa
                   </button>
                 </td>
               </tr>
@@ -183,6 +258,9 @@ export default function AdminMarketing() {
           </tbody>
         </table>
       )}
+      {filteredItems.length > 0 ? (
+        <Pagination page={page} pageSize={pageSize} total={filteredItems.length} onPageChange={setPage} />
+      ) : null}
     </div>
   )
 }

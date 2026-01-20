@@ -1,5 +1,6 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"
 const API_ROOT = API_BASE.replace(/\/api\/?$/, "")
+const AUTH_MESSAGE_KEY = "auth_message"
 
 let token: string | null = localStorage.getItem("token")
 
@@ -45,6 +46,14 @@ async function requestUrl<T>(url: string, options: RequestOptions = {}): Promise
     const error = new Error(typeof msg === "string" ? msg : JSON.stringify(msg))
     ;(error as any).status = res.status
     ;(error as any).body = typeof data === "string" ? data : JSON.stringify(data)
+    if ((res.status === 401 || res.status === 403) && token) {
+      localStorage.setItem(AUTH_MESSAGE_KEY, "Phien dang nhap het han. Vui long dang nhap lai.")
+      setToken(null)
+      localStorage.removeItem("auth_user")
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login")
+      }
+    }
     throw error
   }
   return data as T
@@ -104,6 +113,18 @@ export default {
       request("/khuyenmai", { method: "POST", body: payload }),
     update: (id: number, payload: { tenKhuyenMai: string; ngayBatDau: string; ngayKetThuc: string; giaTriGiam: number }) =>
       request(`/khuyenmai/${id}`, { method: "PUT", body: payload }),
+    delete: (id: number) => request(`/khuyenmai/${id}`, { method: "DELETE" }),
+  },
+  report: {
+    finance: (from: string, to: string) =>
+      request<Array<{ ngay: string; thu: number; chi: number }>>(
+        `/report/finance?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+      ),
+    sales: (from: string, to: string) =>
+      request<Array<{ ngay: string; soHoaDon: number; doanhThu: number }>>(
+        `/report/sales?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+      ),
+    staff: () => request<Array<{ trangThai: string; soLuong: number }>>("/report/staff"),
   },
   thietbi: {
     list: () => request<Array<{ maThietBi: number; tenThietBi: string; soLuong: number; donGiaMua: number; ngayMua: string; ghiChu?: string }>>("/thietbi"),

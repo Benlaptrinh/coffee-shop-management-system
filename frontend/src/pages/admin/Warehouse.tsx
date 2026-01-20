@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
 import { formatDateTime, formatNumber, toDigits } from "../../utils/format"
+import Pagination from "../../components/Pagination"
 
 type Unit = { maDonViTinh: number; tenDonVi: string }
 type StockItem = {
@@ -21,6 +22,8 @@ export default function AdminWarehouse() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editItem, setEditItem] = useState<StockItem | null>(null)
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const [nhapForm, setNhapForm] = useState({
     tenHangHoa: "",
@@ -41,6 +44,9 @@ export default function AdminWarehouse() {
     donGiaRaw: "",
     donViTinhId: "",
   })
+  const [nhapErrors, setNhapErrors] = useState<Record<string, string>>({})
+  const [xuatErrors, setXuatErrors] = useState<Record<string, string>>({})
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({})
 
   const load = async () => {
     setLoading(true)
@@ -68,6 +74,15 @@ export default function AdminWarehouse() {
 
   const filteredItems = useMemo(() => items, [items])
 
+  useEffect(() => {
+    setPage(1)
+  }, [search])
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize))
+    if (page > totalPages) setPage(totalPages)
+  }, [filteredItems.length, page, pageSize])
+
   const onNhapSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError(null)
@@ -78,13 +93,18 @@ export default function AdminWarehouse() {
       donGia: Number(nhapForm.donGiaRaw || 0),
       ngayNhap: nhapForm.ngayNhap,
     }
-    if (!payload.tenHangHoa || !payload.soLuong || !payload.donGia || !payload.ngayNhap) {
-      setError("Missing required fields")
-      return
-    }
+    const errors: Record<string, string> = {}
+    if (!payload.tenHangHoa) errors.tenHangHoa = "Ten hang khong duoc de trong"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
+    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Don gia khong hop le"
+    if (!payload.donViTinhId) errors.donViTinhId = "Vui long chon don vi"
+    if (!payload.ngayNhap) errors.ngayNhap = "Ngay nhap khong duoc de trong"
+    setNhapErrors(errors)
+    if (Object.keys(errors).length > 0) return
     try {
       await api.hanghoa.nhap(payload)
       setNhapForm({ tenHangHoa: "", soLuongRaw: "", donGiaRaw: "", donViTinhId: "", ngayNhap: "" })
+      setNhapErrors({})
       await load()
     } catch (err: any) {
       setError(err?.body || err?.message || "Nhap hang failed")
@@ -99,13 +119,16 @@ export default function AdminWarehouse() {
       soLuong: Number(xuatForm.soLuongRaw || 0),
       ngayXuat: xuatForm.ngayXuat,
     }
-    if (!payload.hangHoaId || !payload.soLuong || !payload.ngayXuat) {
-      setError("Missing required fields")
-      return
-    }
+    const errors: Record<string, string> = {}
+    if (!payload.hangHoaId) errors.hangHoaId = "Vui long chon hang hoa"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
+    if (!payload.ngayXuat) errors.ngayXuat = "Ngay xuat khong duoc de trong"
+    setXuatErrors(errors)
+    if (Object.keys(errors).length > 0) return
     try {
       await api.hanghoa.xuat(payload)
       setXuatForm({ hangHoaId: "", soLuongRaw: "", ngayXuat: "" })
+      setXuatErrors({})
       await load()
     } catch (err: any) {
       setError(err?.body || err?.message || "Xuat hang failed")
@@ -123,13 +146,17 @@ export default function AdminWarehouse() {
       donViTinhId: editForm.donViTinhId ? Number(editForm.donViTinhId) : null,
       donGia: Number(editForm.donGiaRaw || 0),
     }
-    if (!payload.tenHangHoa || !payload.soLuong || !payload.donViTinhId || !payload.donGia) {
-      setError("Missing required fields")
-      return
-    }
+    const errors: Record<string, string> = {}
+    if (!payload.tenHangHoa) errors.tenHangHoa = "Ten hang khong duoc de trong"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
+    if (!payload.donViTinhId) errors.donViTinhId = "Vui long chon don vi"
+    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Don gia khong hop le"
+    setEditErrors(errors)
+    if (Object.keys(errors).length > 0) return
     try {
       await api.hanghoa.update(payload)
       setEditItem(null)
+      setEditErrors({})
       await load()
     } catch (err: any) {
       setError(err?.body || err?.message || "Update failed")
@@ -146,6 +173,7 @@ export default function AdminWarehouse() {
       donGiaRaw: toDigits(String(item.donGia)),
       donViTinhId: matchUnit ? String(matchUnit.maDonViTinh) : "",
     })
+    setEditErrors({})
   }
 
   const onDelete = async (id: number) => {
@@ -170,7 +198,14 @@ export default function AdminWarehouse() {
             <form onSubmit={onNhapSubmit} noValidate>
               <div className="form-group">
                 <label>Ten hang</label>
-                <input value={nhapForm.tenHangHoa} onChange={(event) => setNhapForm((prev) => ({ ...prev, tenHangHoa: event.target.value }))} />
+                <input
+                  value={nhapForm.tenHangHoa}
+                  onChange={(event) => {
+                    setNhapForm((prev) => ({ ...prev, tenHangHoa: event.target.value }))
+                    if (nhapErrors.tenHangHoa) setNhapErrors((prev) => ({ ...prev, tenHangHoa: "" }))
+                  }}
+                />
+                {nhapErrors.tenHangHoa ? <div className="field-error">{nhapErrors.tenHangHoa}</div> : null}
               </div>
               <div className="form-row">
                 <div className="form-group">
@@ -178,22 +213,36 @@ export default function AdminWarehouse() {
                   <input
                     inputMode="numeric"
                     value={formatNumber(nhapForm.soLuongRaw)}
-                    onChange={(event) => setNhapForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))}
+                    onChange={(event) => {
+                      setNhapForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
+                      if (nhapErrors.soLuong) setNhapErrors((prev) => ({ ...prev, soLuong: "" }))
+                    }}
                   />
+                  {nhapErrors.soLuong ? <div className="field-error">{nhapErrors.soLuong}</div> : null}
                 </div>
                 <div className="form-group">
                   <label>Don gia</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(nhapForm.donGiaRaw)}
-                    onChange={(event) => setNhapForm((prev) => ({ ...prev, donGiaRaw: toDigits(event.target.value) }))}
+                    onChange={(event) => {
+                      setNhapForm((prev) => ({ ...prev, donGiaRaw: toDigits(event.target.value) }))
+                      if (nhapErrors.donGia) setNhapErrors((prev) => ({ ...prev, donGia: "" }))
+                    }}
                   />
+                  {nhapErrors.donGia ? <div className="field-error">{nhapErrors.donGia}</div> : null}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>Don vi</label>
-                  <select value={nhapForm.donViTinhId} onChange={(event) => setNhapForm((prev) => ({ ...prev, donViTinhId: event.target.value }))}>
+                  <select
+                    value={nhapForm.donViTinhId}
+                    onChange={(event) => {
+                      setNhapForm((prev) => ({ ...prev, donViTinhId: event.target.value }))
+                      if (nhapErrors.donViTinhId) setNhapErrors((prev) => ({ ...prev, donViTinhId: "" }))
+                    }}
+                  >
                     <option value="">-- Select --</option>
                     {units.map((unit) => (
                       <option key={unit.maDonViTinh} value={unit.maDonViTinh}>
@@ -201,10 +250,19 @@ export default function AdminWarehouse() {
                       </option>
                     ))}
                   </select>
+                  {nhapErrors.donViTinhId ? <div className="field-error">{nhapErrors.donViTinhId}</div> : null}
                 </div>
                 <div className="form-group">
                   <label>Ngay nhap</label>
-                  <input type="datetime-local" value={nhapForm.ngayNhap} onChange={(event) => setNhapForm((prev) => ({ ...prev, ngayNhap: event.target.value }))} />
+                  <input
+                    type="datetime-local"
+                    value={nhapForm.ngayNhap}
+                    onChange={(event) => {
+                      setNhapForm((prev) => ({ ...prev, ngayNhap: event.target.value }))
+                      if (nhapErrors.ngayNhap) setNhapErrors((prev) => ({ ...prev, ngayNhap: "" }))
+                    }}
+                  />
+                  {nhapErrors.ngayNhap ? <div className="field-error">{nhapErrors.ngayNhap}</div> : null}
                 </div>
               </div>
               <div className="form-actions">
@@ -220,7 +278,14 @@ export default function AdminWarehouse() {
             <form onSubmit={onEditSubmit} noValidate>
               <div className="form-group">
                 <label>Ten hang</label>
-                <input value={editForm.tenHangHoa} onChange={(event) => setEditForm((prev) => ({ ...prev, tenHangHoa: event.target.value }))} />
+                <input
+                  value={editForm.tenHangHoa}
+                  onChange={(event) => {
+                    setEditForm((prev) => ({ ...prev, tenHangHoa: event.target.value }))
+                    if (editErrors.tenHangHoa) setEditErrors((prev) => ({ ...prev, tenHangHoa: "" }))
+                  }}
+                />
+                {editErrors.tenHangHoa ? <div className="field-error">{editErrors.tenHangHoa}</div> : null}
               </div>
               <div className="form-row">
                 <div className="form-group">
@@ -228,22 +293,36 @@ export default function AdminWarehouse() {
                   <input
                     inputMode="numeric"
                     value={formatNumber(editForm.soLuongRaw)}
-                    onChange={(event) => setEditForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))}
+                    onChange={(event) => {
+                      setEditForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
+                      if (editErrors.soLuong) setEditErrors((prev) => ({ ...prev, soLuong: "" }))
+                    }}
                   />
+                  {editErrors.soLuong ? <div className="field-error">{editErrors.soLuong}</div> : null}
                 </div>
                 <div className="form-group">
                   <label>Don gia</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(editForm.donGiaRaw)}
-                    onChange={(event) => setEditForm((prev) => ({ ...prev, donGiaRaw: toDigits(event.target.value) }))}
+                    onChange={(event) => {
+                      setEditForm((prev) => ({ ...prev, donGiaRaw: toDigits(event.target.value) }))
+                      if (editErrors.donGia) setEditErrors((prev) => ({ ...prev, donGia: "" }))
+                    }}
                   />
+                  {editErrors.donGia ? <div className="field-error">{editErrors.donGia}</div> : null}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>Don vi</label>
-                  <select value={editForm.donViTinhId} onChange={(event) => setEditForm((prev) => ({ ...prev, donViTinhId: event.target.value }))}>
+                  <select
+                    value={editForm.donViTinhId}
+                    onChange={(event) => {
+                      setEditForm((prev) => ({ ...prev, donViTinhId: event.target.value }))
+                      if (editErrors.donViTinhId) setEditErrors((prev) => ({ ...prev, donViTinhId: "" }))
+                    }}
+                  >
                     <option value="">-- Select --</option>
                     {units.map((unit) => (
                       <option key={unit.maDonViTinh} value={unit.maDonViTinh}>
@@ -251,13 +330,21 @@ export default function AdminWarehouse() {
                       </option>
                     ))}
                   </select>
+                  {editErrors.donViTinhId ? <div className="field-error">{editErrors.donViTinhId}</div> : null}
                 </div>
               </div>
               <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
                   Save
                 </button>
-                <button type="button" className="btn btn-cancel" onClick={() => setEditItem(null)}>
+                <button
+                  type="button"
+                  className="btn btn-cancel"
+                  onClick={() => {
+                    setEditItem(null)
+                    setEditErrors({})
+                  }}
+                >
                   Cancel
                 </button>
               </div>
@@ -270,7 +357,13 @@ export default function AdminWarehouse() {
           <form onSubmit={onXuatSubmit} noValidate>
             <div className="form-group">
               <label>Hang hoa</label>
-              <select value={xuatForm.hangHoaId} onChange={(event) => setXuatForm((prev) => ({ ...prev, hangHoaId: event.target.value }))}>
+              <select
+                value={xuatForm.hangHoaId}
+                onChange={(event) => {
+                  setXuatForm((prev) => ({ ...prev, hangHoaId: event.target.value }))
+                  if (xuatErrors.hangHoaId) setXuatErrors((prev) => ({ ...prev, hangHoaId: "" }))
+                }}
+              >
                 <option value="">-- Select --</option>
                 {items.map((item) => (
                   <option key={item.maHangHoa} value={item.maHangHoa}>
@@ -278,6 +371,7 @@ export default function AdminWarehouse() {
                   </option>
                 ))}
               </select>
+              {xuatErrors.hangHoaId ? <div className="field-error">{xuatErrors.hangHoaId}</div> : null}
             </div>
             <div className="form-row">
               <div className="form-group">
@@ -285,12 +379,24 @@ export default function AdminWarehouse() {
                 <input
                   inputMode="numeric"
                   value={formatNumber(xuatForm.soLuongRaw)}
-                  onChange={(event) => setXuatForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))}
+                  onChange={(event) => {
+                    setXuatForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
+                    if (xuatErrors.soLuong) setXuatErrors((prev) => ({ ...prev, soLuong: "" }))
+                  }}
                 />
+                {xuatErrors.soLuong ? <div className="field-error">{xuatErrors.soLuong}</div> : null}
               </div>
               <div className="form-group">
                 <label>Ngay xuat</label>
-                <input type="datetime-local" value={xuatForm.ngayXuat} onChange={(event) => setXuatForm((prev) => ({ ...prev, ngayXuat: event.target.value }))} />
+                <input
+                  type="datetime-local"
+                  value={xuatForm.ngayXuat}
+                  onChange={(event) => {
+                    setXuatForm((prev) => ({ ...prev, ngayXuat: event.target.value }))
+                    if (xuatErrors.ngayXuat) setXuatErrors((prev) => ({ ...prev, ngayXuat: "" }))
+                  }}
+                />
+                {xuatErrors.ngayXuat ? <div className="field-error">{xuatErrors.ngayXuat}</div> : null}
               </div>
             </div>
             <div className="form-actions" style={{ marginTop: 8 }}>
@@ -336,7 +442,7 @@ export default function AdminWarehouse() {
             </tr>
           </thead>
           <tbody>
-            {filteredItems.map((item) => (
+            {filteredItems.slice((page - 1) * pageSize, page * pageSize).map((item) => (
               <tr key={item.maHangHoa}>
                 <td>{item.tenHangHoa}</td>
                 <td>{formatNumber(item.soLuong)}</td>
@@ -364,6 +470,9 @@ export default function AdminWarehouse() {
           </tbody>
         </table>
       )}
+      {filteredItems.length > 0 ? (
+        <Pagination page={page} pageSize={pageSize} total={filteredItems.length} onPageChange={setPage} />
+      ) : null}
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import api from "../../api"
+import Pagination from "../../components/Pagination"
 
 type Employee = {
   maNhanVien: number
@@ -18,6 +19,8 @@ export default function AdminEmployeesList() {
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const load = async (q?: string) => {
     setLoading(true)
@@ -35,6 +38,15 @@ export default function AdminEmployeesList() {
   useEffect(() => {
     load(search)
   }, [search])
+
+  useEffect(() => {
+    setPage(1)
+  }, [search])
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize))
+    if (page > totalPages) setPage(totalPages)
+  }, [items.length, page, pageSize])
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -96,7 +108,7 @@ export default function AdminEmployeesList() {
             </tr>
           </thead>
           <tbody>
-            {items.map((nv) => (
+            {items.slice((page - 1) * pageSize, page * pageSize).map((nv) => (
               <tr key={nv.maNhanVien}>
                 <td>{nv.hoTen}</td>
                 <td>{nv.soDienThoai || "-"}</td>
@@ -122,6 +134,7 @@ export default function AdminEmployeesList() {
           </tbody>
         </table>
       )}
+      {items.length > 0 ? <Pagination page={page} pageSize={pageSize} total={items.length} onPageChange={setPage} /> : null}
     </div>
   )
 }

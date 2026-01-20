@@ -46,6 +46,12 @@ public class KhuyenMaiApiController {
         kmService.updateKhuyenMai(id, form);
         return ResponseEntity.ok().build();
     }
-}
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        kmService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}
 

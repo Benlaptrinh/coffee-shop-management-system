@@ -8,10 +8,16 @@ export default function Login() {
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({})
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    const msg = localStorage.getItem("auth_message")
+    if (msg) {
+      setError(msg)
+      localStorage.removeItem("auth_message")
+    }
     if (token && user) {
       if (user.roles.includes("ADMIN")) navigate("/admin/dashboard", { replace: true })
       else navigate("/staff/home", { replace: true })
@@ -20,6 +26,11 @@ export default function Login() {
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
+    const errors: { username?: string; password?: string } = {}
+    if (!username.trim()) errors.username = "Username khong duoc de trong"
+    if (!password.trim()) errors.password = "Password khong duoc de trong"
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return
     setError(null)
     setLoading(true)
     try {
@@ -28,7 +39,7 @@ export default function Login() {
       if (resp.roles.includes("ADMIN")) navigate("/admin/dashboard", { replace: true })
       else navigate("/staff/home", { replace: true })
     } catch (err: any) {
-      setError(err?.body || err?.message || "Login failed")
+      setError("Dang nhap that bai. Vui long thu lai.")
     } finally {
       setLoading(false)
     }
@@ -44,16 +55,28 @@ export default function Login() {
         <form className="auth-form" onSubmit={submit}>
           <label className="auth-field">
             Username
-            <input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" />
+            <input
+              value={username}
+              onChange={(event) => {
+                setUsername(event.target.value)
+                if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: "" }))
+              }}
+              autoComplete="username"
+            />
+            {fieldErrors.username ? <span className="field-error">{fieldErrors.username}</span> : null}
           </label>
           <label className="auth-field">
             Password
             <input
               type="password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => {
+                setPassword(event.target.value)
+                if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: "" }))
+              }}
               autoComplete="current-password"
             />
+            {fieldErrors.password ? <span className="field-error">{fieldErrors.password}</span> : null}
           </label>
           {error ? <p className="auth-error">{error}</p> : null}
           <button className="btn btn-primary auth-submit" type="submit" disabled={loading}>

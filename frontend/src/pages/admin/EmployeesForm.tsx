@@ -30,6 +30,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
     username: "",
     password: "",
   })
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     setChucVuLoading(true)
@@ -92,21 +93,34 @@ export default function AdminEmployeesForm({ mode }: Props) {
 
   const onChange = (field: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }))
+    }
   }
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
+    const errors: Record<string, string> = {}
     const isCreate = mode === "create"
     const wantsAccount = account.username.trim() !== "" || account.password.trim() !== ""
-    if (isCreate && (!account.username.trim() || !account.password.trim())) {
-      setError("Username va password bat buoc khi tao tai khoan")
-      return
+    if (!form.hoTen.trim()) errors.hoTen = "Ho ten khong duoc de trong"
+    if (!form.diaChi.trim()) errors.diaChi = "Dia chi khong duoc de trong"
+    if (!form.soDienThoai.trim()) {
+      errors.soDienThoai = "So dien thoai khong duoc de trong"
+    } else if (!/^\d{9,11}$/.test(form.soDienThoai.trim())) {
+      errors.soDienThoai = "So dien thoai phai tu 9 den 11 so"
     }
-    if (!isCreate && wantsAccount && (!account.username.trim() || !account.password.trim()) && !hasAccount) {
-      setError("Username va password bat buoc khi tao tai khoan")
-      return
+    if (isCreate && !account.username.trim()) errors.username = "Username khong duoc de trong"
+    if (isCreate && !account.password.trim()) errors.password = "Password khong duoc de trong"
+    if (!isCreate && wantsAccount && !hasAccount && !account.username.trim()) {
+      errors.username = "Username khong duoc de trong"
     }
+    if (!isCreate && wantsAccount && !hasAccount && !account.password.trim()) {
+      errors.password = "Password khong duoc de trong"
+    }
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return
     const payload: any = {
       hoTen: form.hoTen,
       diaChi: form.diaChi,
@@ -191,10 +205,12 @@ export default function AdminEmployeesForm({ mode }: Props) {
             <div className="form-group">
               <label>Ho ten</label>
               <input value={form.hoTen} onChange={(event) => onChange("hoTen", event.target.value)} />
+              {fieldErrors.hoTen ? <div className="field-error">{fieldErrors.hoTen}</div> : null}
             </div>
             <div className="form-group">
               <label>Dia chi</label>
               <input value={form.diaChi} onChange={(event) => onChange("diaChi", event.target.value)} />
+              {fieldErrors.diaChi ? <div className="field-error">{fieldErrors.diaChi}</div> : null}
             </div>
             <div className="form-group">
               <label>Vai tro</label>
@@ -209,6 +225,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
                 value={form.soDienThoai}
                 onChange={(event) => onChange("soDienThoai", event.target.value.replace(/\D/g, ""))}
               />
+              {fieldErrors.soDienThoai ? <div className="field-error">{fieldErrors.soDienThoai}</div> : null}
             </div>
             <div className="form-group">
               <label>Trang thai</label>
@@ -241,19 +258,27 @@ export default function AdminEmployeesForm({ mode }: Props) {
               <label>Username</label>
               <input
                 value={account.username}
-                onChange={(event) => setAccount((prev) => ({ ...prev, username: event.target.value }))}
+                onChange={(event) => {
+                  setAccount((prev) => ({ ...prev, username: event.target.value }))
+                  if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: "" }))
+                }}
                 readOnly={hasAccount}
                 placeholder={hasAccount ? "" : "Nhap username"}
               />
+              {fieldErrors.username ? <div className="field-error">{fieldErrors.username}</div> : null}
             </div>
             <div className="form-group">
               <label>{hasAccount ? "Mat khau moi (bo trong neu giu nguyen)" : "Password"}</label>
               <input
                 type="password"
                 value={account.password}
-                onChange={(event) => setAccount((prev) => ({ ...prev, password: event.target.value }))}
+                onChange={(event) => {
+                  setAccount((prev) => ({ ...prev, password: event.target.value }))
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: "" }))
+                }}
                 placeholder={hasAccount ? "Nhap neu muon doi mat khau" : "Nhap mat khau"}
               />
+              {fieldErrors.password ? <div className="field-error">{fieldErrors.password}</div> : null}
             </div>
           </div>
 

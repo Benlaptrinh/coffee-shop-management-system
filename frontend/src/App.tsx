@@ -15,7 +15,6 @@ import AdminMarketing from "./pages/admin/Marketing"
 import AdminEquipment from "./pages/admin/Equipment"
 import AdminWarehouse from "./pages/admin/Warehouse"
 import AdminBudget from "./pages/admin/Budget"
-import AdminReport from "./pages/admin/Report"
 import AdminReports from "./pages/admin/Reports"
 import AdminSales from "./pages/admin/Sales"
 import StaffHome from "./pages/staff/Home"
@@ -88,7 +87,7 @@ export default function App() {
               <Route path="menu" element={<AdminMenu />} />
               <Route path="marketing" element={<AdminMarketing />} />
               <Route path="budget" element={<AdminBudget />} />
-              <Route path="report" element={<AdminReport />} />
+              <Route path="report" element={<AdminReports />} />
               <Route path="reports" element={<AdminReports />} />
             </Route>
 

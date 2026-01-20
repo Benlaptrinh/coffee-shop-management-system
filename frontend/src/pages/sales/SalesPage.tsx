@@ -34,7 +34,7 @@ export default function SalesPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detail, setDetail] = useState<TableDetail | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
-  const [menuQty, setMenuQty] = useState<Record<number, number>>({})
+  const [menuQty, setMenuQty] = useState<Record<number, string>>({})
   const [modal, setModal] = useState<ModalType | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -84,10 +84,10 @@ export default function SalesPage() {
     if (type === "menu") {
       const [menu, tableDetail] = await Promise.all([api.sales.menu(), loadDetail(selectedId)])
       setMenuItems(menu)
-      const qtyMap: Record<number, number> = {}
+      const qtyMap: Record<number, string> = {}
       if (tableDetail.invoice?.items) {
         tableDetail.invoice.items.forEach((it) => {
-          qtyMap[it.maThucDon] = it.soLuong
+          qtyMap[it.maThucDon] = String(it.soLuong)
         })
       }
       setMenuQty(qtyMap)
@@ -131,7 +131,9 @@ export default function SalesPage() {
     if (!selectedId) return
     const params: Record<string, string> = {}
     menuItems.forEach((item) => {
-      const qty = menuQty[item.maThucDon] || 0
+      const raw = menuQty[item.maThucDon] ?? ""
+      const normalized = toDigits(raw)
+      const qty = normalized ? Number(normalized) : 0
       params[`qty_${item.maThucDon}`] = String(qty)
     })
     try {
@@ -396,12 +398,13 @@ export default function SalesPage() {
                   <td className="text-right">{formatNumber(item.giaHienTai)}</td>
                   <td className="text-center">
                     <input
-                      type="number"
-                      min={0}
-                      value={menuQty[item.maThucDon] ?? 0}
-                      onChange={(event) =>
-                        setMenuQty((prev) => ({ ...prev, [item.maThucDon]: Number(event.target.value) || 0 }))
-                      }
+                      inputMode="numeric"
+                      value={menuQty[item.maThucDon] ?? ""}
+                      onChange={(event) => {
+                        const digits = toDigits(event.target.value)
+                        const normalized = digits === "" ? "" : digits.replace(/^0+(?=\d)/, "")
+                        setMenuQty((prev) => ({ ...prev, [item.maThucDon]: normalized }))
+                      }}
                     />
                   </td>
                 </tr>
