@@ -391,6 +391,7 @@ public class SalesServiceImpl implements SalesService {
         
         Ban b = banRepository.findById(banId).orElse(null);
         if (b != null) {
+            chiTietDatBanRepository.deleteByBan(b);
             b.setTinhTrang(TinhTrangBan.TRONG);
             banRepository.save(b);
         }
