@@ -1,0 +1,32 @@
+<div th:fragment="content">
+  <div style="background:#fff;padding:16px;max-width:800px;">
+    <h3 th:text="'Chọn món - ' + ${tableId}">Chọn món</h3>
+    <form th:action="@{|/sales/${tableId}/menu|}" method="post">
+      <table border="1" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="padding:6px">Tên món</th>
+            <th style="padding:6px;text-align:right">Giá</th>
+            <th style="padding:6px">Số lượng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="m : ${menu}">
+            <td style="padding:6px" th:text="${m.tenMon}">Mon</td>
+            <td style="padding:6px;text-align:right"
+                th:text="${m.giaHienTai != null ? #numbers.formatDecimal(m.giaHienTai,0,'POINT',0,'COMMA') : '0'}">0</td>
+            <td style="padding:6px;text-align:center">
+              <input type="number" min="0" th:name="${'qty_' + m.maThucDon}"
+                     th:value="${#lists.find(hoaDon != null ? hoaDon.chiTietHoaDons : {}, ct -> ct.thucDon != null && ct.thucDon.maThucDon == m.maThucDon)?.soLuong ?: 0}" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;">
+        <button type="submit">Lưu</button>
+        <button type="button" onclick="closeModal()">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>
+

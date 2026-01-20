@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="content-wrapper">
+    <h1>Danh sách khuyến mãi</h1>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="form-box">
+      <h2 th:text="${editMode} ? 'Chỉnh sửa khuyến mãi' : 'Thêm khuyến mãi'"></h2>
+      <form th:action="${editMode} ? @{/admin/marketing/edit} : @{/admin/marketing/add}"
+            th:object="${khuyenMaiForm}"
+            method="post"
+            novalidate>
+        <input type="hidden" name="page" th:value="${page}" />
+        <input type="hidden" name="keyword" th:value="${keyword}" />
+        <input type="hidden" th:if="${editMode}" th:field="*{id}" />
+
+        <div class="form-group">
+          <label>Tên khuyến mãi</label>
+          <input type="text" th:field="*{tenKhuyenMai}" />
+          <div class="field-error" th:if="${#fields.hasErrors('tenKhuyenMai')}" th:errors="*{tenKhuyenMai}"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Ngày bắt đầu</label>
+          <input type="date" th:field="*{ngayBatDau}" />
+          <div class="field-error" th:if="${#fields.hasErrors('ngayBatDau')}" th:errors="*{ngayBatDau}"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Ngày kết thúc</label>
+          <input type="date" th:field="*{ngayKetThuc}" />
+          <div class="field-error" th:if="${#fields.hasErrors('ngayKetThuc')}" th:errors="*{ngayKetThuc}"></div>
+        </div>
+
+        <div class="form-group">
+          <label>% giảm giá</label>
+          <input type="number" min="1" max="100" th:field="*{giaTriGiam}" />
+          <div class="field-error" th:if="${#fields.hasErrors('giaTriGiam')}" th:errors="*{giaTriGiam}"></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" th:text="${editMode} ? 'Lưu' : 'Thêm'"></button>
+          <a th:if="${editMode}" th:href="@{/admin/marketing}" class="btn btn-cancel">Hủy</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="action-bar">
+      <form th:action="@{/admin/marketing}" method="get" class="search-form">
+        <input type="text" name="keyword" placeholder="Nhập tên khuyến mãi..." th:value="${keyword}" />
+        <button class="btn btn-sm">Tìm kiếm</button>
+        <a th:href="@{/admin/marketing}" class="btn btn-sm btn-cancel">Reset</a>
+      </form>
+    </div>
+
+    <table class="data-table table-actions">
+      <thead>
+        <tr>
+          <th>Tên khuyến mãi</th>
+          <th>Ngày bắt đầu</th>
+          <th>Ngày kết thúc</th>
+          <th class="text-right">% giảm giá</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="km : ${khuyenMais}">
+          <td th:text="${km.tenKhuyenMai}"></td>
+          <td th:text="${km.ngayBatDau}"></td>
+          <td th:text="${km.ngayKetThuc}"></td>
+          <td class="text-right" th:text="${#numbers.formatDecimal(km.giaTriGiam, 0, 'POINT', 0, 'COMMA')} + '%'"></td>
+          <td class="action-buttons">
+            <a th:href="@{/admin/marketing/edit/{id}(id=${km.maKhuyenMai}, page=${page}, keyword=${keyword})}" class="btn btn-sm btn-edit">Sửa</a>
+            <a th:href="@{/admin/marketing/delete/{id}(id=${km.maKhuyenMai})}"
+               class="btn btn-sm btn-delete"
+               onclick="return confirm('Bạn có chắc muốn xóa khuyến mãi này hay không?')">Xóa</a>
+          </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(khuyenMais)}">
+          <td colspan="5" class="text-center text-muted">Chưa có khuyến mãi nào</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <a class="btn btn-sm"
+         th:href="@{/admin/marketing(page=${page - 1}, keyword=${keyword})}"
+         th:classappend="${page <= 1 ? ' btn-disabled' : ''}">
+        Trước
+      </a>
+      <span class="pagination-info" th:text="'Trang ' + ${page} + ' / ' + ${totalPages}"></span>
+      <a class="btn btn-sm"
+         th:href="@{/admin/marketing(page=${page + 1}, keyword=${keyword})}"
+         th:classappend="${page >= totalPages ? ' btn-disabled' : ''}">
+        Sau
+      </a>
+    </div>
+  </div>
+</body>
+</html>

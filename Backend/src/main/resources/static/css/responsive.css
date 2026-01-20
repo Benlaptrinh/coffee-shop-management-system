@@ -1,0 +1,136 @@
+.sidebar {
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.content-wrapper {
+  display: block;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.content-area {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Report table sizing */
+.report-table {
+  width: 100% !important;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+/* Mobile: hide sidebar, show toggle button */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    background: var(--sidebar-bg, #f5f5f5);
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .content-area {
+    padding: 12px;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+  .sidebar-overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 900;
+  }
+
+  .no-print {
+    display: inline-block;
+  }
+
+  .report-table.data-table,
+  .report-table.report-table--compact {
+    min-width: 100% !important;
+  }
+}
+
+/* Desktop: hide toggle button */
+@media (min-width: 769px) {
+  .no-print {
+    display: none;
+  }
+}
+
+/* Print rules (preserve earlier print styles) */
+@media print {
+  nav, header, footer, button, form, .sidebar, .no-print {
+    display: none !important;
+  }
+  body {
+    font-size: 12pt;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+}
+
+/* Support for layout classes used in templates */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+.app-layout .sidebar {
+  width: 250px;
+  flex: 0 0 250px;
+}
+.sidebar-toggle {
+  display: none;
+  margin: 8px;
+  padding: 8px 12px;
+}
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle { display: inline-block; }
+  body.sidebar-open .app-layout .sidebar {
+    transform: translateX(0);
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: var(--sidebar-bg, #fff);
+  }
+  body.sidebar-open .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 900;
+  }
+  .app-layout .content-area {
+    padding: 12px;
+  }
+}

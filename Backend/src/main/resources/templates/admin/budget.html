@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="content-wrapper">
+    <h1>Quản lý ngân sách</h1>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form method="get" class="action-bar budget-filter">
+      <div class="form-row budget-filter-row">
+        <div class="form-group">
+          <label>Từ ngày</label>
+          <input type="date" name="from" th:value="${from != null ? #temporals.format(from,'yyyy-MM-dd') : ''}" />
+        </div>
+        <div class="form-group">
+          <label>Đến ngày</label>
+          <input type="date" name="to" th:value="${to != null ? #temporals.format(to,'yyyy-MM-dd') : ''}" />
+        </div>
+        <div class="form-group budget-filter-actions">
+          <label class="budget-filter-label" aria-hidden="true">&nbsp;</label>
+          <div class="form-actions form-actions--equal">
+            <button class="btn btn-primary btn-sm" type="submit">Xem</button>
+            <a th:href="@{/admin/budget}" class="btn btn-sm btn-cancel">Reset</a>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="budget-summary" th:if="${totalThu != null}">
+      <div class="budget-summary-card">
+        <div class="budget-summary-label">Tổng thu</div>
+        <div class="budget-summary-value" th:text="${#numbers.formatDecimal(totalThu,0,'COMMA',0,'POINT')}">0</div>
+      </div>
+      <div class="budget-summary-card">
+        <div class="budget-summary-label">Tổng chi</div>
+        <div class="budget-summary-value" th:text="${#numbers.formatDecimal(totalChi,0,'COMMA',0,'POINT')}">0</div>
+      </div>
+      <div class="budget-summary-card">
+        <div class="budget-summary-label">Chênh lệch</div>
+        <div class="budget-summary-value"
+             th:classappend="${netAmount != null and netAmount.signum() < 0 ? ' is-negative' : ''}"
+             th:text="${#numbers.formatDecimal(netAmount,0,'COMMA',0,'POINT')}">0</div>
+      </div>
+      <div class="budget-summary-card">
+        <div class="budget-summary-label">Tỷ lệ chi/thu</div>
+        <div class="budget-summary-value"
+             th:text="${chiThuRatio != null ? #numbers.formatDecimal(chiThuRatio,0,'COMMA',2,'POINT') + '%' : '-'}">-</div>
+      </div>
+    </div>
+    <div class="budget-summary-extra" th:if="${maxThuDay != null or maxChiDay != null}">
+      <span th:if="${maxThuDay != null}"
+            th:text="'Ngày thu cao nhất: ' + ${#temporals.format(maxThuDay,'dd/MM/yyyy')} + ' (' + ${#numbers.formatDecimal(maxThu,0,'COMMA',0,'POINT')} + ')'">
+        Ngày thu cao nhất
+      </span>
+      <span th:if="${maxChiDay != null}"
+            th:text="'Ngày chi cao nhất: ' + ${#temporals.format(maxChiDay,'dd/MM/yyyy')} + ' (' + ${#numbers.formatDecimal(maxChi,0,'COMMA',0,'POINT')} + ')'">
+        Ngày chi cao nhất
+      </span>
+    </div>
+
+    <table class="data-table report-table">
+      <thead>
+        <tr>
+          <th>Ngày</th>
+          <th class="text-right">Thu</th>
+          <th class="text-right">Chi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="row : ${thuChiList}">
+          <td th:text="${row.ngay}"></td>
+          <td class="text-right" th:text="${#numbers.formatDecimal(row.thu,0,'COMMA',0,'POINT')}"></td>
+          <td class="text-right" th:text="${#numbers.formatDecimal(row.chi,0,'COMMA',0,'POINT')}"></td>
+        </tr>
+        <tr th:if="${thuChiList == null || thuChiList.isEmpty()}">
+          <td colspan="3" class="text-center text-muted">Chưa có dữ liệu</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="form-box" style="margin-top:16px;">
+      <h3>Thêm chi tiêu</h3>
+      <form th:action="@{/admin/budget/expense}" method="post" th:object="${chiTieuForm}" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày</label>
+            <input type="date" th:field="*{ngayChi}" />
+            <div class="field-error" th:if="${#fields.hasErrors('ngayChi')}" th:errors="*{ngayChi}"></div>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Khoản chi</label>
+            <input th:field="*{tenKhoanChi}" />
+            <div class="field-error" th:if="${#fields.hasErrors('tenKhoanChi')}" th:errors="*{tenKhoanChi}"></div>
+          </div>
+          <div class="form-group">
+            <label>Số tiền</label>
+            <input type="number" min="1" th:field="*{soTien}" />
+            <div class="field-error" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
+          </div>
+        </div>
+        <div class="form-actions form-actions--equal">
+          <button class="btn btn-primary btn-sm" type="submit">Lưu</button>
+          <a th:href="@{/admin/budget}" class="btn btn-sm btn-cancel">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

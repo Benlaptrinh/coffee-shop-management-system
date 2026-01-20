@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="content-wrapper">
+    <h1>Sao lưu dữ liệu</h1>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="form-box">
+      <p>Nhấn <strong>Sao lưu</strong> để tải file sao lưu xuống máy của bạn (trình duyệt sẽ mở hộp thoại lưu).</p>
+      <form method="post" class="form-inline">
+        <button type="submit" class="btn btn-primary">Sao lưu</button>
+        <a th:href="@{/admin}" class="btn btn-cancel" style="margin-left:8px">Hủy</a>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
+

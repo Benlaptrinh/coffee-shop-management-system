@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content">
+    <div>
+      <h2 th:text="${thietBi.maThietBi != null} ? 'Chỉnh sửa thiết bị' : 'Thêm thiết bị'">Form</h2>
+      <form th:action="${thietBi.maThietBi != null} ? @{/admin/equipment/{id}(id=${thietBi.maThietBi})} : @{/admin/equipment}" th:object="${thietBi}" method="post">
+        <input type="hidden" th:field="*{maThietBi}" />
+        <div>
+          <label>Tên thiết bị</label><br/>
+          <input type="text" th:field="*{tenThietBi}" required />
+        </div>
+        <div>
+          <label>Ngày mua</label><br/>
+          <input type="date" th:field="*{ngayMua}" required />
+        </div>
+        <div>
+          <label>Số lượng</label><br/>
+          <input type="number" th:field="*{soLuong}" min="1" required />
+        </div>
+        <div>
+          <label>Đơn giá mua</label><br/>
+          <input type="number" step="0.01" th:field="*{donGiaMua}" min="0" required />
+        </div>
+        <div>
+          <label>Ghi chú</label><br/>
+          <textarea th:field="*{ghiChu}"></textarea>
+        </div>
+        <div style="margin-top:8px;">
+          <button type="submit">Lưu</button>
+          <a th:href="@{/admin/equipment}">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
+

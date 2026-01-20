@@ -1,0 +1,28 @@
+<div th:fragment="content">
+  <div class="modal-card modal-card--wide">
+    <h3 th:text="'Chọn món - ' + ${tableId}">Chọn món</h3>
+    <form class="modal-form" th:action="@{|/sales/${tableId}/menu|}" method="post"
+          th:onsubmit="return submitMenuForm(event)">
+      <table class="modal-table">
+        <thead>
+          <tr><th>Tên món</th><th class="text-right">Giá</th><th>Số lượng</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="m : ${menu}">
+            <td th:text="${m.tenMon}">Mon</td>
+            <td class="text-right"
+                th:text="${m.giaHienTai != null ? #numbers.formatDecimal(m.giaHienTai,0,'POINT',0,'COMMA') : '0'}">0</td>
+            <td class="text-center">
+              <input type="number" min="0" th:name="${'qty_' + m.maThucDon}"
+                     th:value="${qtyMap[m.maThucDon] != null ? qtyMap[m.maThucDon] : 0}" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal()">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>

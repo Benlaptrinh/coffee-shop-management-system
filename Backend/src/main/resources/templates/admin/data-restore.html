@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="content-wrapper">
+    <h1>Phục hồi dữ liệu</h1>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="form-box">
+      <p>Chọn file `.sql` đã tải lên từ máy của bạn để phục hồi cơ sở dữ liệu.</p>
+      <form method="post" enctype="multipart/form-data" class="form-inline">
+        <input type="file" name="file" accept=".sql" required />
+        <div style="margin-top:8px;">
+          <button type="submit" class="btn btn-primary">Phục hồi</button>
+          <a th:href="@{/admin}" class="btn btn-cancel" style="margin-left:8px">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
+

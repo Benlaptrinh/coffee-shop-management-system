@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="content-wrapper">
+    <h1>Quản lý bán hàng - Danh sách bàn</h1>
+
+    <div class="status-legend">
+      <span class="legend-item"><span class="legend-swatch table-free"></span> Trống</span>
+      <span class="legend-item"><span class="legend-swatch table-busy"></span> Đang sử dụng</span>
+      <span class="legend-item"><span class="legend-swatch table-reserved"></span> Đã đặt</span>
+    </div>
+
+    <div class="table-grid">
+      <div th:each="b : ${tables}" class="table-card table-free" th:attr="data-id=${b.maBan}"
+           th:classappend="${b.tinhTrang.name() == 'TRONG' ? '' : (b.tinhTrang.name() == 'DANG_SU_DUNG' ? ' table-busy' : ' table-reserved')}">
+        <div th:text="${b.tenBan}">Bàn</div>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedBanId" name="banId" />
+
+    <div class="action-bar sales-action-bar" style="margin-top:16px;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="btnView" type="button" class="btn btn-sm" onclick="openViewBan()" disabled>Xem bàn</button>
+        <button id="btnMenu" type="button" class="btn btn-sm" onclick="openMenuModal()" disabled>Chọn thực đơn</button>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="btnMove" type="button" class="btn btn-sm" disabled>Chuyển</button>
+        <button id="btnMerge" type="button" class="btn btn-sm" disabled>Gộp</button>
+        <button id="btnSplit" type="button" class="btn btn-sm" disabled>Tách</button>
+        <button id="btnCancel" type="button" class="btn btn-sm btn-delete" disabled>Hủy đặt</button>
+        <button id="btnReserve" type="button" class="btn btn-sm btn-edit" disabled>Đặt bàn</button>
+      </div>
+    </div>
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      function stripToDigits(value){
+        return (value || '').toString().replace(/\D/g, '');
+      }
+
+      function formatVnCurrency(value){
+        var digits = stripToDigits(value);
+        if(!digits) return '';
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      }
+
+      function setupTienKhachInput(){
+        var input = document.getElementById('tienKhach');
+        if(!input) return;
+        input.value = formatVnCurrency(input.value);
+        input.addEventListener('input', function(){
+          input.value = formatVnCurrency(input.value);
+        });
+        input.addEventListener('blur', function(){
+          input.value = formatVnCurrency(input.value);
+        });
+      }
+
+      function selectBan(id){
+        var sel = document.getElementById('selectedBanId');
+        if(sel) sel.value = id;
+        // document.getElementById('formMenuBanId').value = id; (no longer using form submit)
+        var paymentHidden = document.getElementById('formPaymentBanId');
+        if(paymentHidden) paymentHidden.value = id;
+        document.querySelectorAll('.table-card').forEach(function(el){ el.classList.remove('active'); });
+        var el = document.querySelector('.table-card[data-id="' + id + '"]');
+        if(el) el.classList.add('active');
+        // enable action buttons when a table is selected
+        var btnView = document.getElementById('btnView');
+        var btnMenu = document.getElementById('btnMenu');
+        var btnReserve = document.getElementById('btnReserve');
+        var btnMove = document.getElementById('btnMove');
+        var btnMerge = document.getElementById('btnMerge');
+        var btnSplit = document.getElementById('btnSplit');
+        var btnCancel = document.getElementById('btnCancel');
+        if(btnView) btnView.disabled = false;
+        if(btnMenu) btnMenu.disabled = false;
+        if(btnReserve) btnReserve.disabled = false;
+
+        var selectedTableEl = document.querySelector('.table-card[data-id=\"' + id + '\"]');
+        var isServing = selectedTableEl && selectedTableEl.classList.contains('table-busy');
+        var isReserved = selectedTableEl && selectedTableEl.classList.contains('table-reserved');
+        var isEmpty = selectedTableEl && !isServing && !isReserved;
+        if (btnMove) {
+          btnMove.disabled = !isServing;
+          if (!btnMove.onclick) {
+            btnMove.onclick = openMoveModal;
+          }
+        }
+        if (btnMerge) {
+          btnMerge.disabled = !isServing;
+          if (!btnMerge.onclick) {
+            btnMerge.onclick = openMergeModal;
+          }
+        }
+        if (btnSplit) {
+          btnSplit.disabled = !isServing;
+          if (!btnSplit.onclick) {
+            btnSplit.onclick = openSplitModal;
+          }
+        }
+        // cancel enabled for reserved tables
+        if (btnCancel) {
+          btnCancel.disabled = !isReserved;
+          if (!btnCancel.onclick) {
+            btnCancel.onclick = openCancelReservation;
+          }
+        }
+        if (btnReserve) {
+          btnReserve.disabled = isServing;
+          if (!btnReserve.onclick) {
+            btnReserve.onclick = function(){ openReserveBan(); };
+          }
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('.table-card').forEach(function(el){
+          el.addEventListener('click', function(){ selectBan(this.getAttribute('data-id')); });
+        });
+        document.getElementById('btnView').disabled = true;
+        document.getElementById('btnMenu').disabled = true;
+        document.getElementById('btnMove').disabled = true;
+        document.getElementById('btnMerge').disabled = true;
+        document.getElementById('btnSplit').disabled = true;
+        document.getElementById('btnCancel').disabled = true;
+        document.getElementById('btnReserve').disabled = true;
+      });
+
+      function openViewBan(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/ban/' + id + '/view', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+            setupTienKhachInput();
+          });
+      }
+
+      function openReserveBan(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/ban/' + id + '/reserve', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function openMenuModal(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/' + id + '/menu/modal', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function openMoveModal(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/ban/' + id + '/move', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function submitMove(banId){
+        var toBanId = document.getElementById('toBanSelect').value;
+        if(!toBanId){ alert('Vui lòng chọn bàn đích'); return; }
+        fetch('/sales/move', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ fromBanId: banId, toBanId: Number(toBanId) })
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Chuyển bàn thành công');
+              closeModal();
+              location.reload();
+            } else {
+              alert('Lỗi: ' + txt);
+            }
+          });
+      }
+
+      function openMergeModal(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/ban/' + id + '/merge', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function submitMerge(targetBanId){
+        var sourceBanId = document.getElementById('sourceBanSelect') ? document.getElementById('sourceBanSelect').value : null;
+        if(!sourceBanId){ alert('Vui lòng chọn bàn nguồn'); return; }
+        if(!confirm('Gộp Bàn ' + sourceBanId + ' vào ' + targetBanId + '?')) return;
+        fetch('/sales/merge', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ targetBanId: targetBanId, sourceBanId: Number(sourceBanId) })
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Gộp bàn thành công');
+              closeModal();
+              location.reload();
+            } else {
+              alert('Lỗi: ' + txt);
+            }
+          });
+      }
+
+      function openSplitModal(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/ban/' + id + '/split', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function submitSplit(fromBanId){
+        var toBanId = document.getElementById('toBanSelect') ? document.getElementById('toBanSelect').value : null;
+        if(!toBanId){ alert('Vui lòng chọn bàn đích'); return; }
+
+        var items = [];
+        var inputs = document.querySelectorAll('input[id^=\"split_qty_\"]');
+        inputs.forEach(function(input){
+          var id = input.getAttribute('data-id') || input.getAttribute('th:data-id') || null;
+          var val = parseInt(input.value || '0', 10);
+          if(val > 0 && id) {
+            items.push({ thucDonId: Number(id), soLuong: val });
+          }
+        });
+
+        if(items.length === 0) { alert('Vui lòng nhập số lượng cần tách'); return; }
+
+        fetch('/sales/' + fromBanId + '/split', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ toBanId: Number(toBanId), items: items })
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Tách bàn thành công');
+              closeModal();
+              location.reload();
+            } else {
+              alert('Lỗi: ' + txt);
+            }
+          });
+      }
+
+      function openCancelReservation(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        if(!confirm('Bạn có chắc muốn hủy đặt bàn ' + id + ' không?')) return;
+        fetch('/sales/ban/' + id + '/cancel-reservation', {
+          method: 'POST',
+          credentials: 'same-origin'
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Hủy đặt bàn thành công');
+              location.reload();
+            } else {
+              alert('Lỗi: ' + txt);
+            }
+          });
+      }
+
+      function openPaymentModal(){
+        var id = document.getElementById('selectedBanId').value;
+        if(!id){ alert('Vui lòng chọn bàn trước'); return; }
+        closeModal();
+        fetch('/sales/' + id + '/payment/modal', { credentials: 'same-origin' })
+          .then(function(resp){ return resp.text(); })
+          .then(function(html){
+            var modal = document.getElementById('modal-body');
+            if(!modal){
+              var m = document.createElement('div');
+              m.id = 'modal';
+              m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+              var mb = document.createElement('div');
+              mb.id = 'modal-body';
+              m.appendChild(mb);
+              document.body.appendChild(m);
+              modal = mb;
+            }
+            modal.innerHTML = html;
+            modal.parentElement.style.display = 'flex';
+          });
+      }
+
+      function submitPayment(banId){
+        var tien = stripToDigits(document.getElementById('tienKhach').value || '');
+        var print = document.getElementById('printInvoice') && document.getElementById('printInvoice').checked;
+        fetch('/sales/' + banId + '/payment', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/x-www-form-urlencoded'},
+          body: 'tienKhach=' + encodeURIComponent(tien) + '&print=' + (print ? 'true' : 'false')
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Thanh toán thành công');
+              closeModal();
+              // if server asked to print, it returns OK:PRINT:{id}
+              if(txt.startsWith('OK:PRINT:')) {
+                var parts = txt.split(':');
+                var id = parts[2];
+                // open print page in new tab
+                window.open('/invoice/' + id, '_blank');
+              }
+              location.reload();
+            } else {
+              alert('Lỗi: ' + txt);
+            }
+          });
+      }
+
+      function openViewBanById(id){
+        if(!id){ return; }
+        selectBan(id);
+        openViewBan();
+      }
+
+      function markTableBusy(id){
+        var el = document.querySelector('.table-card[data-id="' + id + '"]');
+        if(!el) return;
+        el.classList.remove('table-reserved');
+        el.classList.remove('table-free');
+        el.classList.add('table-busy');
+      }
+
+      function submitMenuForm(event){
+        event.preventDefault();
+        var form = event.target;
+        var action = form.getAttribute('action') || form.action;
+        var id = null;
+        if (action) {
+          var match = action.match(/\/sales\/(\d+)\/menu/);
+          if (match && match[1]) {
+            id = match[1];
+          }
+        }
+        if (!id) {
+          var selected = document.getElementById('selectedBanId');
+          id = selected ? selected.value : null;
+        }
+        var formData = new URLSearchParams(new FormData(form));
+        var hasQty = false;
+        formData.forEach(function(value, key){
+          if (key.indexOf('qty_') === 0 && parseInt(value || '0', 10) > 0) {
+            hasQty = true;
+          }
+        });
+        fetch(action, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/x-www-form-urlencoded'},
+          body: formData.toString()
+        }).then(function(resp){
+          if(!resp.ok){ throw new Error('Lưu thực đơn không thành công'); }
+          return resp.text();
+        }).then(function(){
+          closeModal();
+          if (id) {
+            if (hasQty) {
+              markTableBusy(id);
+            }
+            openViewBanById(id);
+          } else {
+            location.reload();
+          }
+        }).catch(function(err){
+          alert(err.message || 'Lưu thực đơn không thành công');
+        });
+        return false;
+      }
+
+      function clearReserveErrors(){
+        var ids = ['reserve-error-tenKhach', 'reserve-error-sdt', 'reserve-error-ngayGio'];
+        ids.forEach(function(id){
+          var el = document.getElementById(id);
+          if(el) el.textContent = '';
+        });
+      }
+
+      function setReserveError(field, message){
+        var el = document.getElementById('reserve-error-' + field);
+        if(el) el.textContent = message;
+      }
+
+      function submitReserve(){
+        clearReserveErrors();
+        var id = document.getElementById('selectedBanId').value;
+        var tenEl = document.getElementById('tenKhach');
+        var sdtEl = document.getElementById('sdt');
+        var ngayGioEl = document.getElementById('ngayGio');
+        var ten = tenEl ? tenEl.value.trim() : '';
+        var sdt = sdtEl ? sdtEl.value.trim() : '';
+        var ngayGio = ngayGioEl ? ngayGioEl.value : '';
+        var hasError = false;
+
+        if(!ten){
+          setReserveError('tenKhach', 'Tên khách bắt buộc');
+          hasError = true;
+        }
+
+        if(!sdt){
+          setReserveError('sdt', 'Số điện thoại bắt buộc');
+          hasError = true;
+        } else if(!/^\d{9,15}$/.test(sdt)) {
+          setReserveError('sdt', 'Số điện thoại chỉ được nhập số (9-15 chữ số)');
+          hasError = true;
+        }
+
+        if(!ngayGio){
+          setReserveError('ngayGio', 'Ngày giờ đến bắt buộc');
+          hasError = true;
+        } else {
+          var selected = new Date(ngayGio);
+          var now = new Date();
+          now.setSeconds(0, 0);
+          if(selected.getTime() < now.getTime()){
+            setReserveError('ngayGio', 'Ngày giờ đến không được trước thời điểm hiện tại');
+            hasError = true;
+          }
+        }
+
+        if(hasError) return;
+
+        fetch('/sales/ban/' + id + '/reserve', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {'Content-Type':'application/x-www-form-urlencoded'},
+          body: 'tenKhach=' + encodeURIComponent(ten) + '&sdt=' + encodeURIComponent(sdt) + '&ngayGio=' + encodeURIComponent(ngayGio)
+        }).then(function(r){ return r.text(); })
+          .then(function(txt){
+            if(txt.startsWith('OK')) {
+              alert('Đặt bàn thành công');
+              closeModal();
+              location.reload();
+              return;
+            }
+            if(txt.startsWith('ERROR_FIELDS:')) {
+              var payload = txt.substring('ERROR_FIELDS:'.length);
+              payload.split('|').forEach(function(pair){
+                var idx = pair.indexOf('=');
+                if(idx > 0) {
+                  var field = pair.substring(0, idx);
+                  var message = pair.substring(idx + 1);
+                  setReserveError(field, message);
+                }
+              });
+              return;
+            }
+            alert('Lỗi: ' + txt);
+          });
+      }
+
+      function closeModal(){
+        var m = document.getElementById('modal');
+        if(m) m.remove();
+      }
+      /*]]>*/
+    </script>
+  </div>
+</body>
+</html>

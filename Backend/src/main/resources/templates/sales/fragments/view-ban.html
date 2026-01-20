@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<div th:fragment="content">
+  <div class="modal-card modal-card--medium">
+    <h3 th:text="'Xem bàn ' + ${banId}">Xem bàn</h3>
+
+    <div th:if="${hoaDon == null and reserved}">
+      <p class="modal-hint">Bàn đã đặt</p>
+      <div th:if="${reservation != null}">
+        <table class="modal-table">
+          <tbody>
+            <tr>
+              <th>Khách</th>
+              <td th:text="${reservation.tenKhach != null ? reservation.tenKhach : 'Chưa có'}">Chưa có</td>
+            </tr>
+            <tr>
+              <th>Số điện thoại</th>
+              <td th:text="${reservation.sdt != null ? reservation.sdt : 'Chưa có'}">Chưa có</td>
+            </tr>
+            <tr>
+              <th>Giờ đến</th>
+              <td th:text="${reservation.ngayGioDat != null ? #temporals.format(reservation.ngayGioDat, 'dd/MM/yyyy HH:mm') : ''}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="modal-hint" th:if="${reservation == null}">Chưa có thông tin đặt bàn</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal()">Đóng</button>
+      </div>
+    </div>
+
+    <div th:if="${hoaDon == null and !reserved}">
+      <p class="modal-hint">Chưa gọi món</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal()">Đóng</button>
+      </div>
+    </div>
+
+    <div th:if="${hoaDon != null}">
+      <div th:if="${reservation != null}">
+        <p class="modal-hint">Khách đặt trước</p>
+        <table class="modal-table">
+          <tbody>
+            <tr>
+              <th>Khách</th>
+              <td th:text="${reservation.tenKhach != null ? reservation.tenKhach : 'Chưa có'}">Chưa có</td>
+            </tr>
+            <tr>
+              <th>Số điện thoại</th>
+              <td th:text="${reservation.sdt != null ? reservation.sdt : 'Chưa có'}">Chưa có</td>
+            </tr>
+            <tr>
+              <th>Giờ đến</th>
+              <td th:text="${reservation.ngayGioDat != null ? #temporals.format(reservation.ngayGioDat, 'dd/MM/yyyy HH:mm') : ''}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th>Tên món</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="ct : ${details}">
+              <td th:text="${ct.thucDon.tenMon}">Món</td>
+              <td class="text-center" th:text="${ct.soLuong}">0</td>
+              <td class="text-right" th:text="${#numbers.formatDecimal(ct.giaTaiThoiDiemBan,0,'POINT',0,'COMMA')}">0</td>
+              <td class="text-right" th:text="${#numbers.formatDecimal(ct.thanhTien,0,'POINT',0,'COMMA')}">0</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-right"><strong>TỔNG:</strong></td>
+              <td class="text-right"><strong th:text="${#numbers.formatDecimal(hoaDon.tongTien,0,'POINT',0,'COMMA')}">0</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm" onclick="openMenuModal()">Chọn thực đơn</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="openPaymentModal()">Thanh toán</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal()">Đóng</button>
+        <div th:if="${hoaDon != null and hoaDon.trangThai.name() == 'MOI_TAO'}">
+          <form th:action="@{/sales/{banId}/cancel(banId=${banId})}" method="post" th:onsubmit="|return confirm('Bạn có chắc muốn hủy hóa đơn bàn ${banId}?');|" style="display:inline;">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn btn-sm btn-delete">Hủy hóa đơn</button>
+          </form>
+        </div>
+        <div th:if="${hoaDon != null and hoaDon.trangThai.name() == 'DA_THANH_TOAN'}">
+          <button type="button" class="btn btn-sm btn-secondary" th:onclick="|window.open('/invoice/' + ${hoaDon.maHoaDon})|">In hóa đơn</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

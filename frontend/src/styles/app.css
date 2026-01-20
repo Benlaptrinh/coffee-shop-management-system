@@ -1,0 +1,37 @@
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#modal[aria-hidden="true"] {
+  display: none;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.header-meta {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.page-loading {
+  padding: 24px;
+  color: var(--muted);
+}

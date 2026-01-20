@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body class="app-body">
+<main class="app-main">
+    <section class="content-wrapper">
+        <h2>Edit User</h2>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form class="form-box" th:action="@{|/admin/users/${taiKhoan.maTaiKhoan}/edit|}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" th:value="${taiKhoan.tenDangNhap}" readonly />
+            </div>
+            <div class="form-group">
+                <label>New Password (leave blank to keep)</label>
+                <input type="password" name="matKhau" />
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select name="quyenHan">
+                    <option th:selected="${taiKhoan.quyenHan.name() == 'ADMIN'}" value="ADMIN">ADMIN</option>
+                    <option th:selected="${taiKhoan.quyenHan.name() == 'NHANVIEN'}" value="NHANVIEN">NHANVIEN</option>
+                </select>
+            </div>
+
+            <h3>Employee info</h3>
+            <div class="form-group">
+                <label>Ho Ten</label>
+                <input type="text" name="hoTen" th:value="${nhanVien != null ? nhanVien.hoTen : ''}" />
+            </div>
+            <div class="form-group">
+                <label>So Dien Thoai</label>
+                <input type="text" name="soDienThoai" th:value="${nhanVien != null ? nhanVien.soDienThoai : ''}" />
+            </div>
+            <div class="form-group">
+                <label>Dia Chi</label>
+                <input type="text" name="diaChi" th:value="${nhanVien != null ? nhanVien.diaChi : ''}" />
+            </div>
+            <div class="form-group">
+                <label>Chuc Vu</label>
+                <select name="chucVuId">
+                    <option th:each="c : ${chucVus}" th:value="${c.maChucVu}" th:text="${c.tenChucVu}"
+                            th:selected="${nhanVien != null and nhanVien.chucVu != null and nhanVien.chucVu.maChucVu == c.maChucVu}">CV</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
+

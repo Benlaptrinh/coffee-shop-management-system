@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<div th:fragment="content">
+  <div class="modal-card modal-card--compact">
+    <h3 th:text="'Gộp bàn vào ' + ${targetBanId}">Gộp bàn</h3>
+
+    <div th:if="${#lists.isEmpty(candidates)}" class="modal-hint">
+      <em>Không có bàn nào để gộp</em>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(candidates)}">
+      <div class="modal-form">
+        <div class="form-group">
+          <label>Chọn bàn nguồn để gộp vào bàn <strong th:text="${targetBanId}">-</strong></label>
+          <select id="sourceBanSelect">
+            <option th:each="b : ${candidates}" th:value="${b.maBan}" th:text="${b.tenBan}">Bàn</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm btn-primary" th:onclick="|submitMerge(${targetBanId})|">Gộp</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal()">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>

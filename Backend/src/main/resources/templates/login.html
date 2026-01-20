@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body class="app-body">
+<main class="auth">
+    <section class="auth-card">
+        <header class="auth-header">
+            <h1>Login</h1>
+            <p>Sign in to continue.</p>
+        </header>
+        <form class="auth-form" th:action="@{/login}" method="post" th:object="${loginForm}" novalidate>
+            <label class="auth-field">
+                <span>Username</span>
+                <input type="text" th:field="*{username}" autocomplete="username" />
+                <span class="auth-error" th:if="${fieldErrors != null and fieldErrors.containsKey('username')}"
+                      th:text="${fieldErrors['username']}"></span>
+            </label>
+            <label class="auth-field">
+                <span>Password</span>
+                <input type="password" th:field="*{password}" autocomplete="current-password" />
+                <span class="auth-error" th:if="${fieldErrors != null and fieldErrors.containsKey('password')}"
+                      th:text="${fieldErrors['password']}"></span>
+            </label>
+            <button class="btn btn-primary auth-submit" type="submit">Login</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
