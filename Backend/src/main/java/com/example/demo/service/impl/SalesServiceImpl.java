@@ -237,9 +237,11 @@ public class SalesServiceImpl implements SalesService {
         hoaDonRepository.save(hd);
 
         if (releaseTable && hd.getBan() != null) {
-            hd.getBan().setTinhTrang(TinhTrangBan.TRONG);
-            banRepository.save(hd.getBan());
-            log.info("Released table after payment tableId={}", tableId);
+            Ban ban = hd.getBan();
+            chiTietDatBanRepository.deleteByBan(ban);
+            ban.setTinhTrang(TinhTrangBan.TRONG);
+            banRepository.save(ban);
+            log.info("Released table and cleared reservations after payment tableId={}", tableId);
         }
     }
 
@@ -441,10 +443,7 @@ public class SalesServiceImpl implements SalesService {
         hd.setBan(toBan);
         hoaDonRepository.save(hd);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowStart = now.minusHours(1);
-        LocalDateTime windowEnd = now.plusHours(1);
-        List<ChiTietDatBan> reservationsToMove = chiTietDatBanRepository.findByBanAndId_NgayGioDatBetween(fromBan, windowStart, windowEnd);
+        List<ChiTietDatBan> reservationsToMove = chiTietDatBanRepository.findByBan(fromBan);
         int movedReservations = reservationsToMove.size();
         if (!reservationsToMove.isEmpty()) {
             for (ChiTietDatBan res : reservationsToMove) {
@@ -648,6 +647,15 @@ public class SalesServiceImpl implements SalesService {
         toHd.setChiTietHoaDons(new ArrayList<>());
         toHd = hoaDonRepository.save(toHd);
 
+        Map<Long, ChiTietHoaDon> targetItemMap = new HashMap<>();
+        if (toHd.getChiTietHoaDons() != null) {
+            for (ChiTietHoaDon ct : toHd.getChiTietHoaDons()) {
+                if (ct.getThucDon() != null && ct.getThucDon().getMaThucDon() != null) {
+                    targetItemMap.put(ct.getThucDon().getMaThucDon(), ct);
+                }
+            }
+        }
+
         BigDecimal fromTotal = BigDecimal.ZERO;
         BigDecimal toTotal = BigDecimal.ZERO;
 
@@ -669,28 +677,48 @@ public class SalesServiceImpl implements SalesService {
                     fromTotal = fromTotal.add(ct.getThanhTien());
 
                     
-                    ChiTietHoaDon newCt = new ChiTietHoaDon();
-                    newCt.setHoaDon(toHd);
-                    newCt.setThucDon(ct.getThucDon());
-                    newCt.setSoLuong(splitQty);
-                    newCt.setGiaTaiThoiDiemBan(ct.getGiaTaiThoiDiemBan());
-                    newCt.setThanhTien(ct.getGiaTaiThoiDiemBan().multiply(new BigDecimal(splitQty)));
-                    toHd.getChiTietHoaDons().add(newCt);
-                    chiTietHoaDonRepository.save(newCt);
-                    toTotal = toTotal.add(newCt.getThanhTien());
+                    ChiTietHoaDon existing = targetItemMap.get(itemId);
+                    if (existing != null) {
+                        int newQty = (existing.getSoLuong() == null ? 0 : existing.getSoLuong()) + splitQty;
+                        existing.setSoLuong(newQty);
+                        existing.setThanhTien(existing.getGiaTaiThoiDiemBan().multiply(new BigDecimal(newQty)));
+                        chiTietHoaDonRepository.save(existing);
+                        toTotal = toTotal.add(ct.getGiaTaiThoiDiemBan().multiply(new BigDecimal(splitQty)));
+                    } else {
+                        ChiTietHoaDon newCt = new ChiTietHoaDon();
+                        newCt.setHoaDon(toHd);
+                        newCt.setThucDon(ct.getThucDon());
+                        newCt.setSoLuong(splitQty);
+                        newCt.setGiaTaiThoiDiemBan(ct.getGiaTaiThoiDiemBan());
+                        newCt.setThanhTien(ct.getGiaTaiThoiDiemBan().multiply(new BigDecimal(splitQty)));
+                        ChiTietHoaDon saved = chiTietHoaDonRepository.save(newCt);
+                        toHd.getChiTietHoaDons().add(saved);
+                        targetItemMap.put(itemId, saved);
+                        toTotal = toTotal.add(saved.getThanhTien());
+                    }
 
                 } else if (splitQty >= ct.getSoLuong()) {
                     
-                    ChiTietHoaDon newCt = new ChiTietHoaDon();
-                    newCt.setHoaDon(toHd);
-                    newCt.setThucDon(ct.getThucDon());
-                    newCt.setSoLuong(ct.getSoLuong());
-                    newCt.setGiaTaiThoiDiemBan(ct.getGiaTaiThoiDiemBan());
-                    newCt.setThanhTien(ct.getThanhTien());
-                    chiTietHoaDonRepository.save(newCt);
-                    toHd.getChiTietHoaDons().add(newCt);
+                    ChiTietHoaDon existing = targetItemMap.get(itemId);
+                    if (existing != null) {
+                        int newQty = (existing.getSoLuong() == null ? 0 : existing.getSoLuong()) + ct.getSoLuong();
+                        existing.setSoLuong(newQty);
+                        existing.setThanhTien(existing.getGiaTaiThoiDiemBan().multiply(new BigDecimal(newQty)));
+                        chiTietHoaDonRepository.save(existing);
+                        toTotal = toTotal.add(ct.getThanhTien());
+                    } else {
+                        ChiTietHoaDon newCt = new ChiTietHoaDon();
+                        newCt.setHoaDon(toHd);
+                        newCt.setThucDon(ct.getThucDon());
+                        newCt.setSoLuong(ct.getSoLuong());
+                        newCt.setGiaTaiThoiDiemBan(ct.getGiaTaiThoiDiemBan());
+                        newCt.setThanhTien(ct.getThanhTien());
+                        ChiTietHoaDon saved = chiTietHoaDonRepository.save(newCt);
+                        toHd.getChiTietHoaDons().add(saved);
+                        targetItemMap.put(itemId, saved);
+                        toTotal = toTotal.add(saved.getThanhTien());
+                    }
                     itemsToRemove.add(ct);
-                    toTotal = toTotal.add(newCt.getThanhTien());
                 } else {
                     
                     fromTotal = fromTotal.add(ct.getThanhTien());
@@ -708,6 +736,31 @@ public class SalesServiceImpl implements SalesService {
         boolean fromEmpty = fromHd.getChiTietHoaDons() == null || fromHd.getChiTietHoaDons().isEmpty();
         if (fromEmpty) {
             hoaDonRepository.delete(fromHd);
+
+            List<ChiTietDatBan> reservationsToMove = chiTietDatBanRepository.findByBan(fromBan);
+            if (!reservationsToMove.isEmpty()) {
+                for (ChiTietDatBan res : reservationsToMove) {
+                    LocalDateTime time = res.getNgayGioDat();
+                    if (time != null) {
+                        LocalDateTime overlapStart = time.minusHours(1);
+                        LocalDateTime overlapEnd = time.plusHours(1);
+                        if (chiTietDatBanRepository.existsOverlappingReservation(toBan, overlapStart, overlapEnd)) {
+                            throw new IllegalStateException("Bàn đích đã có khách đặt trong khung giờ này");
+                        }
+                    }
+                }
+                for (ChiTietDatBan res : reservationsToMove) {
+                    ChiTietDatBan moved = new ChiTietDatBan();
+                    moved.setBan(toBan);
+                    moved.setTenKhach(res.getTenKhach());
+                    moved.setSdt(res.getSdt());
+                    moved.setNhanVien(res.getNhanVien());
+                    moved.setNgayGioDat(res.getNgayGioDat());
+                    chiTietDatBanRepository.save(moved);
+                }
+                chiTietDatBanRepository.deleteAll(reservationsToMove);
+            }
+
             fromBan.setTinhTrang(TinhTrangBan.TRONG);
             banRepository.save(fromBan);
         } else {

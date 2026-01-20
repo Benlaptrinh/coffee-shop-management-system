@@ -28,6 +28,7 @@ public interface ChiTietDatBanRepository extends JpaRepository<ChiTietDatBan, Ch
     Optional<ChiTietDatBan> findTopByBanOrderById_NgayGioDatDesc(Ban ban);
     Optional<ChiTietDatBan> findTopByBanAndId_NgayGioDatAfterOrderById_NgayGioDatAsc(Ban ban, LocalDateTime ngayGioDat);
     List<ChiTietDatBan> findByBanAndId_NgayGioDatBetween(Ban ban, LocalDateTime start, LocalDateTime end);
+    List<ChiTietDatBan> findByBan(Ban ban);
     boolean existsByBan(Ban ban);
     @Query("""
         select (count(c) > 0)
