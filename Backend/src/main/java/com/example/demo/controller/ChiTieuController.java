@@ -8,17 +8,22 @@ import com.example.demo.dto.ThuChiDTO;
 import com.example.demo.service.NganSachService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/chitieu")
-public class ChiTieuApiController {
+public class ChiTieuController {
 
     private final NganSachService nganSachService;
 
-    public ChiTieuApiController(NganSachService nganSachService) {
+    public ChiTieuController(NganSachService nganSachService) {
         this.nganSachService = nganSachService;
     }
 
@@ -36,5 +41,3 @@ public class ChiTieuApiController {
         return ResponseEntity.ok().build();
     }
 }
-
-

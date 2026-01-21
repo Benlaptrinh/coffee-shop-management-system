@@ -38,21 +38,21 @@ public interface SalesService {
      * @param tableId tableId
      * @return result
      */
-    Optional<Ban> findTableById(Long tableId);
+    Optional<Ban> findTableById(long tableId);
     /**
      * Find latest reservation for table.
      *
      * @param banId banId
      * @return result
      */
-    Optional<ChiTietDatBan> findLatestReservation(Long banId);
+    Optional<ChiTietDatBan> findLatestReservation(long banId);
     /**
      * Find unpaid invoice by table.
      *
      * @param tableId tableId
      * @return result
      */
-    Optional<HoaDon> findUnpaidInvoiceByTable(Long tableId);
+    Optional<HoaDon> findUnpaidInvoiceByTable(long tableId);
     /**
      * Find menu items.
      *
@@ -66,7 +66,7 @@ public interface SalesService {
      * @param itemId itemId
      * @param quantity quantity
      */
-    void addItemToInvoice(Long tableId, Long itemId, Integer quantity);
+    void addItemToInvoice(long tableId, long itemId, int quantity);
     /**
      * Pay invoice.
      *
@@ -74,7 +74,7 @@ public interface SalesService {
      * @param tienKhach tienKhach
      * @param releaseTable releaseTable
      */
-    void payInvoice(Long tableId, BigDecimal tienKhach, boolean releaseTable);
+    void payInvoice(long tableId, BigDecimal tienKhach, boolean releaseTable);
     /**
      * Reserve table.
      *
@@ -83,27 +83,27 @@ public interface SalesService {
      * @param sdt sdt
      * @param ngayGioDat ngayGioDat
      */
-    void reserveTable(Long banId, String tenKhach, String sdt, LocalDateTime ngayGioDat);
+    void reserveTable(long banId, String tenKhach, String sdt, LocalDateTime ngayGioDat);
     /**
      * Save selected menu.
      *
      * @param banId banId
      * @param params params
      */
-    void saveSelectedMenu(Long banId, Map<String,String> params);
+    void saveSelectedMenu(long banId, Map<String,String> params);
     /**
      * Cancel invoice.
      *
      * @param banId banId
      */
-    void cancelInvoice(Long banId);
+    void cancelInvoice(long banId);
     /**
      * Find invoice by id.
      *
      * @param id id
      * @return result
      */
-    Optional<HoaDon> findInvoiceById(Long id);
+    Optional<HoaDon> findInvoiceById(long id);
 
     
     /**
@@ -112,7 +112,7 @@ public interface SalesService {
      * @param fromBanId fromBanId
      * @param toBanId toBanId
      */
-    void moveTable(Long fromBanId, Long toBanId);
+    void moveTable(long fromBanId, long toBanId);
     /**
      * Find empty tables.
      *
@@ -125,14 +125,14 @@ public interface SalesService {
      * @param excludeBanId excludeBanId
      * @return result
      */
-    List<Ban> findMergeCandidates(Long excludeBanId);
+    List<Ban> findMergeCandidates(long excludeBanId);
     /**
      * Merge tables.
      *
      * @param targetBanId targetBanId
      * @param sourceBanId sourceBanId
      */
-    void mergeTables(Long targetBanId, Long sourceBanId);
+    void mergeTables(long targetBanId, long sourceBanId);
     /**
      * Split table.
      *
@@ -140,12 +140,11 @@ public interface SalesService {
      * @param toBanId toBanId
      * @param itemQuantities itemQuantities
      */
-    void splitTable(Long fromBanId, Long toBanId, Map<Long, Integer> itemQuantities);
+    void splitTable(long fromBanId, long toBanId, Map<Long, Integer> itemQuantities);
     /**
      * Cancel reservation.
      *
      * @param banId banId
      */
-    void cancelReservation(Long banId);
+    void cancelReservation(long banId);
 }
-

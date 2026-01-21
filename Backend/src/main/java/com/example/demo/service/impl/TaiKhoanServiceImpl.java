@@ -100,7 +100,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
      * @return result
      */
     @Override
-    public Optional<TaiKhoan> findById(Long id) {
+    public Optional<TaiKhoan> findById(long id) {
         return taiKhoanRepository.findById(id);
     }
 
@@ -121,7 +121,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
      * @param id id
      */
     @Override
-    public void disable(Long id) {
+    public void disable(long id) {
         Optional<TaiKhoan> target = taiKhoanRepository.findById(id);
         if (target.isEmpty()) {
             log.warn("TaiKhoan not found id={}", id);

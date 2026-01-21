@@ -44,7 +44,7 @@ public interface HangHoaService {
      * @param ngayXuat ngayXuat
      * @param nhanVien nhanVien
      */
-    void xuatHang(Long hangHoaId, Integer soLuong, LocalDateTime ngayXuat, NhanVien nhanVien);
+    void xuatHang(long hangHoaId, int soLuong, LocalDateTime ngayXuat, NhanVien nhanVien);
     /**
      * Update hang hoa.
      *
@@ -56,7 +56,7 @@ public interface HangHoaService {
      *
      * @param id id
      */
-    void deleteHangHoa(Long id);
+    void deleteHangHoa(long id);
     /**
      * Search hang hoa.
      *
@@ -65,5 +65,4 @@ public interface HangHoaService {
      */
     List<HangHoaKhoDTO> searchHangHoa(String keyword);
 }
-
 

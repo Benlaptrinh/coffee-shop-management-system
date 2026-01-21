@@ -39,26 +39,26 @@ public interface NhanVienService {
      * @param id id
      * @return result
      */
-    Optional<NhanVien> findById(Long id);
+    Optional<NhanVien> findById(long id);
     /**
      * Find by tai khoan id.
      *
      * @param maTaiKhoan maTaiKhoan
      * @return result
      */
-    Optional<NhanVien> findByTaiKhoanId(Long maTaiKhoan);
+    Optional<NhanVien> findByTaiKhoanId(long maTaiKhoan);
     /**
      * Delete by tai khoan id.
      *
      * @param maTaiKhoan maTaiKhoan
      */
-    void deleteByTaiKhoanId(Long maTaiKhoan);
+    void deleteByTaiKhoanId(long maTaiKhoan);
     /**
      * Delete by id.
      *
      * @param id id
      */
-    void deleteById(Long id);
+    void deleteById(long id);
     /**
      * Find by ho ten containing.
      *
@@ -67,4 +67,3 @@ public interface NhanVienService {
      */
     List<NhanVien> findByHoTenContaining(String keyword);
 }
-

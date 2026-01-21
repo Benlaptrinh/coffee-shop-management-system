@@ -5,20 +5,23 @@ import java.util.List;
 import com.example.demo.entity.DonNhap;
 import com.example.demo.repository.DonNhapRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * DonNhapApiController
+ * DonNhapController
  *
  * Endpoints for purchase orders (don nhap).
  */
 @RestController
 @RequestMapping("/api/donnhap")
-public class DonNhapApiController {
+public class DonNhapController {
 
     private final DonNhapRepository repo;
 
-    public DonNhapApiController(DonNhapRepository repo) {
+    public DonNhapController(DonNhapRepository repo) {
         this.repo = repo;
     }
 
@@ -28,9 +31,7 @@ public class DonNhapApiController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DonNhap> get(@PathVariable Long id) {
+    public ResponseEntity<DonNhap> get(@PathVariable long id) {
         return repo.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
-
-

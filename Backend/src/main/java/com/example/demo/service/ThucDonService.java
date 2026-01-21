@@ -41,20 +41,20 @@ public interface ThucDonService {
      * @param tenMon tenMon
      * @param giaTien giaTien
      */
-    void update(Long id, String tenMon, BigDecimal giaTien);
+    void update(long id, String tenMon, BigDecimal giaTien);
     /**
      * Find by id.
      *
      * @param id id
      * @return result
      */
-    Optional<ThucDon> findById(Long id);
+    Optional<ThucDon> findById(long id);
     /**
      * Delete by id.
      *
      * @param id id
      */
-    void deleteById(Long id);
+    void deleteById(long id);
     /**
      * Search by ten mon.
      *
@@ -63,5 +63,4 @@ public interface ThucDonService {
      */
     List<ThucDon> searchByTenMon(String keyword);
 }
-
 

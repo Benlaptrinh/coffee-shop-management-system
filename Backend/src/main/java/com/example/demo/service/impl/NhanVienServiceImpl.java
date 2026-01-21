@@ -64,7 +64,7 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @return result
      */
     @Override
-    public Optional<NhanVien> findById(Long id) {
+    public Optional<NhanVien> findById(long id) {
         return nhanVienRepository.findById(id);
     }
 
@@ -75,7 +75,7 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @return result
      */
     @Override
-    public Optional<NhanVien> findByTaiKhoanId(Long maTaiKhoan) {
+    public Optional<NhanVien> findByTaiKhoanId(long maTaiKhoan) {
         return nhanVienRepository.findByTaiKhoan_MaTaiKhoan(maTaiKhoan);
     }
 
@@ -119,7 +119,7 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @param maTaiKhoan maTaiKhoan
      */
     @Transactional
-    public void deleteByTaiKhoanId(Long maTaiKhoan) {
+    public void deleteByTaiKhoanId(long maTaiKhoan) {
         Optional<NhanVien> target = nhanVienRepository.findByTaiKhoan_MaTaiKhoan(maTaiKhoan);
         if (target.isEmpty()) {
             log.warn("NhanVien not found for taiKhoanId={}", maTaiKhoan);
@@ -145,7 +145,7 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @param id id
      */
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         Optional<NhanVien> target = nhanVienRepository.findById(id);
         if (target.isEmpty()) {
             log.warn("NhanVien not found id={}", id);
@@ -159,4 +159,3 @@ public class NhanVienServiceImpl implements NhanVienService {
         log.info("Deleted nhanVien id={}", id);
     }
 }
-

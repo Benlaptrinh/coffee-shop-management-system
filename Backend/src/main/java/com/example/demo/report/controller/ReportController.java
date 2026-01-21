@@ -12,21 +12,19 @@ import com.example.demo.report.service.FinanceReportService;
 import com.example.demo.report.service.SalesReportService;
 import com.example.demo.report.service.StaffReportService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * ReportApiController
+ * ReportController
  *
  * REST endpoints for report charts in React UI.
  */
 @RestController
 @RequestMapping("/api/report")
-@PreAuthorize("hasRole('ADMIN')")
-public class ReportApiController {
+public class ReportController {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE;
 
@@ -34,9 +32,9 @@ public class ReportApiController {
     private final SalesReportService salesReportService;
     private final StaffReportService staffReportService;
 
-    public ReportApiController(FinanceReportService financeReportService,
-                               SalesReportService salesReportService,
-                               StaffReportService staffReportService) {
+    public ReportController(FinanceReportService financeReportService,
+                            SalesReportService salesReportService,
+                            StaffReportService staffReportService) {
         this.financeReportService = financeReportService;
         this.salesReportService = salesReportService;
         this.staffReportService = staffReportService;

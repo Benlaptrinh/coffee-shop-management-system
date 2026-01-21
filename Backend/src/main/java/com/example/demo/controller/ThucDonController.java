@@ -1,0 +1,79 @@
+package com.example.demo.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.example.demo.dto.CreateThucDonRequest;
+import com.example.demo.dto.ThucDonDto;
+import com.example.demo.dto.UpdateThucDonRequest;
+import com.example.demo.entity.ThucDon;
+import com.example.demo.service.ThucDonService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+
+/**
+ * ThucDonController
+ *
+ * CRUD endpoints for menu items (ThucDon).
+ */
+@RestController
+@RequestMapping("/api/thucdon")
+public class ThucDonController {
+
+    private final ThucDonService thucDonService;
+
+    public ThucDonController(ThucDonService thucDonService) {
+        this.thucDonService = thucDonService;
+    }
+
+    private static ThucDonDto toDto(ThucDon t) {
+        if (t == null) return null;
+        ThucDonDto d = new ThucDonDto();
+        d.setMaThucDon(t.getMaThucDon());
+        d.setTenMon(t.getTenMon());
+        d.setGiaHienTai(t.getGiaHienTai());
+        d.setLoaiMon(t.getLoaiMon());
+        return d;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThucDonDto>> list(@RequestParam(value = "q", required = false) String q) {
+        List<ThucDon> list = (q == null || q.isBlank()) ? thucDonService.findAll() : thucDonService.searchByTenMon(q);
+        return ResponseEntity.ok(list.stream().map(ThucDonController::toDto).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ThucDonDto> get(@PathVariable long id) {
+        return thucDonService.findById(id).map(ThucDonController::toDto).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody CreateThucDonRequest req) {
+        thucDonService.create(req.getTenMon(), req.getGiaHienTai());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody UpdateThucDonRequest req) {
+        thucDonService.update(id, req.getTenMon(), req.getGiaHienTai());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable long id) {
+        thucDonService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}

@@ -32,7 +32,7 @@ public interface ThietBiService {
      * @param id id
      * @return result
      */
-    Optional<ThietBi> findById(Long id);
+    Optional<ThietBi> findById(long id);
     /**
      * Save.
      *
@@ -45,7 +45,6 @@ public interface ThietBiService {
      *
      * @param id id
      */
-    void deleteById(Long id);
+    void deleteById(long id);
 }
-
 

@@ -108,7 +108,7 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    public Optional<Ban> findTableById(Long tableId) {
+    public Optional<Ban> findTableById(long tableId) {
         Optional<Ban> banOpt = banRepository.findById(tableId);
         log.info("findTableById id={} found={}", tableId, banOpt.isPresent());
         return banOpt;
@@ -121,7 +121,7 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    public Optional<ChiTietDatBan> findLatestReservation(Long banId) {
+    public Optional<ChiTietDatBan> findLatestReservation(long banId) {
         LocalDateTime now = LocalDateTime.now().minusMinutes(1);
         Optional<ChiTietDatBan> result = banRepository.findById(banId)
                 .flatMap(ban -> {
@@ -143,7 +143,7 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    public Optional<HoaDon> findUnpaidInvoiceByTable(Long tableId) {
+    public Optional<HoaDon> findUnpaidInvoiceByTable(long tableId) {
         Optional<HoaDon> result = hoaDonRepository.findChuaThanhToanByBan(tableId);
         log.info("findUnpaidInvoiceByTable tableId={} found={}", tableId, result.isPresent());
         return result;
@@ -173,8 +173,11 @@ public class SalesServiceImpl implements SalesService {
      * @param quantity quantity
      */
     @Override
-    public void addItemToInvoice(Long tableId, Long itemId, Integer quantity) {
-        int requestedQty = quantity == null ? 1 : quantity;
+    public void addItemToInvoice(long tableId, long itemId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Số lượng phải > 0");
+        }
+        int requestedQty = quantity;
         HoaDon hd = getOrCreateInvoice(tableId, true);
         ThucDon item = thucDonRepository.findById(itemId).orElseThrow();
 
@@ -218,13 +221,21 @@ public class SalesServiceImpl implements SalesService {
      * @param releaseTable releaseTable
      */
     @Override
-    public void payInvoice(Long tableId, BigDecimal tienKhach, boolean releaseTable) {
+    public void payInvoice(long tableId, BigDecimal tienKhach, boolean releaseTable) {
         Optional<HoaDon> hdOpt = hoaDonRepository.findChuaThanhToanByBan(tableId);
         if (hdOpt.isEmpty()) {
             log.warn("Pay invoice failed tableId={} reason=no unpaid invoice", tableId);
             return;
         }
         HoaDon hd = hdOpt.get();
+        findCurrentNhanVien().ifPresent(hd::setNhanVien);
+        if (hd.getTenKhachDat() == null && hd.getBan() != null) {
+            chiTietDatBanRepository.findTopByBanOrderById_NgayGioDatDesc(hd.getBan())
+                .ifPresent(res -> {
+                    hd.setTenKhachDat(res.getTenKhach());
+                    hd.setSdtKhachDat(res.getSdt());
+                });
+        }
 
         BigDecimal total = calculateTotal(hd);
         hd.setTongTien(total);
@@ -254,7 +265,7 @@ public class SalesServiceImpl implements SalesService {
      * @param ngayGioDat ngayGioDat
      */
     @Override
-    public void reserveTable(Long banId, String tenKhach, String sdt, LocalDateTime ngayGioDat) {
+    public void reserveTable(long banId, String tenKhach, String sdt, LocalDateTime ngayGioDat) {
         log.info("Reserve table request banId={} ngayGioDat={} tenKhachLen={} sdtMasked={}",
                 banId,
                 ngayGioDat,
@@ -295,7 +306,7 @@ public class SalesServiceImpl implements SalesService {
      * @param params params
      */
     @Override
-    public void saveSelectedMenu(Long banId, Map<String,String> params) {
+    public void saveSelectedMenu(long banId, Map<String,String> params) {
         HoaDon hd = getOrCreateInvoice(banId, false);
         findCurrentNhanVien().ifPresent(hd::setNhanVien);
 
@@ -372,7 +383,7 @@ public class SalesServiceImpl implements SalesService {
      * @param banId banId
      */
     @Override
-    public void cancelInvoice(Long banId) {
+    public void cancelInvoice(long banId) {
         log.info("Cancel invoice start banId={}", banId);
         Optional<HoaDon> hdOpt = hoaDonRepository.findChuaThanhToanByBan(banId);
         if (hdOpt.isEmpty()) {
@@ -405,7 +416,7 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    public Optional<HoaDon> findInvoiceById(Long id) {
+    public Optional<HoaDon> findInvoiceById(long id) {
         Optional<HoaDon> result = hoaDonRepository.findById(id);
         log.info("findInvoiceById id={} found={}", id, result.isPresent());
         return result;
@@ -418,9 +429,9 @@ public class SalesServiceImpl implements SalesService {
      * @param toBanId toBanId
      */
     @Override
-    public void moveTable(Long fromBanId, Long toBanId) {
+    public void moveTable(long fromBanId, long toBanId) {
         log.info("Move table start fromBanId={} toBanId={}", fromBanId, toBanId);
-        if (fromBanId.equals(toBanId)) {
+        if (fromBanId == toBanId) {
             throw new IllegalArgumentException("Không thể chuyển bàn với chính nó");
         }
 
@@ -499,7 +510,7 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    public List<Ban> findMergeCandidates(Long excludeBanId) {
+    public List<Ban> findMergeCandidates(long excludeBanId) {
         List<Ban> candidates = banRepository.findAll().stream()
                 .filter(b -> b.getTinhTrang() == TinhTrangBan.DANG_SU_DUNG)
                 .filter(b -> !b.getMaBan().equals(excludeBanId))
@@ -516,9 +527,9 @@ public class SalesServiceImpl implements SalesService {
      * @param sourceBanId sourceBanId
      */
     @Override
-    public void mergeTables(Long targetBanId, Long sourceBanId) {
+    public void mergeTables(long targetBanId, long sourceBanId) {
         log.info("Merge tables start targetBanId={} sourceBanId={}", targetBanId, sourceBanId);
-        if (targetBanId.equals(sourceBanId)) {
+        if (targetBanId == sourceBanId) {
             throw new IllegalArgumentException("Không thể gộp bàn vào chính nó");
         }
 
@@ -605,7 +616,7 @@ public class SalesServiceImpl implements SalesService {
      * @param itemQuantities itemQuantities
      */
     @Override
-    public void splitTable(Long fromBanId, Long toBanId, Map<Long, Integer> itemQuantities) {
+    public void splitTable(long fromBanId, long toBanId, Map<Long, Integer> itemQuantities) {
         int totalQty = 0;
         if (itemQuantities != null) {
             for (Integer qty : itemQuantities.values()) {
@@ -616,7 +627,7 @@ public class SalesServiceImpl implements SalesService {
         }
         log.info("Split table start fromBanId={} toBanId={} items={} totalQty={}",
                 fromBanId, toBanId, itemQuantities == null ? 0 : itemQuantities.size(), totalQty);
-        if (fromBanId.equals(toBanId)) {
+        if (fromBanId == toBanId) {
             throw new IllegalArgumentException("Không thể tách bàn với chính nó");
         }
 
@@ -784,7 +795,7 @@ public class SalesServiceImpl implements SalesService {
      * @param banId banId
      */
     @Override
-    public void cancelReservation(Long banId) {
+    public void cancelReservation(long banId) {
         log.info("Cancel reservation start banId={}", banId);
         Ban ban = banRepository.findById(banId).orElseThrow(() -> new IllegalArgumentException("Bàn không tồn tại"));
 
@@ -822,7 +833,7 @@ public class SalesServiceImpl implements SalesService {
         return total;
     }
 
-    private HoaDon getOrCreateInvoice(Long tableId, boolean markTableInUse) {
+    private HoaDon getOrCreateInvoice(long tableId, boolean markTableInUse) {
         Optional<HoaDon> existing = hoaDonRepository.findChuaThanhToanByBan(tableId);
         if (existing.isPresent()) {
             return existing.get();
@@ -885,7 +896,7 @@ public class SalesServiceImpl implements SalesService {
         return nv;
     }
 
-    private ChiTietHoaDon findExistingDetail(HoaDon hoaDon, Long thucDonId) {
+    private ChiTietHoaDon findExistingDetail(HoaDon hoaDon, long thucDonId) {
         if (hoaDon.getChiTietHoaDons() == null) {
             return null;
         }

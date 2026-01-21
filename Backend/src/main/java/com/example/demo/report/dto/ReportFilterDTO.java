@@ -2,6 +2,8 @@ package com.example.demo.report.dto;
 
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -18,6 +20,8 @@ import org.springframework.format.annotation.DateTimeFormat;
  * -----------------------------------
  * 09-01-2026  Việt    Create
  */
+@Getter
+@Setter
 public class ReportFilterDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fromDate;
@@ -27,29 +31,5 @@ public class ReportFilterDTO {
 
     private String type;
 
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(LocalDate fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public LocalDate getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(LocalDate toDate) {
-        this.toDate = toDate;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }
-
 

@@ -84,7 +84,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @param giaTien giaTien
      */
     @Override
-    public void update(Long id, String tenMon, BigDecimal giaTien) {
+    public void update(long id, String tenMon, BigDecimal giaTien) {
         if (tenMon == null || tenMon.isBlank() || giaTien == null) {
             throw new IllegalArgumentException("Chưa nhập các trường bắt buộc");
         }
@@ -112,7 +112,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @return result
      */
     @Override
-    public Optional<ThucDon> findById(Long id) {
+    public Optional<ThucDon> findById(long id) {
         return thucDonRepository.findById(id);
     }
 
@@ -122,7 +122,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @param id id
      */
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         ThucDon thucDon = thucDonRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy món"));
         thucDonRepository.delete(thucDon);
@@ -143,4 +143,3 @@ public class ThucDonServiceImpl implements ThucDonService {
         return thucDonRepository.findByTenMonContainingIgnoreCase(keyword.trim());
     }
 }
-

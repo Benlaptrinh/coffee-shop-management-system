@@ -38,20 +38,19 @@ public interface KhuyenMaiService {
      * @param id id
      * @return result
      */
-    KhuyenMaiForm getFormById(Long id);
+    KhuyenMaiForm getFormById(long id);
     /**
      * Update khuyen mai.
      *
      * @param id id
      * @param form form
      */
-    void updateKhuyenMai(Long id, KhuyenMaiForm form);
+    void updateKhuyenMai(long id, KhuyenMaiForm form);
     /**
      * Delete by id.
      *
      * @param id id
      */
-    void deleteById(Long id);
+    void deleteById(long id);
 }
-
 

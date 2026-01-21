@@ -7,6 +7,8 @@ type Invoice = {
   maHoaDon: number
   ngayThanhToan?: string
   tongTien: number
+  tenNhanVien?: string
+  tenKhachDat?: string
   items: Array<{ maThucDon: number; tenMon: string; soLuong: number; giaTaiThoiDiemBan: number; thanhTien: number }>
 }
 
@@ -39,6 +41,8 @@ export default function InvoicePrint() {
         <>
           <p>Invoice ID: {invoice.maHoaDon}</p>
           <p>Date: {invoice.ngayThanhToan ? formatDateTime(invoice.ngayThanhToan) : "-"}</p>
+          <p>Staff: {invoice.tenNhanVien || "-"}</p>
+          <p>Customer: {invoice.tenKhachDat || "-"}</p>
           <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 12 }}>
             <thead>
               <tr>

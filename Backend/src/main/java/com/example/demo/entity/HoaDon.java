@@ -70,8 +70,13 @@ public class HoaDon {
     
     private LocalDateTime ngayThanhToan;
 
+    @Column(name = "ten_khach_dat")
+    private String tenKhachDat;
+
+    @Column(name = "sdt_khach_dat")
+    private String sdtKhachDat;
+
     @OneToMany(mappedBy = "hoaDon", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChiTietHoaDon> chiTietHoaDons;
 }
-
 

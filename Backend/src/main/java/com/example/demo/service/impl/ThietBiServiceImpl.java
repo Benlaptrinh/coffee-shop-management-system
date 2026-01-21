@@ -59,7 +59,7 @@ public class ThietBiServiceImpl implements ThietBiService {
      * @return result
      */
     @Override
-    public Optional<ThietBi> findById(Long id) {
+    public Optional<ThietBi> findById(long id) {
         return thietBiRepository.findById(id);
     }
 
@@ -114,7 +114,7 @@ public class ThietBiServiceImpl implements ThietBiService {
      * @param id id
      */
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         thietBiRepository.deleteById(id);
         log.info("Deleted thietBi id={}", id);
     }

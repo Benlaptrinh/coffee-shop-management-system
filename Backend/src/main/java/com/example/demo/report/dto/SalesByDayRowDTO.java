@@ -3,6 +3,8 @@ package com.example.demo.report.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import lombok.Getter;
+
 /**
  * SalesByDayRowDTO
  *
@@ -17,6 +19,7 @@ import java.time.LocalDate;
  * -----------------------------------
  * 09-01-2026  Việt    Create
  */
+@Getter
 public class SalesByDayRowDTO {
 
     private LocalDate ngay;
@@ -36,17 +39,5 @@ public class SalesByDayRowDTO {
         this.doanhThu = doanhThu == null ? BigDecimal.ZERO : doanhThu;
     }
 
-    public LocalDate getNgay() {
-        return ngay;
-    }
-
-    public Long getSoHoaDon() {
-        return soHoaDon;
-    }
-
-    public BigDecimal getDoanhThu() {
-        return doanhThu;
-    }
 }
-
 

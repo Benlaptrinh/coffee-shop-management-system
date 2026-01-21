@@ -5,6 +5,7 @@ import org.apache.catalina.session.StandardManager;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 
 /**
  * TomcatConfig
@@ -29,7 +30,7 @@ public class TomcatConfig implements WebServerFactoryCustomizer<TomcatServletWeb
      * @param factory factory
      */
     @Override
-    public void customize(TomcatServletWebServerFactory factory) {
+    public void customize(@NonNull TomcatServletWebServerFactory factory) {
         factory.addContextCustomizers((Context context) -> {
             StandardManager manager = new StandardManager();
             manager.setPathname("");
@@ -37,5 +38,4 @@ public class TomcatConfig implements WebServerFactoryCustomizer<TomcatServletWeb
         });
     }
 }
-
 

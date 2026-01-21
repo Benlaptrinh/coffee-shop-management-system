@@ -1,5 +1,7 @@
 package com.example.demo.report.dto;
 
+import lombok.Getter;
+
 /**
  * StaffReportRowDTO
  *
@@ -14,6 +16,7 @@ package com.example.demo.report.dto;
  * -----------------------------------
  * 09-01-2026  Việt    Create
  */
+@Getter
 public class StaffReportRowDTO {
 
     private String trangThai;
@@ -30,13 +33,5 @@ public class StaffReportRowDTO {
         this.soLuong = soLuong == null ? 0L : soLuong;
     }
 
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public Long getSoLuong() {
-        return soLuong;
-    }
 }
-
 

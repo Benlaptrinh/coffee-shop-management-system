@@ -4,6 +4,7 @@ import com.example.demo.entity.NhanVien;
 import com.example.demo.entity.TaiKhoan;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.repository.TaiKhoanRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,7 +49,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @throws UsernameNotFoundException if an error occurs
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         TaiKhoan tk = taiKhoanRepository.findByTenDangNhap(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         boolean nhanVienEnabled = nhanVienRepository.findByTaiKhoan_MaTaiKhoan(tk.getMaTaiKhoan())

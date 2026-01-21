@@ -180,6 +180,8 @@ export default {
           ngayGioTao: string
           ngayThanhToan?: string
           tongTien: number
+          tenNhanVien?: string
+          tenKhachDat?: string
           items: Array<{ maThucDon: number; tenMon: string; soLuong: number; giaTaiThoiDiemBan: number; thanhTien: number }>
         } | null
       }>(`/sales/tables/${id}`),
@@ -205,6 +207,8 @@ export default {
         ngayGioTao: string
         ngayThanhToan?: string
         tongTien: number
+        tenNhanVien?: string
+        tenKhachDat?: string
         items: Array<{ maThucDon: number; tenMon: string; soLuong: number; giaTaiThoiDiemBan: number; thanhTien: number }>
       }>(`/sales/invoices/${id}`),
     cancelReservation: (tableId: number) => requestRoot(`/sales/ban/${tableId}/cancel-reservation`, { method: "POST" }),

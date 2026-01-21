@@ -218,11 +218,8 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param nhanVien nhanVien
      */
     @Transactional
-    public void xuatHang(Long hangHoaId, Integer soLuong, LocalDateTime ngayXuat, NhanVien nhanVien) {
-        if (hangHoaId == null) {
-            throw new IllegalArgumentException("Hàng hóa bắt buộc");
-        }
-        if (soLuong == null || soLuong <= 0) {
+    public void xuatHang(long hangHoaId, int soLuong, LocalDateTime ngayXuat, NhanVien nhanVien) {
+        if (soLuong <= 0) {
             throw new IllegalArgumentException("Số lượng xuất phải > 0");
         }
         if (ngayXuat == null) {
@@ -315,7 +312,7 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param id id
      */
     @Transactional
-    public void deleteHangHoa(Long id) {
+    public void deleteHangHoa(long id) {
         HangHoa hh = hangHoaRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hàng hóa"));
 

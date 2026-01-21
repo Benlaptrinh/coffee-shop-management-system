@@ -93,7 +93,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
      * @return result
      */
     @Override
-    public KhuyenMaiForm getFormById(Long id) {
+    public KhuyenMaiForm getFormById(long id) {
         KhuyenMai km = khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Khuyến mãi không tồn tại"));
 
@@ -114,7 +114,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
      * @param form form
      */
     @Override
-    public void updateKhuyenMai(Long id, KhuyenMaiForm form) {
+    public void updateKhuyenMai(long id, KhuyenMaiForm form) {
         KhuyenMai km = khuyenMaiRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Khuyến mãi không tồn tại"));
 
@@ -150,9 +150,8 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
      * @param id id
      */
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         khuyenMaiRepository.deleteById(id);
         log.info("Deleted khuyenMai id={}", id);
     }
 }
-

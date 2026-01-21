@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import lombok.Getter;
+
 /**
  * ReportRowDTO
  *
@@ -18,6 +20,7 @@ import java.time.LocalDate;
  * -----------------------------------
  * 09-01-2026  Việt    Create
  */
+@Getter
 public class ReportRowDTO {
 
     private LocalDate ngay;
@@ -50,17 +53,5 @@ public class ReportRowDTO {
              chi != null ? chi.longValue() : 0L);
     }
 
-    public LocalDate getNgay() {
-        return ngay;
-    }
-
-    public Long getThu() {
-        return thu;
-    }
-
-    public Long getChi() {
-        return chi;
-    }
 }
-
 

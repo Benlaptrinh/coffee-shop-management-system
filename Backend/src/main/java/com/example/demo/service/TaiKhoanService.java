@@ -39,7 +39,7 @@ public interface TaiKhoanService {
      * @param id id
      * @return result
      */
-    Optional<TaiKhoan> findById(Long id);
+    Optional<TaiKhoan> findById(long id);
     /**
      * Find by username.
      *
@@ -52,7 +52,6 @@ public interface TaiKhoanService {
      *
      * @param id id
      */
-    void disable(Long id);
+    void disable(long id);
 }
-
 

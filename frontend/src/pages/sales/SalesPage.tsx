@@ -19,6 +19,8 @@ type Invoice = {
   ngayGioTao: string
   ngayThanhToan?: string
   tongTien: number
+  tenNhanVien?: string
+  tenKhachDat?: string
   items: InvoiceItem[]
 }
 type TableDetail = {
