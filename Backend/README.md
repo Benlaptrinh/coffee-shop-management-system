@@ -1,202 +1,140 @@
-# QuanCaPhe — Quản lý quán cà phê
+# QuanCaPhe Pro — Backend (REST API)
 
-README đầy đủ cho developer, reviewer và các bạn junior mới tham gia dự án.
-
-Tài liệu này gồm:
-- Mô tả tổng quan
-- Công nghệ sử dụng và phiên bản khuyến nghị
-- Kiến trúc và cấu trúc package
-- Danh sách tính năng và luồng nghiệp vụ
-- Cách chạy local (quickstart + cấu hình)
-- Quy ước dev, lộ trình refactor và gợi ý testing
-- Hướng dẫn cài đặt chi tiết cho người mới
-
-Hãy giữ file này luôn cập nhật — đây là nguồn thông tin duy nhất cho việc onboarding.
+Backend Spring Boot chỉ cung cấp REST API. Giao diện web nằm ở `frontend/` (React + Vite). Dự án đã bỏ hoàn toàn Thymeleaf.
 
 ---
 
 ## 1. Tóm tắt dự án
 
-**Tên dự án:** QuanCaPhe (Coffee Shop Management)  
-**Mục tiêu:** ứng dụng web render server (Spring Boot + Thymeleaf) để quản lý vận hành quán cà phê nhỏ: bán hàng theo bàn, quản lý nhân viên, thực đơn & thiết bị, và báo cáo (thu/chi, bán hàng theo ngày, nhân sự).
-
-Đối tượng: junior học full-stack Spring Boot, tập trung vào backend (service/repository) và render server-side.
-
----
-
-## 2. Tech stack & phiên bản khuyến nghị
-
-- **Java:** 17 (LTS) — compile và chạy bằng JVM Java 17  
-- **Spring Boot:** 3.x (xem `pom.xml` để biết phiên bản chính xác)  
-- **Spring MVC** + **Thymeleaf** (UI server-side)  
-- **Spring Data JPA** (Hibernate) cho ORM  
-- **Spring Security** cho xác thực & phân quyền  
-- **Database:** MySQL (dev); khuyến nghị H2 cho test nhẹ  
-- **Build:** Maven (dùng wrapper `./mvnw`)  
-- **Dev tools:** tùy chọn `spring-boot-devtools` để hot reload
-
-Lưu ý:
-- Dùng đúng phiên bản dependency trong `pom.xml`. Dự án được build với Spring Boot 3.x và Java 17.
+- **Mục tiêu:** API phục vụ quản lý quán cà phê (bán hàng theo bàn, nhân viên, thực đơn, thiết bị, kho, marketing, ngân sách, báo cáo).
+- **Kiến trúc:** REST API + JWT.
+- **Frontend:** React + TypeScript trong thư mục `frontend/`.
 
 ---
 
-## 3. Kiến trúc & nguyên tắc thiết kế
+## 2. Tech stack
 
-Dự án theo kiến trúc nhiều lớp:
-
-- **Controller (Web layer)** — nhận HTTP request, validate cơ bản, gọi Service và trả về Thymeleaf view + model. Controller nên mỏng.
-- **Service (Business layer)** — xử lý logic nghiệp vụ: tính toán, chuyển đổi thời gian, tổng hợp, mapping dữ liệu.
-- **Repository (Data access layer)** — JPA repository & native SQL cho báo cáo. Repository trả về entity hoặc raw objects để service mapping.
-- **Entity (Domain model)** — JPA entity đại diện bảng DB.
-- **DTO (Data Transfer Objects)** — object đơn giản/immutable để truyền dữ liệu giữa các lớp.
-
-Nguyên tắc để dễ bảo trì:
-- Controller mỏng; logic & mapping nằm ở Service.  
-- Báo cáo theo ngày: ưu tiên native SQL `DATE(column)` để nhóm dữ liệu; service map `Object[]` → DTO. Tránh JPQL dùng `function('date', ...)` trong constructor expression.  
-- Template Thymeleaf tránh SpEL phức tạp; dùng `#aggregates.sum(list.![field])` để tính tổng.  
-- Query & mapping nên có chú thích ở service để dễ review.
+- **Java:** 17 (LTS)
+- **Spring Boot:** 3.5.x (xem `pom.xml`)
+- **Spring Web** (REST)
+- **Spring Data JPA** (Hibernate)
+- **Spring Security** (JWT, stateless)
+- **Validation:** `spring-boot-starter-validation`
+- **Database:** MySQL
+- **Build:** Maven (`./mvnw`)
+- **OpenAPI:** springdoc (`/swagger-ui`)
+- **Logging:** Logback (rolling file)
 
 ---
 
-## 4. Cấu trúc dự án (khuyến nghị)
-
-Các package chính (đã có trong code):
+## 3. Cấu trúc package
 
 ```
 src/main/java/com/example/demo
-├─ controller/              # Controller cho admin/sales/... (không gồm report)
-├─ report/                  # Module báo cáo (tách riêng)
+├─ controller/              # REST controllers (/api/**)
+├─ report/                  # Module báo cáo (API)
 │  ├─ controller/
 │  ├─ dto/
 │  ├─ repository/
 │  └─ service/
-├─ service/                 # Service nghiệp vụ (non-report)
-├─ repository/              # JPA repository cho domain (Ban, HoaDon, NhanVien,...)
+├─ service/                 # Business logic
+├─ repository/              # JPA repositories
 ├─ entity/                  # JPA entities
-├─ dto/                     # DTO dùng chung / form
-└─ security/                # Security config / user details
+├─ dto/                     # DTO/Form
+└─ security/                # JWT + security config
 ```
-
-Templates:
-
-```
-src/main/resources/templates/
-├─ fragments/   # head, header, footer, sidebar
-├─ layout/      # base layout dùng fragments
-├─ admin/       # trang admin (bao gồm report UI)
-├─ sales/       # UI bán hàng
-└─ ...
-```
-
-Static assets: `src/main/resources/static/` (css/js/images).
 
 ---
 
-## 5. Entity & repository quan trọng (tóm tắt)
-
-- `HoaDon` — hóa đơn (maHoaDon, ngayGioTao, ngayThanhToan, tongTien, trangThai)  
-- `ChiTietHoaDon` — chi tiết hóa đơn (món, số lượng, giá)  
-- `Ban` — bàn  
-- `NhanVien` — nhân viên (`enabled` để phân biệt đang làm / nghỉ)  
-- Repository: `HoaDonRepository`, `NhanVienRepository`, `ChiTieuRepository` (chi tiêu)
-
-Ghi chú báo cáo:
-- Group theo ngày + tổng tiền nên làm bằng native SQL `DATE(column)` và map tại service.
-
----
-
-## 6. Tính năng & luồng chính
-
-**Bán hàng theo bàn:**
-1. Mở bàn → tạo `HoaDon`.  
-2. Thêm `ChiTietHoaDon` (món).  
-3. Thanh toán → set `trangThai = 'DA_THANH_TOAN'` và `ngayThanhToan = now()`.
-
-**Nhân viên:**
-- Admin tạo/cập nhật `NhanVien`.  
-- `NhanVien` có thể gắn `TaiKhoan`.  
-- `enabled` dùng cho báo cáo nhân sự.
-
-**Báo cáo (UC11):**
-- UI: chọn khoảng ngày + loại báo cáo `{FINANCE, SALES, STAFF}` + “Xem” + “In”.  
-- Thu/Chi: tổng doanh thu và chi tiêu theo ngày.  
-- Bán hàng theo ngày: số hóa đơn + doanh thu.  
-- Nhân viên: số lượng active/inactive.
-
-Ghi chú triển khai:
-- Controller cung cấp `filter` + dữ liệu báo cáo cho view.  
-- Service map dữ liệu và trả về list DTO.  
-- Template dùng `#aggregates.sum` để tính tổng.
-
----
-
-## 7. Chạy local — Quickstart
+## 4. Chạy local — Backend
 
 **Yêu cầu:**
-- Java 17+  
-- MySQL chạy local  
-- Tạo database `quancaphe` và user (hoặc chỉnh `application.properties`)
+- Java 17
+- MySQL
 
-**Bước 1:** cấu hình DB trong `src/main/resources/application.properties`:
+**Cấu hình DB & JWT:** `Backend/src/main/resources/application.properties`
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/quancaphe?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh
+spring.datasource.url=jdbc:mysql://localhost:3306/tiemchung
 spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.thymeleaf.cache=false
-server.port=8080
+spring.datasource.password=123456
+
+jwt.secret=changeit_replace_this_with_secure_value
+jwt.expiration.seconds=3600
 ```
 
-**Bước 2:** build & chạy:
+**Chạy:**
 
 ```bash
 ./mvnw -DskipTests package
 ./mvnw spring-boot:run
 ```
 
-**Bước 3:** mở trình duyệt:
-- `http://localhost:8080/login` — trang login  
-- `http://localhost:8080/admin/report` — trang báo cáo (admin)
+**API base:** `http://localhost:8080/api`
 
-Lưu ý:
+**Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
+
+---
+
+## 5. Chạy local — Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**ENV (tùy chọn):**
+
+```env
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+---
+
+## 6. Auth (JWT)
+
+**Login**
+
+```
+POST /api/auth/login
+{
+  "username": "...",
+  "password": "..."
+}
+```
+
+Response trả về `token`. Các request sau dùng header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 7. Logging (Logback)
+
+Backend dùng Logback với file rolling. File cấu hình: `Backend/src/main/resources/logback-spring.xml`.
+
+Mặc định log ghi ra:
+
+```
+logs/app.log
+```
+
+Có thể chỉnh level qua `application.properties`:
+
+```properties
+logging.level.root=INFO
+logging.level.com.example.demo=DEBUG
+```
+
+---
+
+## 8. Notes
+
+- Backend chỉ phục vụ API, không còn server-rendered HTML.
 - `ddl-auto=update` chỉ dùng cho dev. Production nên dùng Flyway/Liquibase.
-
-Xem hướng dẫn cài đặt chi tiết (từng bước cho người mới): `INSTALL.md`.
-
----
-
-## 8. Quy ước dev & best practices
-
-**Branch:**
-- `main`: stable release  
-- `feature/<name>`: phát triển tính năng  
-- `refactor/<name>`: refactor
-
-**Commit message:**
-- Dùng prefix ngắn: `feat(...)`, `fix(...)`, `refactor(...)`
-
-**Coding rules:**
-- Controller mỏng; logic đặt ở Service.  
-- Repository chỉ trả dữ liệu; mapping nằm ở Service.  
-- Tránh JPQL dùng function phụ thuộc dialect trong constructor expression; ưu tiên native SQL.
-- Bắt buộc Javadoc cho class và public method (trừ getter/setter/private).  
-- Import chia nhóm, không dùng wildcard.  
-- Indent 4 spaces, không dùng tab.
-
-**Thymeleaf:**
-- Tránh SpEL phức tạp; dùng `#aggregates.sum(list.![field])`.  
-- Dùng fragments cho header/footer/sidebar với `th:replace="~{fragments/head :: head}"`.
-
-**Testing:**
-- Ưu tiên unit test cho mapping & logic tổng hợp.  
-- Dùng H2 cho integration test nhẹ (lưu ý behavior của DATE).
-
----
-
-## 9. Troubleshooting & lỗi thường gặp
 
 - App fail startup với `Query validation failed` ở repository:
   - Kiểm tra JPQL có `function('date', ...)` hoặc constructor expression dùng function DB-specific. Nên chuyển sang native SQL.
