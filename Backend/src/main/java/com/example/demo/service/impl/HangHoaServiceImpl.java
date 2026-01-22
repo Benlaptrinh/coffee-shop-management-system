@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.demo.dto.EditHangHoaForm;
-import com.example.demo.dto.HangHoaKhoDTO;
-import com.example.demo.dto.HangHoaNhapForm;
 import com.example.demo.entity.DonNhap;
 import com.example.demo.entity.DonViTinh;
 import com.example.demo.entity.DonXuat;
 import com.example.demo.entity.HangHoa;
 import com.example.demo.entity.NhanVien;
+import com.example.demo.payload.dto.HangHoaKhoDto;
+import com.example.demo.payload.form.EditHangHoaForm;
+import com.example.demo.payload.form.HangHoaNhapForm;
 import com.example.demo.repository.DonNhapRepository;
 import com.example.demo.repository.DonViTinhRepository;
 import com.example.demo.repository.DonXuatRepository;
@@ -70,12 +70,12 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @return result
      */
     @Override
-    public List<HangHoaKhoDTO> getDanhSachKho() {
+    public List<HangHoaKhoDto> getDanhSachKho() {
         List<HangHoa> list = hangHoaRepo.findAll();
-        List<HangHoaKhoDTO> result = new ArrayList<>();
+        List<HangHoaKhoDto> result = new ArrayList<>();
 
         for (HangHoa hh : list) {
-            HangHoaKhoDTO dto = new HangHoaKhoDTO();
+            HangHoaKhoDto dto = new HangHoaKhoDto();
             dto.setMaHangHoa(hh.getMaHangHoa());
             dto.setTenHangHoa(hh.getTenHangHoa());
             dto.setSoLuong(hh.getSoLuong());
@@ -98,16 +98,16 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @return result
      */
     @Override
-    public List<HangHoaKhoDTO> searchHangHoa(String keyword) {
+    public List<HangHoaKhoDto> searchHangHoa(String keyword) {
         List<HangHoa> list;
         if (keyword == null || keyword.trim().isEmpty()) {
             list = hangHoaRepo.findAll();
         } else {
             list = hangHoaRepo.findByTenHangHoaContainingIgnoreCase(keyword.trim());
         }
-        List<HangHoaKhoDTO> result = new ArrayList<>();
+        List<HangHoaKhoDto> result = new ArrayList<>();
         for (HangHoa hh : list) {
-            HangHoaKhoDTO dto = new HangHoaKhoDTO();
+            HangHoaKhoDto dto = new HangHoaKhoDto();
             dto.setMaHangHoa(hh.getMaHangHoa());
             dto.setTenHangHoa(hh.getTenHangHoa());
             dto.setSoLuong(hh.getSoLuong());

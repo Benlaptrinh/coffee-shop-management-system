@@ -3,11 +3,11 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.dto.ChangePasswordRequest;
-import com.example.demo.dto.CreateUserRequest;
-import com.example.demo.dto.UpdateUserRequest;
-import com.example.demo.dto.UserDto;
 import com.example.demo.entity.TaiKhoan;
+import com.example.demo.payload.dto.UserDto;
+import com.example.demo.payload.request.ChangePasswordRequest;
+import com.example.demo.payload.request.CreateUserRequest;
+import com.example.demo.payload.request.UpdateUserRequest;
 import com.example.demo.service.TaiKhoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

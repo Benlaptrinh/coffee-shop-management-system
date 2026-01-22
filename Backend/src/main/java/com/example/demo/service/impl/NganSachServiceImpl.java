@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.example.demo.dto.ChiTieuForm;
-import com.example.demo.dto.ThuChiDTO;
 import com.example.demo.entity.ChiTieu;
 import com.example.demo.entity.HoaDon;
 import com.example.demo.entity.TaiKhoan;
+import com.example.demo.payload.dto.ThuChiDto;
+import com.example.demo.payload.form.ChiTieuForm;
 import com.example.demo.repository.ChiTieuRepository;
 import com.example.demo.repository.HoaDonRepository;
 import com.example.demo.repository.TaiKhoanRepository;
@@ -71,7 +71,7 @@ public class NganSachServiceImpl implements NganSachService {
      * @return result
      */
     @Override
-    public List<ThuChiDTO> xemThuChi(LocalDate from, LocalDate to) {
+    public List<ThuChiDto> xemThuChi(LocalDate from, LocalDate to) {
         Map<LocalDate, BigDecimal> thuMap = new HashMap<>();
         Map<LocalDate, BigDecimal> chiMap = new HashMap<>();
 
@@ -98,9 +98,9 @@ public class NganSachServiceImpl implements NganSachService {
         List<LocalDate> sorted = new ArrayList<>(allDays);
         Collections.sort(sorted);
 
-        List<ThuChiDTO> result = new ArrayList<>();
+        List<ThuChiDto> result = new ArrayList<>();
         for (LocalDate d : sorted) {
-            result.add(new ThuChiDTO(
+            result.add(new ThuChiDto(
                     d,
                     thuMap.getOrDefault(d, BigDecimal.ZERO),
                     chiMap.getOrDefault(d, BigDecimal.ZERO)

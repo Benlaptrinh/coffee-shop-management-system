@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * ReportFilterDTO
+ * ReportFilterDto
  *
  * Version 1.0
  *
@@ -22,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Getter
 @Setter
-public class ReportFilterDTO {
+public class ReportFilterDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fromDate;
 

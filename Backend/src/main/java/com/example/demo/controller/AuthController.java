@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.LoginResponse;
+import com.example.demo.payload.request.LoginRequest;
+import com.example.demo.payload.response.LoginResponse;
 import com.example.demo.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

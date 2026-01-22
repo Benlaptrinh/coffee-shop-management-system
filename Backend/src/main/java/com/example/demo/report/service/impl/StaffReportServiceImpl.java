@@ -3,7 +3,7 @@ package com.example.demo.report.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.demo.report.dto.StaffReportRowDTO;
+import com.example.demo.report.dto.StaffReportRowDto;
 import com.example.demo.report.service.StaffReportService;
 import com.example.demo.repository.NhanVienRepository;
 import org.slf4j.Logger;
@@ -46,14 +46,14 @@ public class StaffReportServiceImpl implements StaffReportService {
      * @return result
      */
     @Override
-    public List<StaffReportRowDTO> getStaffSummary() {
+    public List<StaffReportRowDto> getStaffSummary() {
         List<Object[]> rows = nhanVienRepository.thongKeNhanVienRaw();
-        List<StaffReportRowDTO> result = new ArrayList<>();
+        List<StaffReportRowDto> result = new ArrayList<>();
         for (Object[] r : rows) {
             Boolean enabled = (Boolean) r[0];
             Number cnt = (Number) r[1];
             String trangThai = enabled != null && enabled ? "Đang làm" : "Nghỉ việc";
-            result.add(new StaffReportRowDTO(trangThai, cnt == null ? 0L : cnt.longValue()));
+            result.add(new StaffReportRowDto(trangThai, cnt == null ? 0L : cnt.longValue()));
         }
         log.info("Staff summary rows={}", result.size());
         return result;

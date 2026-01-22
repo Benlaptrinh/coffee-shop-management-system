@@ -2,8 +2,8 @@ package com.example.demo.service;
 
 import java.util.List;
 
-import com.example.demo.dto.KhuyenMaiForm;
 import com.example.demo.entity.KhuyenMai;
+import com.example.demo.payload.form.KhuyenMaiForm;
 
 /**
  * KhuyenMaiService

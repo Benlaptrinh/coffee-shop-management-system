@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 
 /**
- * ReportRowDTO
+ * ReportRowDto
  *
  * Version 1.0
  *
@@ -21,33 +21,33 @@ import lombok.Getter;
  * 09-01-2026  Việt    Create
  */
 @Getter
-public class ReportRowDTO {
+public class ReportRowDto {
 
     private LocalDate ngay;
     private Long thu;
     private Long chi;
 
     /**
-     * Creates ReportRowDTO.
+     * Creates ReportRowDto.
      *
      * @param ngay ngay
      * @param thu thu
      * @param chi chi
      */
-    public ReportRowDTO(LocalDate ngay, Long thu, Long chi) {
+    public ReportRowDto(LocalDate ngay, Long thu, Long chi) {
         this.ngay = ngay;
         this.thu = thu == null ? 0L : thu;
         this.chi = chi == null ? 0L : chi;
     }
 
     /**
-     * Creates ReportRowDTO.
+     * Creates ReportRowDto.
      *
      * @param sqlDate sqlDate
      * @param thu thu
      * @param chi chi
      */
-    public ReportRowDTO(Date sqlDate, BigDecimal thu, Number chi) {
+    public ReportRowDto(Date sqlDate, BigDecimal thu, Number chi) {
         this(sqlDate != null ? sqlDate.toLocalDate() : null,
              thu != null ? thu.longValue() : 0L,
              chi != null ? chi.longValue() : 0L);

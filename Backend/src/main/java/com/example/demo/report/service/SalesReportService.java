@@ -3,7 +3,7 @@ package com.example.demo.report.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.demo.report.dto.SalesByDayRowDTO;
+import com.example.demo.report.dto.SalesByDayRowDto;
 
 /**
  * SalesReportService
@@ -27,7 +27,7 @@ public interface SalesReportService {
      * @param to to
      * @return result
      */
-    List<SalesByDayRowDTO> getSalesByDay(LocalDate from, LocalDate to);
+    List<SalesByDayRowDto> getSalesByDay(LocalDate from, LocalDate to);
 }
 
 

@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.dto.NhanVienDto;
 import com.example.demo.entity.NhanVien;
+import com.example.demo.payload.dto.NhanVienDto;
 import com.example.demo.service.NhanVienService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

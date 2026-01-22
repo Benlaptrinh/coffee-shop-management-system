@@ -3,9 +3,9 @@ package com.example.demo.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.demo.dto.EditHangHoaForm;
-import com.example.demo.dto.HangHoaKhoDTO;
-import com.example.demo.dto.HangHoaNhapForm;
+import com.example.demo.payload.dto.HangHoaKhoDto;
+import com.example.demo.payload.form.EditHangHoaForm;
+import com.example.demo.payload.form.HangHoaNhapForm;
 import com.example.demo.service.HangHoaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +36,8 @@ public class HangHoaController {
     }
 
     @GetMapping("/kho")
-    public ResponseEntity<List<HangHoaKhoDTO>> danhSachKho(@RequestParam(value = "q", required = false) String q) {
-        List<HangHoaKhoDTO> list = (q == null || q.isBlank()) ? hangHoaService.getDanhSachKho() : hangHoaService.searchHangHoa(q);
+    public ResponseEntity<List<HangHoaKhoDto>> danhSachKho(@RequestParam(value = "q", required = false) String q) {
+        List<HangHoaKhoDto> list = (q == null || q.isBlank()) ? hangHoaService.getDanhSachKho() : hangHoaService.searchHangHoa(q);
         return ResponseEntity.ok(list);
     }
 

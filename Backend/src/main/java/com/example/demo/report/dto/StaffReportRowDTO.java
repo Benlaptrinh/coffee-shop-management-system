@@ -3,7 +3,7 @@ package com.example.demo.report.dto;
 import lombok.Getter;
 
 /**
- * StaffReportRowDTO
+ * StaffReportRowDto
  *
  * Version 1.0
  *
@@ -17,18 +17,18 @@ import lombok.Getter;
  * 09-01-2026  Việt    Create
  */
 @Getter
-public class StaffReportRowDTO {
+public class StaffReportRowDto {
 
     private String trangThai;
     private Long soLuong;
 
     /**
-     * Creates StaffReportRowDTO.
+     * Creates StaffReportRowDto.
      *
      * @param trangThai trangThai
      * @param soLuong soLuong
      */
-    public StaffReportRowDTO(String trangThai, Long soLuong) {
+    public StaffReportRowDto(String trangThai, Long soLuong) {
         this.trangThai = trangThai;
         this.soLuong = soLuong == null ? 0L : soLuong;
     }

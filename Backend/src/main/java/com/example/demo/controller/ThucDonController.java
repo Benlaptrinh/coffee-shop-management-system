@@ -3,10 +3,10 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.dto.CreateThucDonRequest;
-import com.example.demo.dto.ThucDonDto;
-import com.example.demo.dto.UpdateThucDonRequest;
 import com.example.demo.entity.ThucDon;
+import com.example.demo.payload.dto.ThucDonDto;
+import com.example.demo.payload.request.CreateThucDonRequest;
+import com.example.demo.payload.request.UpdateThucDonRequest;
 import com.example.demo.service.ThucDonService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

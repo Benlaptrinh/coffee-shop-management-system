@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.demo.report.dto.SalesByDayRowDTO;
+import com.example.demo.report.dto.SalesByDayRowDto;
 import com.example.demo.report.service.SalesReportService;
 import com.example.demo.repository.HoaDonRepository;
 import org.slf4j.Logger;
@@ -50,13 +50,13 @@ public class SalesReportServiceImpl implements SalesReportService {
      * @return result
      */
     @Override
-    public List<SalesByDayRowDTO> getSalesByDay(LocalDate from, LocalDate to) {
+    public List<SalesByDayRowDto> getSalesByDay(LocalDate from, LocalDate to) {
         LocalDateTime fromTime = from.atStartOfDay();
         LocalDateTime toTime = to.atTime(23, 59, 59);
 
         List<Object[]> rows = hoaDonRepository.thongKeBanHangTheoNgayRaw(fromTime, toTime);
-        List<SalesByDayRowDTO> result = rows.stream()
-                .map(r -> new SalesByDayRowDTO(
+        List<SalesByDayRowDto> result = rows.stream()
+                .map(r -> new SalesByDayRowDto(
                         ((java.sql.Date) r[0]).toLocalDate(),
                         ((Number) r[1]).longValue(),
                         (BigDecimal) r[2]

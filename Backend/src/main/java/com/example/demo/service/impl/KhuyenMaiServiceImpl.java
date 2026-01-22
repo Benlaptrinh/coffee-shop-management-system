@@ -3,8 +3,8 @@ package com.example.demo.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.example.demo.dto.KhuyenMaiForm;
 import com.example.demo.entity.KhuyenMai;
+import com.example.demo.payload.form.KhuyenMaiForm;
 import com.example.demo.repository.KhuyenMaiRepository;
 import com.example.demo.service.KhuyenMaiService;
 import org.slf4j.Logger;

@@ -3,9 +3,9 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.demo.dto.CreateDonViRequest;
-import com.example.demo.dto.DonViDto;
 import com.example.demo.entity.DonViTinh;
+import com.example.demo.payload.dto.DonViDto;
+import com.example.demo.payload.request.CreateDonViRequest;
 import com.example.demo.repository.DonViTinhRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import com.example.demo.dto.KhuyenMaiForm;
 import com.example.demo.entity.KhuyenMai;
+import com.example.demo.payload.form.KhuyenMaiForm;
 import com.example.demo.service.KhuyenMaiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

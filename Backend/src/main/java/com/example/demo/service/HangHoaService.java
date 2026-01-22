@@ -3,10 +3,10 @@ package com.example.demo.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.demo.dto.EditHangHoaForm;
-import com.example.demo.dto.HangHoaKhoDTO;
-import com.example.demo.dto.HangHoaNhapForm;
 import com.example.demo.entity.NhanVien;
+import com.example.demo.payload.dto.HangHoaKhoDto;
+import com.example.demo.payload.form.EditHangHoaForm;
+import com.example.demo.payload.form.HangHoaNhapForm;
 
 /**
  * HangHoaService
@@ -28,7 +28,7 @@ public interface HangHoaService {
      *
      * @return result
      */
-    List<HangHoaKhoDTO> getDanhSachKho();
+    List<HangHoaKhoDto> getDanhSachKho();
     /**
      * Nhap hang.
      *
@@ -63,6 +63,6 @@ public interface HangHoaService {
      * @param keyword keyword
      * @return result
      */
-    List<HangHoaKhoDTO> searchHangHoa(String keyword);
+    List<HangHoaKhoDto> searchHangHoa(String keyword);
 }
 

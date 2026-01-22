@@ -3,8 +3,8 @@ package com.example.demo.report.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.demo.dto.ThuChiDTO;
-import com.example.demo.report.dto.ReportRowDTO;
+import com.example.demo.payload.dto.ThuChiDto;
+import com.example.demo.report.dto.ReportRowDto;
 import com.example.demo.report.service.FinanceReportService;
 import com.example.demo.service.NganSachService;
 import org.slf4j.Logger;
@@ -49,10 +49,10 @@ public class FinanceReportServiceImpl implements FinanceReportService {
      * @return result
      */
     @Override
-    public List<ReportRowDTO> getFinanceReport(LocalDate from, LocalDate to) {
-        List<ThuChiDTO> rows = nganSachService.xemThuChi(from, to);
-        List<ReportRowDTO> result = rows.stream()
-                .map(r -> new ReportRowDTO(
+    public List<ReportRowDto> getFinanceReport(LocalDate from, LocalDate to) {
+        List<ThuChiDto> rows = nganSachService.xemThuChi(from, to);
+        List<ReportRowDto> result = rows.stream()
+                .map(r -> new ReportRowDto(
                         r.getNgay(),
                         r.getThu() == null ? 0L : r.getThu().longValue(),
                         r.getChi() == null ? 0L : r.getChi().longValue()

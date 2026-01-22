@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 
 /**
- * SalesByDayRowDTO
+ * SalesByDayRowDto
  *
  * Version 1.0
  *
@@ -20,20 +20,20 @@ import lombok.Getter;
  * 09-01-2026  Việt    Create
  */
 @Getter
-public class SalesByDayRowDTO {
+public class SalesByDayRowDto {
 
     private LocalDate ngay;
     private Long soHoaDon;
     private BigDecimal doanhThu;
 
     /**
-     * Creates SalesByDayRowDTO.
+     * Creates SalesByDayRowDto.
      *
      * @param ngay ngay
      * @param soHoaDon soHoaDon
      * @param doanhThu doanhThu
      */
-    public SalesByDayRowDTO(LocalDate ngay, Long soHoaDon, BigDecimal doanhThu) {
+    public SalesByDayRowDto(LocalDate ngay, Long soHoaDon, BigDecimal doanhThu) {
         this.ngay = ngay;
         this.soHoaDon = soHoaDon == null ? 0L : soHoaDon;
         this.doanhThu = doanhThu == null ? BigDecimal.ZERO : doanhThu;

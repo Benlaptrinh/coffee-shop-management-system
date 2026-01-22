@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.demo.dto.ChiTieuForm;
-import com.example.demo.dto.ThuChiDTO;
+import com.example.demo.payload.dto.ThuChiDto;
+import com.example.demo.payload.form.ChiTieuForm;
 import com.example.demo.service.NganSachService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class ChiTieuController {
     }
 
     @GetMapping("/report")
-    public ResponseEntity<List<ThuChiDTO>> report(@RequestParam("from") String fromStr, @RequestParam("to") String toStr) {
+    public ResponseEntity<List<ThuChiDto>> report(@RequestParam("from") String fromStr, @RequestParam("to") String toStr) {
         LocalDate from = LocalDate.parse(fromStr);
         LocalDate to = LocalDate.parse(toStr);
         return ResponseEntity.ok(nganSachService.xemThuChi(from, to));

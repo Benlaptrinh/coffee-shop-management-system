@@ -3,9 +3,9 @@ package com.example.demo.report.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.demo.report.dto.ReportRowDTO;
-import com.example.demo.report.dto.SalesByDayRowDTO;
-import com.example.demo.report.dto.StaffReportRowDTO;
+import com.example.demo.report.dto.ReportRowDto;
+import com.example.demo.report.dto.SalesByDayRowDto;
+import com.example.demo.report.dto.StaffReportRowDto;
 
 /**
  * ReportService
@@ -29,13 +29,13 @@ public interface ReportService {
      * @param to to
      * @return result
      */
-    List<ReportRowDTO> thongKeThuChi(LocalDate from, LocalDate to);
+    List<ReportRowDto> thongKeThuChi(LocalDate from, LocalDate to);
     /**
      * Thong ke nhan vien.
      *
      * @return result
      */
-    List<StaffReportRowDTO> thongKeNhanVien();
+    List<StaffReportRowDto> thongKeNhanVien();
     /**
      * Report sales by day.
      *
@@ -43,7 +43,7 @@ public interface ReportService {
      * @param to to
      * @return result
      */
-    List<SalesByDayRowDTO> reportSalesByDay(LocalDate from, LocalDate to);
+    List<SalesByDayRowDto> reportSalesByDay(LocalDate from, LocalDate to);
 }
 
 

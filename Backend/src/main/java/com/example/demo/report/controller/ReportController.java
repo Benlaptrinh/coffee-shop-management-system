@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import com.example.demo.report.dto.ReportRowDTO;
-import com.example.demo.report.dto.SalesByDayRowDTO;
-import com.example.demo.report.dto.StaffReportRowDTO;
+import com.example.demo.report.dto.ReportRowDto;
+import com.example.demo.report.dto.SalesByDayRowDto;
+import com.example.demo.report.dto.StaffReportRowDto;
 import com.example.demo.report.service.FinanceReportService;
 import com.example.demo.report.service.SalesReportService;
 import com.example.demo.report.service.StaffReportService;
@@ -54,7 +54,7 @@ public class ReportController {
         if (from.isAfter(to)) {
             return ResponseEntity.badRequest().body("Tu ngay khong duoc sau den ngay");
         }
-        List<ReportRowDTO> data = financeReportService.getFinanceReport(from, to);
+        List<ReportRowDto> data = financeReportService.getFinanceReport(from, to);
         return ResponseEntity.ok(data);
     }
 
@@ -72,12 +72,12 @@ public class ReportController {
         if (from.isAfter(to)) {
             return ResponseEntity.badRequest().body("Tu ngay khong duoc sau den ngay");
         }
-        List<SalesByDayRowDTO> data = salesReportService.getSalesByDay(from, to);
+        List<SalesByDayRowDto> data = salesReportService.getSalesByDay(from, to);
         return ResponseEntity.ok(data);
     }
 
     @GetMapping("/staff")
-    public ResponseEntity<List<StaffReportRowDTO>> staff() {
+    public ResponseEntity<List<StaffReportRowDto>> staff() {
         return ResponseEntity.ok(staffReportService.getStaffSummary());
     }
 }

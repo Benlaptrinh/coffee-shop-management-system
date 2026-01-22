@@ -3,8 +3,8 @@ package com.example.demo.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.demo.dto.ChiTieuForm;
-import com.example.demo.dto.ThuChiDTO;
+import com.example.demo.payload.dto.ThuChiDto;
+import com.example.demo.payload.form.ChiTieuForm;
 
 /**
  * NganSachService
@@ -28,7 +28,7 @@ public interface NganSachService {
      * @param to to
      * @return result
      */
-    List<ThuChiDTO> xemThuChi(LocalDate from, LocalDate to);
+    List<ThuChiDto> xemThuChi(LocalDate from, LocalDate to);
     /**
      * Them chi tieu.
      *

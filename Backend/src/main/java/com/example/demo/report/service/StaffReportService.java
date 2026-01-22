@@ -2,7 +2,7 @@ package com.example.demo.report.service;
 
 import java.util.List;
 
-import com.example.demo.report.dto.StaffReportRowDTO;
+import com.example.demo.report.dto.StaffReportRowDto;
 
 /**
  * StaffReportService
@@ -24,7 +24,7 @@ public interface StaffReportService {
      *
      * @return result
      */
-    List<StaffReportRowDTO> getStaffSummary();
+    List<StaffReportRowDto> getStaffSummary();
 }
 
 

@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import com.example.demo.dto.CreateChucVuRequest;
 import com.example.demo.entity.ChucVu;
+import com.example.demo.payload.request.CreateChucVuRequest;
 import com.example.demo.repository.ChucVuRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
