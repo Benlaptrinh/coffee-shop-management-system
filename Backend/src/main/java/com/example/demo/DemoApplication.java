@@ -10,11 +10,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Spring Boot application entry point.
  */
 @SpringBootApplication
+@EnableScheduling
 public class DemoApplication {
 
     private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);

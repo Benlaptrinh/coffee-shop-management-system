@@ -84,7 +84,8 @@ public class UserController {
         if (!passwordEncoder.matches(req.getOldPassword(), tk.getMatKhau())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password is incorrect");
         }
-        tk.setMatKhau(req.getNewPassword());
+        // encode new password before saving
+        tk.setMatKhau(passwordEncoder.encode(req.getNewPassword()));
         taiKhoanService.save(tk);
         return ResponseEntity.ok().build();
     }
@@ -97,7 +98,8 @@ public class UserController {
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserRequest req) {
         TaiKhoan tk = new TaiKhoan();
         tk.setTenDangNhap(req.getUsername());
-        tk.setMatKhau(req.getPassword());
+        // encode password before saving
+        tk.setMatKhau(passwordEncoder.encode(req.getPassword()));
         try {
             if (req.getRole() != null) tk.setQuyenHan(com.example.demo.enums.Role.valueOf(req.getRole()));
         } catch (IllegalArgumentException ex) {
@@ -137,7 +139,7 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@PathVariable long id, @Valid @RequestBody UpdateUserRequest req) {
         TaiKhoan existing = taiKhoanService.findById(id).orElse(null);
         if (existing == null) return ResponseEntity.notFound().build();
-        if (req.getPassword() != null && !req.getPassword().isBlank()) existing.setMatKhau(req.getPassword());
+        if (req.getPassword() != null && !req.getPassword().isBlank()) existing.setMatKhau(passwordEncoder.encode(req.getPassword()));
         if (req.getRole() != null) {
             try { existing.setQuyenHan(com.example.demo.enums.Role.valueOf(req.getRole())); } catch (IllegalArgumentException ex) {}
         }

@@ -85,6 +85,8 @@ public class SalesServiceImpl implements SalesService {
      */
     @Override
     public List<Ban> findAllTables() {
+        // ensure expired reservations are cleaned up before returning table list
+        cleanupExpiredReservations();
         List<Ban> tables = banRepository.findAll();
         log.info("findAllTables count={}", tables.size());
         return tables;
@@ -111,6 +113,8 @@ public class SalesServiceImpl implements SalesService {
      */
     @Override
     public Optional<ChiTietDatBan> findLatestReservation(long banId) {
+        // cleanup expired reservations first so latest reservation reflects current state
+        cleanupExpiredReservations();
         LocalDateTime now = LocalDateTime.now().minusMinutes(1);
         Optional<ChiTietDatBan> result = banRepository.findById(banId)
                 .flatMap(ban -> {
@@ -905,5 +909,38 @@ public class SalesServiceImpl implements SalesService {
             return "***";
         }
         return "***" + normalized.substring(len - 3);
+    }
+
+    /**
+     * Scheduled cleanup for expired reservations.
+     * Runs every minute to remove reservations older than 1 hour after scheduled time.
+     */
+    @org.springframework.scheduling.annotation.Scheduled(fixedRateString = "60000")
+    public void cleanupExpiredReservations() {
+        LocalDateTime now = LocalDateTime.now();
+        List<ChiTietDatBan> all = chiTietDatBanRepository.findAll();
+        for (ChiTietDatBan res : all) {
+            if (res.getNgayGioDat() == null) continue;
+            LocalDateTime expiry = res.getNgayGioDat().plusHours(1);
+            if (expiry.isBefore(now)) {
+                Ban b = res.getBan();
+                try {
+                    chiTietDatBanRepository.delete(res);
+                    if (b != null) {
+                        if (!chiTietDatBanRepository.existsByBan(b)) {
+                            b.setTinhTrang(TinhTrangBan.TRONG);
+                            banRepository.save(b);
+                            log.info("Expired reservation removed and table released banId={} expiredAt={}", b.getMaBan(), expiry);
+                        } else {
+                            log.info("Expired reservation removed but other reservations remain for banId={}", b.getMaBan());
+                        }
+                    } else {
+                        log.info("Expired reservation removed for unknown ban expiredAt={}", expiry);
+                    }
+                } catch (Exception ex) {
+                    log.warn("Failed to cleanup expired reservation for banId={} reason={}", b == null ? null : b.getMaBan(), ex.getMessage());
+                }
+            }
+        }
     }
 }

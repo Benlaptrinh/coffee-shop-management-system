@@ -71,8 +71,7 @@ export default function ProfileEdit() {
       errors.soDienThoai = "So dien thoai phai tu 9 den 11 so"
     }
     const wantsPasswordChange = passwordNew.trim().length > 0
-    const isAdmin = me?.role === "ADMIN"
-    if (wantsPasswordChange && !isAdmin && !passwordCurrent.trim()) {
+    if (wantsPasswordChange && !passwordCurrent.trim()) {
       errors.passwordCurrent = "Can nhap mat khau hien tai"
     }
     if (wantsPasswordChange && passwordNew.trim().length < 6) {
@@ -91,15 +90,19 @@ export default function ProfileEdit() {
     try {
       await api.nhanvien.update(employeeId, payload)
       if (wantsPasswordChange) {
-        if (isAdmin && me?.id) {
-          await api.users.update(me.id, { password: passwordNew.trim() })
-        } else {
-          await api.users.changePassword({ oldPassword: passwordCurrent.trim(), newPassword: passwordNew.trim() })
-        }
+        // Always use change-password endpoint (require current password)
+        await api.users.changePassword({ oldPassword: passwordCurrent.trim(), newPassword: passwordNew.trim() })
       }
       navigate("/profile")
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      // If change-password failed due to wrong current password, show field error under input (Vietnamese)
+      const status = err?.status
+      const body = typeof err?.body === "string" ? err.body : String(err?.body || "")
+      if (wantsPasswordChange && status === 400 && body.toLowerCase().includes("old password")) {
+        setFieldErrors((prev) => ({ ...prev, passwordCurrent: "Mật khẩu hiện tại không đúng" }))
+        return
+      }
+      setError(err?.body || err?.message || "Lưu thất bại")
     }
   }
 

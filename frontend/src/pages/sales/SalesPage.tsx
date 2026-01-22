@@ -140,9 +140,10 @@ export default function SalesPage() {
     })
     try {
       await api.sales.menuSelection(selectedId, params)
-      closeModal()
+      // Refresh data and show view modal for the same table
       await loadTables()
       await loadDetail(selectedId)
+      setModal("view")
     } catch (err: any) {
       setError(err?.body || err?.message || "Save menu failed")
     }
