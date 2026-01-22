@@ -42,9 +42,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatusCode status,
                                                                   @NonNull WebRequest request) {
-        List<ApiError.FieldError> fields = new ArrayList<>();
+        List<ApiError.ApiFieldError> fields = new ArrayList<>();
         ex.getBindingResult().getFieldErrors()
-            .forEach(f -> fields.add(new ApiError.FieldError(f.getField(), f.getDefaultMessage())));
+            .forEach(f -> fields.add(new ApiError.ApiFieldError(f.getField(), f.getDefaultMessage())));
         ApiError err = buildError(HttpStatus.BAD_REQUEST, "Validation failed", resolvePath(request), fields);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
@@ -106,9 +106,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
-        List<ApiError.FieldError> fields = new ArrayList<>();
+        List<ApiError.ApiFieldError> fields = new ArrayList<>();
         ex.getConstraintViolations()
-            .forEach(cv -> fields.add(new ApiError.FieldError(cv.getPropertyPath().toString(), cv.getMessage())));
+            .forEach(cv -> fields.add(new ApiError.ApiFieldError(cv.getPropertyPath().toString(), cv.getMessage())));
         ApiError err = buildError(HttpStatus.BAD_REQUEST, "Validation failed", resolvePath(request), fields);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
@@ -163,7 +163,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
     }
 
-    private ApiError buildError(HttpStatus status, String message, String path, List<ApiError.FieldError> fields) {
+    private ApiError buildError(HttpStatus status, String message, String path, List<ApiError.ApiFieldError> fields) {
         ApiError err = new ApiError();
         err.setStatus(status.value());
         err.setError(status.getReasonPhrase());

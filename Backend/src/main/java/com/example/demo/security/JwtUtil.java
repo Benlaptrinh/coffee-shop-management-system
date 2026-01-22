@@ -1,14 +1,20 @@
 package com.example.demo.security;
 
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Base64;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,113 +33,69 @@ public class JwtUtil {
     @Value("${jwt.expiration.seconds:3600}")
     private long jwtExpirationSeconds;
 
-    private static final String HMAC_ALGO = "HmacSHA256";
-
     public String generateToken(String username, List<String> roles) {
-        try {
-            String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-            long exp = Instant.now().getEpochSecond() + jwtExpirationSeconds;
-            String payloadJson = String.format("{\"sub\":\"%s\",\"roles\":\"%s\",\"exp\":%d}",
-                    escape(username), String.join(",", roles), exp);
-
-            String header = base64UrlEncode(headerJson.getBytes(StandardCharsets.UTF_8));
-            String payload = base64UrlEncode(payloadJson.getBytes(StandardCharsets.UTF_8));
-            String signingInput = header + "." + payload;
-            String signature = sign(signingInput, jwtSecret);
-            return signingInput + "." + signature;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate token", e);
-        }
+        Instant now = Instant.now();
+        Date issuedAt = Date.from(now);
+        Date exp = Date.from(now.plusSeconds(jwtExpirationSeconds));
+        return Jwts.builder()
+            .setSubject(username)
+            .claim("roles", String.join(",", roles))
+            .setIssuedAt(issuedAt)
+            .setExpiration(exp)
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            String[] parts = token.split("\\.");
-            if (parts.length != 3) return false;
-            String signingInput = parts[0] + "." + parts[1];
-            String signature = parts[2];
-            String expected = sign(signingInput, jwtSecret);
-            if (!constantTimeEquals(expected, signature)) return false;
-            String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-            Map<String, Object> payload = JsonSimple.parse(payloadJson);
-            Object expObj = payload.get("exp");
-            if (expObj instanceof Number) {
-                long exp = ((Number) expObj).longValue();
-                return Instant.now().getEpochSecond() <= exp;
-            }
-            return false;
-        } catch (Exception e) {
+            parseClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
     }
 
     public String getUsername(String token) {
-        String[] parts = token.split("\\.");
-        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        Map<String, Object> payload = JsonSimple.parse(payloadJson);
-        Object sub = payload.get("sub");
-        return sub == null ? null : sub.toString();
+        Claims claims = parseClaims(token);
+        return claims.getSubject();
     }
 
     public List<String> getRoles(String token) {
-        String[] parts = token.split("\\.");
-        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        Map<String, Object> payload = JsonSimple.parse(payloadJson);
-        Object roles = payload.get("roles");
+        Claims claims = parseClaims(token);
+        Object roles = claims.get("roles");
         if (roles == null) return List.of();
-        String[] arr = roles.toString().split(",");
-        return List.of(arr);
-    }
-
-    private static String base64UrlEncode(byte[] data) {
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(data);
-    }
-
-    private static String sign(String data, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
-        Mac mac = Mac.getInstance(HMAC_ALGO);
-        mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), HMAC_ALGO));
-        byte[] sig = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(sig);
-    }
-
-    private static boolean constantTimeEquals(String a, String b) {
-        if (a.length() != b.length()) return false;
-        int result = 0;
-        for (int i = 0; i < a.length(); i++) {
-            result |= a.charAt(i) ^ b.charAt(i);
+        if (roles instanceof String roleString) {
+            if (roleString.isBlank()) return List.of();
+            String[] arr = roleString.split(",");
+            return List.of(arr);
         }
-        return result == 0;
+        if (roles instanceof List<?> list) {
+            return list.stream().map(Object::toString).collect(Collectors.toList());
+        }
+        return List.of();
     }
 
-    private static String escape(String s) {
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
-    /**
-     * tiny JSON parser for payload extraction (only handles flat objects with string/number values)
-     */
-    private static class JsonSimple {
-        static Map<String, Object> parse(String json) {
-            return java.util.Arrays.stream(json.trim().replaceAll("^\\{|\\}$", "").split(","))
-                    .map(String::trim)
-                    .filter(p -> !p.isEmpty())
-                    .map(p -> {
-                        int idx = p.indexOf(':');
-                        String k = p.substring(0, idx).trim().replaceAll("^\"|\"$", "");
-                        String vRaw = p.substring(idx + 1).trim();
-                        Object v;
-                        if (vRaw.startsWith("\"") && vRaw.endsWith("\"")) {
-                            v = vRaw.substring(1, vRaw.length() - 1);
-                        } else {
-                            try { v = Long.parseLong(vRaw); } catch (Exception ex) {
-                                try { v = Double.parseDouble(vRaw); } catch (Exception ex2) { v = vRaw; }
-                            }
-                        }
-                        return new java.util.AbstractMap.SimpleEntry<>(k, v);
-                    })
-                    .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            keyBytes = sha256(keyBytes);
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private static byte[] sha256(byte[] input) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(input);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 not available", ex);
         }
     }
 }
-
-

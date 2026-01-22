@@ -22,15 +22,14 @@ public class ApiError {
     private String error;
     private String message;
     private String path;
-    private List<FieldError> errors;
+    private List<ApiFieldError> errors;
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FieldError {
+    public static class ApiFieldError {
         private String field;
         private String message;
     }
 }
-
