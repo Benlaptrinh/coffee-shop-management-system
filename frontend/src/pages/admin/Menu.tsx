@@ -19,7 +19,7 @@ export default function AdminMenu() {
   const [form, setForm] = useState({ tenMon: "", giaRaw: "" })
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 8
 
   const load = async (q?: string) => {
     setLoading(true)

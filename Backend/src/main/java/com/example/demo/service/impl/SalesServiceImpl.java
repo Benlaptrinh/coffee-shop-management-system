@@ -921,25 +921,49 @@ public class SalesServiceImpl implements SalesService {
         List<ChiTietDatBan> all = chiTietDatBanRepository.findAll();
         for (ChiTietDatBan res : all) {
             if (res.getNgayGioDat() == null) continue;
-            LocalDateTime expiry = res.getNgayGioDat().plusHours(1);
-            if (expiry.isBefore(now)) {
-                Ban b = res.getBan();
-                try {
-                    chiTietDatBanRepository.delete(res);
+            LocalDateTime when = res.getNgayGioDat();
+            Ban b = res.getBan();
+            try {
+                // If reservation time has arrived (or passed) and there is no order, remove it and free table
+                if (!now.isBefore(when)) {
+                    boolean hasOrder = false;
                     if (b != null) {
-                        if (!chiTietDatBanRepository.existsByBan(b)) {
+                        Optional<HoaDon> hdOpt = hoaDonRepository.findChuaThanhToanByBan(b.getMaBan());
+                        if (hdOpt.isPresent()) {
+                            HoaDon hd = hdOpt.get();
+                            if (hd.getChiTietHoaDons() != null && hd.getChiTietHoaDons().stream()
+                                    .anyMatch(ct -> ct.getSoLuong() != null && ct.getSoLuong() > 0)) {
+                                hasOrder = true;
+                            }
+                        }
+                    }
+                    if (!hasOrder) {
+                        chiTietDatBanRepository.delete(res);
+                        if (b != null && !chiTietDatBanRepository.existsByBan(b)) {
                             b.setTinhTrang(TinhTrangBan.TRONG);
                             banRepository.save(b);
-                            log.info("Expired reservation removed and table released banId={} expiredAt={}", b.getMaBan(), expiry);
-                        } else {
-                            log.info("Expired reservation removed but other reservations remain for banId={}", b.getMaBan());
                         }
+                        log.info("Reservation removed at arrival time banId={} when={} now={}", b == null ? null : b.getMaBan(), when, now);
+                        continue;
+                    }
+                }
+
+                // Fallback: remove reservations that expired 1 hour after scheduled time
+                LocalDateTime expiry = when.plusHours(1);
+                if (expiry.isBefore(now)) {
+                    chiTietDatBanRepository.delete(res);
+                    if (b != null && !chiTietDatBanRepository.existsByBan(b)) {
+                        b.setTinhTrang(TinhTrangBan.TRONG);
+                        banRepository.save(b);
+                        log.info("Expired reservation removed and table released banId={} expiredAt={}", b.getMaBan(), expiry);
+                    } else if (b != null) {
+                        log.info("Expired reservation removed but other reservations remain for banId={}", b.getMaBan());
                     } else {
                         log.info("Expired reservation removed for unknown ban expiredAt={}", expiry);
                     }
-                } catch (Exception ex) {
-                    log.warn("Failed to cleanup expired reservation for banId={} reason={}", b == null ? null : b.getMaBan(), ex.getMessage());
                 }
+            } catch (Exception ex) {
+                log.warn("Failed to cleanup expired reservation for banId={} reason={}", b == null ? null : b.getMaBan(), ex.getMessage());
             }
         }
     }

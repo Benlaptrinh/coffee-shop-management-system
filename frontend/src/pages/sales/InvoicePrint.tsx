@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import api from "../../api"
 import { formatDateTime, formatNumber } from "../../utils/format"
+import { useRef } from "react"
 
 type Invoice = {
   maHoaDon: number
@@ -16,6 +17,7 @@ export default function InvoicePrint() {
   const params = useParams()
   const [invoice, setInvoice] = useState<Invoice | null>(null)
   const [loading, setLoading] = useState(false)
+  const printedRef = useRef(false)
 
   useEffect(() => {
     const id = Number(params.id)
@@ -29,7 +31,10 @@ export default function InvoicePrint() {
 
   useEffect(() => {
     if (invoice) {
-      setTimeout(() => window.print(), 300)
+      if (!printedRef.current) {
+        printedRef.current = true
+        setTimeout(() => window.print(), 300)
+      }
     }
   }, [invoice])
 

@@ -28,7 +28,7 @@ export default function AdminEquipment() {
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 5
 
   const load = async () => {
     setLoading(true)
@@ -117,28 +117,30 @@ export default function AdminEquipment() {
       <div className="form-box">
         <h2>{editId ? "Chinh sua thiet bi" : "Them thiet bi"}</h2>
         <form onSubmit={onSubmit} noValidate>
-          <div className="form-group">
-            <label>Ten thiet bi</label>
-            <input
-              value={form.tenThietBi}
-              onChange={(event) => {
-                setForm((prev) => ({ ...prev, tenThietBi: event.target.value }))
-                if (fieldErrors.tenThietBi) setFieldErrors((prev) => ({ ...prev, tenThietBi: "" }))
-              }}
-            />
-            {fieldErrors.tenThietBi ? <div className="field-error">{fieldErrors.tenThietBi}</div> : null}
-          </div>
-          <div className="form-group">
-            <label>Ngay mua</label>
-            <input
-              type="date"
-              value={form.ngayMua}
-              onChange={(event) => {
-                setForm((prev) => ({ ...prev, ngayMua: event.target.value }))
-                if (fieldErrors.ngayMua) setFieldErrors((prev) => ({ ...prev, ngayMua: "" }))
-              }}
-            />
-            {fieldErrors.ngayMua ? <div className="field-error">{fieldErrors.ngayMua}</div> : null}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Ten thiet bi</label>
+              <input
+                value={form.tenThietBi}
+                onChange={(event) => {
+                  setForm((prev) => ({ ...prev, tenThietBi: event.target.value }))
+                  if (fieldErrors.tenThietBi) setFieldErrors((prev) => ({ ...prev, tenThietBi: "" }))
+                }}
+              />
+              {fieldErrors.tenThietBi ? <div className="field-error">{fieldErrors.tenThietBi}</div> : null}
+            </div>
+            <div className="form-group">
+              <label>Ngay mua</label>
+              <input
+                type="date"
+                value={form.ngayMua}
+                onChange={(event) => {
+                  setForm((prev) => ({ ...prev, ngayMua: event.target.value }))
+                  if (fieldErrors.ngayMua) setFieldErrors((prev) => ({ ...prev, ngayMua: "" }))
+                }}
+              />
+              {fieldErrors.ngayMua ? <div className="field-error">{fieldErrors.ngayMua}</div> : null}
+            </div>
           </div>
           <div className="form-row">
             <div className="form-group">

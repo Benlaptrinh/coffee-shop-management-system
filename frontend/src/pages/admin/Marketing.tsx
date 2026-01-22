@@ -25,7 +25,7 @@ export default function AdminMarketing() {
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 6
 
   const load = async () => {
     setLoading(true)

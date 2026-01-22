@@ -23,7 +23,7 @@ export default function AdminWarehouse() {
   const [error, setError] = useState<string | null>(null)
   const [editItem, setEditItem] = useState<StockItem | null>(null)
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 4
 
   const [nhapForm, setNhapForm] = useState({
     tenHangHoa: "",
