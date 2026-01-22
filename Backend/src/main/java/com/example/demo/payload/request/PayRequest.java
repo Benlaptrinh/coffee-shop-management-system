@@ -3,7 +3,9 @@ import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * Request payload for Pay.
+ */
 @Getter
 @Setter
 public class PayRequest {

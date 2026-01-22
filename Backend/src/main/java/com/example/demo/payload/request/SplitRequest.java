@@ -4,7 +4,9 @@ import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * Request payload for Split.
+ */
 @Getter
 @Setter
 public class SplitRequest {

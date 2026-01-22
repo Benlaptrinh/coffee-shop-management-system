@@ -7,18 +7,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 
 /**
- * ReportRowDto
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * DTO for Report Row.
  */
 @Getter
 public class ReportRowDto {

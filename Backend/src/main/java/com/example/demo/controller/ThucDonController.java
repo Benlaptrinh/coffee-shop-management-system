@@ -32,7 +32,10 @@ import jakarta.validation.Valid;
 public class ThucDonController {
 
     private final ThucDonService thucDonService;
-
+    /**
+     * Creates a new Thuc Don Controller.
+     * @param thucDonService thuc don service
+     */
     public ThucDonController(ThucDonService thucDonService) {
         this.thucDonService = thucDonService;
     }
@@ -46,31 +49,52 @@ public class ThucDonController {
         d.setLoaiMon(t.getLoaiMon());
         return d;
     }
-
+    /**
+     * Lists items.
+     * @param q q
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<ThucDonDto>> list(@RequestParam(value = "q", required = false) String q) {
         List<ThucDon> list = (q == null || q.isBlank()) ? thucDonService.findAll() : thucDonService.searchByTenMon(q);
         return ResponseEntity.ok(list.stream().map(ThucDonController::toDto).collect(Collectors.toList()));
     }
-
+    /**
+     * Gets an item.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ThucDonDto> get(@PathVariable long id) {
         return thucDonService.findById(id).map(ThucDonController::toDto).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    /**
+     * Creates a new entry.
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateThucDonRequest req) {
         thucDonService.create(req.getTenMon(), req.getGiaHienTai());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
+    /**
+     * Updates the entry.
+     * @param id id
+     * @param req request payload
+     * @return response entity
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody UpdateThucDonRequest req) {
         thucDonService.update(id, req.getTenMon(), req.getGiaHienTai());
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Deletes the entry.
+     * @param id id
+     * @return response entity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         thucDonService.deleteById(id);

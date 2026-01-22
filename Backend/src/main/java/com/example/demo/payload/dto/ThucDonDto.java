@@ -3,7 +3,9 @@ import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * DTO for Thuc Don.
+ */
 @Getter
 @Setter
 public class ThucDonDto {

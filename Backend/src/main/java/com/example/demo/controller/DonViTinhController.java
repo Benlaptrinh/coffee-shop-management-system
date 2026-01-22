@@ -28,11 +28,17 @@ import jakarta.validation.Valid;
 public class DonViTinhController {
 
     private final DonViTinhRepository repo;
-
+    /**
+     * Creates a new Don Vi Tinh Controller.
+     * @param repo repo
+     */
     public DonViTinhController(DonViTinhRepository repo) {
         this.repo = repo;
     }
-
+    /**
+     * Lists items.
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<DonViDto>> list() {
         List<DonViDto> list = repo.findAll().stream().map(d -> {
@@ -43,7 +49,11 @@ public class DonViTinhController {
         }).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
+    /**
+     * Creates a new entry.
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateDonViRequest req) {
         DonViTinh d = new DonViTinh();
@@ -51,7 +61,11 @@ public class DonViTinhController {
         repo.save(d);
         return ResponseEntity.status(201).build();
     }
-
+    /**
+     * Deletes the entry.
+     * @param id id
+     * @return response entity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         repo.findById(id).ifPresent(repo::delete);

@@ -36,7 +36,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
+    /**
+     * Handles method argument validation errors.
+     * @param ex ex
+     * @param headers headers
+     * @param status status
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
                                                                   @NonNull HttpHeaders headers,
@@ -48,7 +55,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(HttpStatus.BAD_REQUEST, "Validation failed", resolvePath(request), fields);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles unreadable HTTP message errors.
+     * @param ex ex
+     * @param headers headers
+     * @param status status
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex,
                                                                   @NonNull HttpHeaders headers,
@@ -59,7 +73,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         err.setError("Malformed JSON");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles missing request parameter errors.
+     * @param ex ex
+     * @param headers headers
+     * @param status status
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(@NonNull MissingServletRequestParameterException ex,
                                                                           @NonNull HttpHeaders headers,
@@ -69,7 +90,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(HttpStatus.BAD_REQUEST, msg, resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles unsupported HTTP method errors.
+     * @param ex ex
+     * @param headers headers
+     * @param status status
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(@NonNull HttpRequestMethodNotSupportedException ex,
                                                                          @NonNull HttpHeaders headers,
@@ -79,7 +107,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(HttpStatus.METHOD_NOT_ALLOWED, msg, resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(err);
     }
-
+    /**
+     * Handles unsupported media type errors.
+     * @param ex ex
+     * @param headers headers
+     * @param status status
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(@NonNull HttpMediaTypeNotSupportedException ex,
                                                                      @NonNull HttpHeaders headers,
@@ -89,7 +124,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, msg, resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(err);
     }
-
+    /**
+     * Handles internal exception responses.
+     * @param ex ex
+     * @param body request body
+     * @param headers headers
+     * @param statusCode status code
+     * @param request request payload
+     * @return response entity
+     */
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex,
                                                             @Nullable Object body,
@@ -103,7 +146,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(status, ex.getMessage(), resolvePath(request), null);
         return new ResponseEntity<>(err, headers, statusCode);
     }
-
+    /**
+     * Handles constraint violation errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
         List<ApiError.ApiFieldError> fields = new ArrayList<>();
@@ -112,50 +160,90 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError err = buildError(HttpStatus.BAD_REQUEST, "Validation failed", resolvePath(request), fields);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles argument type mismatch errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         String msg = "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue();
         ApiError err = buildError(HttpStatus.BAD_REQUEST, msg, resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles illegal argument errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
-
+    /**
+     * Handles illegal state errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.CONFLICT, ex.getMessage(), resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
     }
-
+    /**
+     * Handles not found errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler({EntityNotFoundException.class, NoSuchElementException.class})
     public ResponseEntity<ApiError> handleNotFound(Exception ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.NOT_FOUND, ex.getMessage(), resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
-
+    /**
+     * Handles data integrity violations.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.CONFLICT, "Data integrity violation", resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
     }
-
+    /**
+     * Handles access denied errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.FORBIDDEN, ex.getMessage(), resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
     }
-
+    /**
+     * Handles authentication errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
         ApiError err = buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), resolvePath(request), null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
     }
-
+    /**
+     * Handles unexpected errors.
+     * @param ex ex
+     * @param request request payload
+     * @return response entity
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAll(Exception ex, HttpServletRequest request) {
         log.error("Unexpected error handling request {}", request.getRequestURI(), ex);

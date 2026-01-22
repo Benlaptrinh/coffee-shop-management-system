@@ -10,18 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * ThucDonForm
- *
- * Version 1.0
- *
- * Date: 16-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 16-01-2026  Việt    Create
+ * Form payload for Thuc Don.
  */
 @Getter @Setter
 @NoArgsConstructor

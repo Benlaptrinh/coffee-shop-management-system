@@ -31,7 +31,12 @@ public class ReportController {
     private final FinanceReportService financeReportService;
     private final SalesReportService salesReportService;
     private final StaffReportService staffReportService;
-
+    /**
+     * Creates a new Report Controller.
+     * @param financeReportService finance report service
+     * @param salesReportService sales report service
+     * @param staffReportService staff report service
+     */
     public ReportController(FinanceReportService financeReportService,
                             SalesReportService salesReportService,
                             StaffReportService staffReportService) {
@@ -39,7 +44,12 @@ public class ReportController {
         this.salesReportService = salesReportService;
         this.staffReportService = staffReportService;
     }
-
+    /**
+     * Returns finance report data.
+     * @param fromStr start date (ISO-8601)
+     * @param toStr end date (ISO-8601)
+     * @return response entity
+     */
     @GetMapping("/finance")
     public ResponseEntity<?> finance(@RequestParam("from") String fromStr,
                                      @RequestParam("to") String toStr) {
@@ -57,7 +67,12 @@ public class ReportController {
         List<ReportRowDto> data = financeReportService.getFinanceReport(from, to);
         return ResponseEntity.ok(data);
     }
-
+    /**
+     * Returns sales report data.
+     * @param fromStr start date (ISO-8601)
+     * @param toStr end date (ISO-8601)
+     * @return response entity
+     */
     @GetMapping("/sales")
     public ResponseEntity<?> sales(@RequestParam("from") String fromStr,
                                    @RequestParam("to") String toStr) {
@@ -75,7 +90,10 @@ public class ReportController {
         List<SalesByDayRowDto> data = salesReportService.getSalesByDay(from, to);
         return ResponseEntity.ok(data);
     }
-
+    /**
+     * Returns staff summary data.
+     * @return response entity
+     */
     @GetMapping("/staff")
     public ResponseEntity<List<StaffReportRowDto>> staff() {
         return ResponseEntity.ok(staffReportService.getStaffSummary());

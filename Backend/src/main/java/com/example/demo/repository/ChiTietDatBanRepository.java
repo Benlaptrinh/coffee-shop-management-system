@@ -11,18 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * ChiTietDatBanRepository
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Repository for Chi Tiet Dat Ban entities.
  */
 public interface ChiTietDatBanRepository extends JpaRepository<ChiTietDatBan, ChiTietDatBanId> {
     Optional<ChiTietDatBan> findTopByBanOrderById_NgayGioDatDesc(Ban ban);

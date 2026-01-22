@@ -12,18 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * TaiKhoanServiceImpl
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service implementation for Tai Khoan.
  */
 @Service
 public class TaiKhoanServiceImpl implements TaiKhoanService {

@@ -12,18 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * DemoApplication
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Spring Boot application entry point.
  */
 @SpringBootApplication
 public class DemoApplication {

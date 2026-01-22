@@ -12,18 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * FinanceReportServiceImpl
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service implementation for Finance Report.
  */
 @Service
 public class FinanceReportServiceImpl implements FinanceReportService {

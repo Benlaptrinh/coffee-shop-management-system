@@ -23,18 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * HangHoaServiceImpl
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service implementation for Hang Hoa.
  */
 @Service
 public class HangHoaServiceImpl implements HangHoaService {
@@ -126,12 +115,6 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param nhanVien nhanVien
      */
     @Override
-    /**
-     * Nhap hang.
-     *
-     * @param form form
-     * @param nhanVien nhanVien
-     */
     @Transactional
     public void nhapHang(HangHoaNhapForm form, NhanVien nhanVien) {
         if (form.getTenHangHoa() == null || form.getTenHangHoa().trim().isEmpty()) {
@@ -209,14 +192,6 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param nhanVien nhanVien
      */
     @Override
-    /**
-     * Xuat hang.
-     *
-     * @param hangHoaId hangHoaId
-     * @param soLuong soLuong
-     * @param ngayXuat ngayXuat
-     * @param nhanVien nhanVien
-     */
     @Transactional
     public void xuatHang(long hangHoaId, int soLuong, LocalDateTime ngayXuat, NhanVien nhanVien) {
         if (soLuong <= 0) {
@@ -256,11 +231,6 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param form form
      */
     @Override
-    /**
-     * Update hang hoa.
-     *
-     * @param form form
-     */
     @Transactional
     public void updateHangHoa(EditHangHoaForm form) {
         HangHoa hh = hangHoaRepo.findById(form.getId())
@@ -306,11 +276,6 @@ public class HangHoaServiceImpl implements HangHoaService {
      * @param id id
      */
     @Override
-    /**
-     * Delete hang hoa.
-     *
-     * @param id id
-     */
     @Transactional
     public void deleteHangHoa(long id) {
         HangHoa hh = hangHoaRepo.findById(id)

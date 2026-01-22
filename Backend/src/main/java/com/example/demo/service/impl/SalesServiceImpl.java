@@ -35,18 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * SalesServiceImpl
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service implementation for Sales.
  */
 @Service
 @Transactional
@@ -306,7 +295,7 @@ public class SalesServiceImpl implements SalesService {
      * @param params params
      */
     @Override
-    public void saveSelectedMenu(long banId, Map<String,String> params) {
+    public void saveSelectedMenu(long banId, Map<String, String> params) {
         HoaDon hd = getOrCreateInvoice(banId, false);
         findCurrentNhanVien().ifPresent(hd::setNhanVien);
 

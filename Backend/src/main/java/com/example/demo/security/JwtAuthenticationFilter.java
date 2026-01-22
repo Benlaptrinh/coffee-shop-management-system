@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * JwtAuthenticationFilter
+ * JWT authentication filter for incoming requests.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,12 +31,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final TaiKhoanService taiKhoanService;
-
+    /**
+     * Creates a new JWT authentication filter.
+     * @param jwtUtil JWT utility
+     * @param taiKhoanService account service
+     */
     public JwtAuthenticationFilter(JwtUtil jwtUtil, TaiKhoanService taiKhoanService) {
         this.jwtUtil = jwtUtil;
         this.taiKhoanService = taiKhoanService;
     }
-
+    /**
+     * Filters requests and sets the authentication context.
+     * @param request request payload
+     * @param response response
+     * @param filterChain filter chain
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -65,4 +74,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

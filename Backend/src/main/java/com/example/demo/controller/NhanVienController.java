@@ -18,13 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-
+/**
+ * REST controller for Nhan Vien.
+ */
 @RestController
 @RequestMapping("/api/nhanvien")
 public class NhanVienController {
 
     private final NhanVienService nhanVienService;
-
+    /**
+     * Creates a new Nhan Vien Controller.
+     * @param nhanVienService nhan vien service
+     */
     public NhanVienController(NhanVienService nhanVienService) {
         this.nhanVienService = nhanVienService;
     }
@@ -41,32 +46,53 @@ public class NhanVienController {
         d.setEnabled(nv.getEnabled() == null ? true : nv.getEnabled());
         return d;
     }
-
+    /**
+     * Lists items.
+     * @param q q
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<NhanVienDto>> list(@RequestParam(value = "q", required = false) String q) {
         List<NhanVien> list = (q == null || q.isBlank()) ? nhanVienService.findAll() : nhanVienService.findByHoTenContaining(q);
         return ResponseEntity.ok(list.stream().map(NhanVienController::toDto).collect(Collectors.toList()));
     }
-
+    /**
+     * Gets an item.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<NhanVienDto> get(@PathVariable long id) {
         return nhanVienService.findById(id).map(NhanVienController::toDto).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    /**
+     * Creates a new entry.
+     * @param nv nv
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody NhanVien nv) {
         nhanVienService.save(nv);
         return ResponseEntity.status(201).build();
     }
-
+    /**
+     * Updates the entry.
+     * @param id id
+     * @param nv nv
+     * @return response entity
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody NhanVien nv) {
         nv.setMaNhanVien(id);
         nhanVienService.save(nv);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Deletes the entry.
+     * @param id id
+     * @return response entity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         nhanVienService.deleteById(id);

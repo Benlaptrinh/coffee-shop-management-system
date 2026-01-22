@@ -13,22 +13,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-
+/**
+ * REST controller for Chuc Vu.
+ */
 @RestController
 @RequestMapping("/api/chucvu")
 public class ChucVuController {
 
     private final ChucVuRepository repo;
-
+    /**
+     * Creates a new Chuc Vu Controller.
+     * @param repo repo
+     */
     public ChucVuController(ChucVuRepository repo) {
         this.repo = repo;
     }
-
+    /**
+     * Lists items.
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<ChucVu>> list() {
         return ResponseEntity.ok(repo.findAll());
     }
-
+    /**
+     * Creates a new entry.
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateChucVuRequest req) {
         ChucVu cv = new ChucVu();

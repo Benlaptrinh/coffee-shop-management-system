@@ -10,18 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * CustomUserDetails
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Component for Custom User Details.
  */
 public class CustomUserDetails implements UserDetails {
 
@@ -32,6 +21,7 @@ public class CustomUserDetails implements UserDetails {
      * Creates CustomUserDetails.
      *
      * @param taiKhoan taiKhoan
+     * @param nhanVienEnabled nhan vien enabled
      */
     public CustomUserDetails(TaiKhoan taiKhoan, boolean nhanVienEnabled) {
         this.taiKhoan = taiKhoan;

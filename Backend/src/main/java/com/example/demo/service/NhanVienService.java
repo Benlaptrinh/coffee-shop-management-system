@@ -6,18 +6,7 @@ import java.util.Optional;
 import com.example.demo.entity.NhanVien;
 
 /**
- * NhanVienService
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service contract for Nhan Vien.
  */
 public interface NhanVienService {
     /**

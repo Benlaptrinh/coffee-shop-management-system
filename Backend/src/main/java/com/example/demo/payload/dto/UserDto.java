@@ -1,7 +1,9 @@
 package com.example.demo.payload.dto;
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * DTO for User.
+ */
 @Getter
 @Setter
 public class UserDto {

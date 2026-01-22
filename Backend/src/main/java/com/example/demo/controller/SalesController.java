@@ -43,7 +43,10 @@ public class SalesController {
     private static final Logger log = LoggerFactory.getLogger(SalesController.class);
 
     private final SalesService salesService;
-
+    /**
+     * Creates a new Sales Controller.
+     * @param salesService sales service
+     */
     public SalesController(SalesService salesService) {
         this.salesService = salesService;
     }
@@ -101,13 +104,20 @@ public class SalesController {
         dto.setNgayGioDat(res.getNgayGioDat());
         return dto;
     }
-
+    /**
+     * Lists tables.
+     * @return response entity
+     */
     @GetMapping("/tables")
     public ResponseEntity<List<TableDto>> listTables() {
         List<TableDto> list = salesService.findAllTables().stream().map(SalesController::toTableDto).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
+    /**
+     * Returns table.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/tables/{id}")
     public ResponseEntity<?> getTable(@PathVariable long id) {
         Optional<Ban> b = salesService.findTableById(id);
@@ -121,13 +131,21 @@ public class SalesController {
         body.put("invoice", toInvoiceDto(invoice));
         return ResponseEntity.ok(body);
     }
-
+    /**
+     * Returns menu items.
+     * @return response entity
+     */
     @GetMapping("/menu")
     public ResponseEntity<List<MenuItemDto>> menu() {
         List<MenuItemDto> list = salesService.findMenuItems().stream().map(SalesController::toMenuItemDto).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
+    /**
+     * Adds item.
+     * @param tableId table id
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping("/tables/{tableId}/items")
     public ResponseEntity<?> addItem(@PathVariable long tableId, @RequestBody AddItemRequest req) {
         if (req == null || req.getThucDonId() == null || req.getSoLuong() == null || req.getSoLuong() <= 0) {
@@ -142,7 +160,12 @@ public class SalesController {
             return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Saves menu selection.
+     * @param tableId table id
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping("/tables/{tableId}/menu-selection")
     public ResponseEntity<?> menuSelection(@PathVariable long tableId, @RequestBody MenuSelectionRequest req) {
         if (req == null || req.getParams() == null) return ResponseEntity.badRequest().body("Missing params");
@@ -154,7 +177,12 @@ public class SalesController {
             return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Processes payment.
+     * @param tableId table id
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping("/tables/{tableId}/pay")
     public ResponseEntity<?> pay(@PathVariable long tableId, @RequestBody PayRequest req) {
         if (req == null || req.getAmountPaid() == null) return ResponseEntity.badRequest().body("Missing amountPaid");
@@ -168,7 +196,11 @@ public class SalesController {
             return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Cancels the invoice.
+     * @param tableId table id
+     * @return response entity
+     */
     @PostMapping("/tables/{tableId}/cancel")
     public ResponseEntity<?> cancel(@PathVariable long tableId) {
         try {
@@ -178,7 +210,12 @@ public class SalesController {
             return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Creates a reservation.
+     * @param tableId table id
+     * @param body request body
+     * @return response entity
+     */
     @PostMapping("/tables/{tableId}/reserve")
     public ResponseEntity<?> reserve(@PathVariable long tableId, @RequestBody Map<String, Object> body) {
         try {
@@ -196,7 +233,11 @@ public class SalesController {
             return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Moves a table.
+     * @param payload payload
+     * @return response entity
+     */
     @PostMapping("/move")
     public ResponseEntity<?> move(@RequestBody Map<String, Object> payload) {
         try {
@@ -208,7 +249,11 @@ public class SalesController {
             return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Merges tables.
+     * @param payload payload
+     * @return response entity
+     */
     @PostMapping("/merge")
     public ResponseEntity<?> merge(@RequestBody Map<String, Object> payload) {
         try {
@@ -220,7 +265,11 @@ public class SalesController {
             return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Splits a table.
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping("/split")
     public ResponseEntity<?> split(@RequestBody SplitRequest req) {
         try {
@@ -242,7 +291,11 @@ public class SalesController {
             return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
         }
     }
-
+    /**
+     * Returns invoice.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/invoices/{id}")
     public ResponseEntity<?> getInvoice(@PathVariable long id) {
         return salesService.findInvoiceById(id).map(SalesController::toInvoiceDto).map(ResponseEntity::ok)

@@ -3,7 +3,9 @@ import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * DTO for Reservation.
+ */
 @Getter
 @Setter
 public class ReservationDto {

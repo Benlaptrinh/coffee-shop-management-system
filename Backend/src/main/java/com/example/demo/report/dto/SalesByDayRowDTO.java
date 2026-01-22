@@ -6,18 +6,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 
 /**
- * SalesByDayRowDto
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * DTO for Sales By Day Row.
  */
 @Getter
 public class SalesByDayRowDto {

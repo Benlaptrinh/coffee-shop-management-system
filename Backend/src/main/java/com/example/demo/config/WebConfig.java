@@ -13,10 +13,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig {
-
+    /**
+     * Creates the CORS configurer.
+     * @return CORS configurer
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+            /**
+             * Adds CORS mappings.
+             * @param registry CORS registry
+             */
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
@@ -28,4 +35,3 @@ public class WebConfig {
         };
     }
 }
-

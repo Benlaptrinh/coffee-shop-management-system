@@ -8,18 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
 /**
- * TomcatConfig
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Configuration for Tomcat.
  */
 @Configuration
 public class TomcatConfig implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {

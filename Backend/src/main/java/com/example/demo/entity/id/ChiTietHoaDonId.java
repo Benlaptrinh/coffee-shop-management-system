@@ -11,18 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * ChiTietHoaDonId
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * JPA entity for Chi Tiet Hoa Don Id.
  */
 @Embeddable
 @Getter @Setter

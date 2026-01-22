@@ -16,40 +16,65 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-
+/**
+ * REST controller for Khuyen Mai.
+ */
 @RestController
 @RequestMapping("/api/khuyenmai")
 public class KhuyenMaiController {
 
     private final KhuyenMaiService kmService;
-
+    /**
+     * Creates a new Khuyen Mai Controller.
+     * @param kmService km service
+     */
     public KhuyenMaiController(KhuyenMaiService kmService) {
         this.kmService = kmService;
     }
-
+    /**
+     * Lists items.
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<KhuyenMai>> list() {
         return ResponseEntity.ok(kmService.getAllKhuyenMai());
     }
-
+    /**
+     * Creates a new entry.
+     * @param form form
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody KhuyenMaiForm form) {
         kmService.createKhuyenMai(form);
         return ResponseEntity.status(201).build();
     }
-
+    /**
+     * Returns form.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<KhuyenMaiForm> getForm(@PathVariable long id) {
         KhuyenMaiForm form = kmService.getFormById(id);
         return ResponseEntity.ok(form);
     }
-
+    /**
+     * Updates the entry.
+     * @param id id
+     * @param form form
+     * @return response entity
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody KhuyenMaiForm form) {
         kmService.updateKhuyenMai(id, form);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Deletes the entry.
+     * @param id id
+     * @return response entity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         kmService.deleteById(id);

@@ -20,9 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * JwtUtil
- *
- * Minimal JWT utility implementation (HS256) without external libs.
+ * JWT utility for token creation and validation.
  */
 @Component
 public class JwtUtil {
@@ -32,7 +30,12 @@ public class JwtUtil {
 
     @Value("${jwt.expiration.seconds:3600}")
     private long jwtExpirationSeconds;
-
+    /**
+     * Generates a JWT token.
+     * @param username username
+     * @param roles roles
+     * @return JWT token
+     */
     public String generateToken(String username, List<String> roles) {
         Instant now = Instant.now();
         Date issuedAt = Date.from(now);
@@ -45,7 +48,11 @@ public class JwtUtil {
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
     }
-
+    /**
+     * Validates a JWT token.
+     * @param token token
+     * @return true if valid
+     */
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
@@ -54,12 +61,20 @@ public class JwtUtil {
             return false;
         }
     }
-
+    /**
+     * Extracts the username from a token.
+     * @param token token
+     * @return username
+     */
     public String getUsername(String token) {
         Claims claims = parseClaims(token);
         return claims.getSubject();
     }
-
+    /**
+     * Extracts roles from a token.
+     * @param token token
+     * @return roles list
+     */
     public List<String> getRoles(String token) {
         Claims claims = parseClaims(token);
         Object roles = claims.get("roles");

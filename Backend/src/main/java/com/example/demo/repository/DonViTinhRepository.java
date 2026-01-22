@@ -5,18 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * DonViTinhRepository
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Repository for Don Vi Tinh entities.
  */
 public interface DonViTinhRepository extends JpaRepository<DonViTinh, Long> {
     Optional<DonViTinh> findByTenDonViIgnoreCase(String tenDonVi);

@@ -13,7 +13,9 @@ import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+/**
+ * Form payload for Thiet Bi.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

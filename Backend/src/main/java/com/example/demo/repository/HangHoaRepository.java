@@ -7,18 +7,7 @@ import com.example.demo.entity.HangHoa;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * HangHoaRepository
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Repository for Hang Hoa entities.
  */
 public interface HangHoaRepository extends JpaRepository<HangHoa, Long> {
     /**

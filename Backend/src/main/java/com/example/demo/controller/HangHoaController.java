@@ -30,23 +30,40 @@ import jakarta.validation.Valid;
 public class HangHoaController {
 
     private final HangHoaService hangHoaService;
-
+    /**
+     * Creates a new Hang Hoa Controller.
+     * @param hangHoaService hang hoa service
+     */
     public HangHoaController(HangHoaService hangHoaService) {
         this.hangHoaService = hangHoaService;
     }
-
+    /**
+     * Returns inventory list.
+     * @param q search keyword
+     * @return response entity
+     */
     @GetMapping("/kho")
     public ResponseEntity<List<HangHoaKhoDto>> danhSachKho(@RequestParam(value = "q", required = false) String q) {
         List<HangHoaKhoDto> list = (q == null || q.isBlank()) ? hangHoaService.getDanhSachKho() : hangHoaService.searchHangHoa(q);
         return ResponseEntity.ok(list);
     }
-
+    /**
+     * Records inventory receipt.
+     * @param form receipt form
+     * @return response entity
+     */
     @PostMapping("/nhap")
     public ResponseEntity<?> nhapHang(@Valid @RequestBody HangHoaNhapForm form) {
         hangHoaService.nhapHang(form, null);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Records inventory issue.
+     * @param hangHoaId inventory item id
+     * @param soLuong quantity
+     * @param ngayXuat issue time (ISO-8601)
+     * @return response entity
+     */
     @PostMapping("/xuat")
     public ResponseEntity<?> xuatHang(@RequestParam long hangHoaId,
                                       @RequestParam int soLuong,
@@ -55,13 +72,21 @@ public class HangHoaController {
         hangHoaService.xuatHang(hangHoaId, soLuong, when, null);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Updates inventory item.
+     * @param form update form
+     * @return response entity
+     */
     @PutMapping
     public ResponseEntity<?> updateHangHoa(@Valid @RequestBody EditHangHoaForm form) {
         hangHoaService.updateHangHoa(form);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Deletes inventory item.
+     * @param id inventory item id
+     * @return response entity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteHangHoa(@PathVariable long id) {
         hangHoaService.deleteHangHoa(id);

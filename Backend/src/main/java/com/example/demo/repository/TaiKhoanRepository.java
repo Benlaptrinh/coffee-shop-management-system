@@ -6,18 +6,7 @@ import com.example.demo.entity.TaiKhoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * TaiKhoanRepository
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Repository for Tai Khoan entities.
  */
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     /**

@@ -7,18 +7,7 @@ import com.example.demo.entity.ThucDon;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * ThucDonRepository
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Repository for Thuc Don entities.
  */
 public interface ThucDonRepository extends JpaRepository<ThucDon, Long> {
     /**

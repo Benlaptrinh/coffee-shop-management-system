@@ -20,16 +20,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class DonXuatController {
 
     private final DonXuatRepository repo;
-
+    /**
+     * Creates a new Don Xuat Controller.
+     * @param repo repo
+     */
     public DonXuatController(DonXuatRepository repo) {
         this.repo = repo;
     }
-
+    /**
+     * Lists all.
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<DonXuat>> listAll() {
         return ResponseEntity.ok(repo.findAll());
     }
-
+    /**
+     * Gets an item.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<DonXuat> get(@PathVariable long id) {
         return repo.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

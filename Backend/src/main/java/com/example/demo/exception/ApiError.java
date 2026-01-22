@@ -23,7 +23,9 @@ public class ApiError {
     private String message;
     private String path;
     private List<ApiFieldError> errors;
-
+    /**
+     * Component for Api Field Error.
+     */
     @Getter
     @Setter
     @NoArgsConstructor

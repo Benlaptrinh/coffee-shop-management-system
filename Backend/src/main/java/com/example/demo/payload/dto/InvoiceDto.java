@@ -5,7 +5,9 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * DTO for Invoice.
+ */
 @Getter
 @Setter
 public class InvoiceDto {

@@ -17,18 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * SecurityConfig
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Configuration for Security.
  */
 @Configuration
 @EnableWebSecurity
@@ -48,6 +37,7 @@ public class SecurityConfig {
      * Filter chain.
      *
      * @param http http
+     * @param jwtAuthenticationFilter jwt authentication filter
      * @return result
      * @throws Exception if an error occurs
      */
@@ -90,6 +80,8 @@ public class SecurityConfig {
 
     /**
      * Authentication manager (exposed for controllers).
+     * @param configuration configuration
+     * @return result
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

@@ -35,7 +35,11 @@ public class UserController {
 
     private final TaiKhoanService taiKhoanService;
     private final PasswordEncoder passwordEncoder;
-
+    /**
+     * Creates a new User Controller.
+     * @param taiKhoanService tai khoan service
+     * @param passwordEncoder password encoder
+     */
     public UserController(TaiKhoanService taiKhoanService, PasswordEncoder passwordEncoder) {
         this.taiKhoanService = taiKhoanService;
         this.passwordEncoder = passwordEncoder;
@@ -51,7 +55,11 @@ public class UserController {
         d.setEnabled(tk.isEnabled());
         return d;
     }
-
+    /**
+     * Returns the current user.
+     * @param authentication authentication
+     * @return response entity
+     */
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(Authentication authentication) {
         if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -61,7 +69,12 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
-
+    /**
+     * Changes the user password.
+     * @param authentication authentication
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping("/me/change-password")
     public ResponseEntity<?> changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest req) {
         if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -75,7 +88,11 @@ public class UserController {
         taiKhoanService.save(tk);
         return ResponseEntity.ok().build();
     }
-
+    /**
+     * Creates user.
+     * @param req request payload
+     * @return response entity
+     */
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserRequest req) {
         TaiKhoan tk = new TaiKhoan();
@@ -91,19 +108,31 @@ public class UserController {
         TaiKhoan saved = taiKhoanService.save(tk);
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(saved));
     }
-
+    /**
+     * Lists users.
+     * @return response entity
+     */
     @GetMapping
     public ResponseEntity<List<UserDto>> listUsers() {
         List<UserDto> list = taiKhoanService.findAll().stream().map(UserController::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
+    /**
+     * Returns user.
+     * @param id id
+     * @return response entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable long id) {
         return taiKhoanService.findById(id).map(UserController::toDto).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    /**
+     * Updates user.
+     * @param id id
+     * @param req request payload
+     * @return response entity
+     */
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable long id, @Valid @RequestBody UpdateUserRequest req) {
         TaiKhoan existing = taiKhoanService.findById(id).orElse(null);
@@ -117,7 +146,12 @@ public class UserController {
         TaiKhoan saved = taiKhoanService.save(existing);
         return ResponseEntity.ok(toDto(saved));
     }
-
+    /**
+     * Disables user.
+     * @param id id
+     * @param body request body
+     * @return response entity
+     */
     @PatchMapping("/{id}/disable")
     public ResponseEntity<?> disableUser(@PathVariable long id,
                                          @RequestBody(required = false) java.util.Map<String, Object> body) {

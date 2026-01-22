@@ -9,18 +9,7 @@ import com.example.demo.payload.form.EditHangHoaForm;
 import com.example.demo.payload.form.HangHoaNhapForm;
 
 /**
- * HangHoaService
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service contract for Hang Hoa.
  */
 public interface HangHoaService {
     /**

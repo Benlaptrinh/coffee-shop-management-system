@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * Request payload for Update Thuc Don.
+ */
 @Getter
 @Setter
 public class UpdateThucDonRequest {

@@ -12,18 +12,7 @@ import com.example.demo.entity.HoaDon;
 import com.example.demo.entity.ThucDon;
 
 /**
- * SalesService
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service contract for Sales.
  */
 public interface SalesService {
     /**
@@ -90,7 +79,7 @@ public interface SalesService {
      * @param banId banId
      * @param params params
      */
-    void saveSelectedMenu(long banId, Map<String,String> params);
+    void saveSelectedMenu(long banId, Map<String, String> params);
     /**
      * Cancel invoice.
      *

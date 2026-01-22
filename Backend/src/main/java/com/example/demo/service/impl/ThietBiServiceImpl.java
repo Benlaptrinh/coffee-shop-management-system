@@ -13,18 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * ThietBiServiceImpl
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service implementation for Thiet Bi.
  */
 @Service
 public class ThietBiServiceImpl implements ThietBiService {
@@ -70,15 +59,8 @@ public class ThietBiServiceImpl implements ThietBiService {
      * @return result
      */
     @Override
-    /**
-     * Save.
-     *
-     * @param thietBi thietBi
-     * @return result
-     */
     @Transactional
     public ThietBi save(ThietBi thietBi) {
-        
         if (thietBi.getTenThietBi() == null || thietBi.getTenThietBi().trim().isEmpty()) {
             throw new IllegalArgumentException("Tên thiết bị bắt buộc");
         }
@@ -108,11 +90,6 @@ public class ThietBiServiceImpl implements ThietBiService {
      * @param id id
      */
     @Override
-    /**
-     * Delete by id.
-     *
-     * @param id id
-     */
     @Transactional
     public void deleteById(long id) {
         thietBiRepository.deleteById(id);

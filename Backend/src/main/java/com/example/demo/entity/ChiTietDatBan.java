@@ -17,18 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * ChiTietDatBan
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * JPA entity for Chi Tiet Dat Ban.
  */
 @Entity
 @Table(name = "chi_tiet_dat_ban")

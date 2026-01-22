@@ -15,7 +15,10 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     private static final String SECURITY_SCHEME_NAME = "bearerAuth";
-
+    /**
+     * Builds the OpenAPI definition.
+     * @return OpenAPI definition
+     */
     @Bean
     public OpenAPI openApi() {
         return new OpenAPI()
@@ -32,5 +35,4 @@ public class OpenApiConfig {
             .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
     }
 }
-
 

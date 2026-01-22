@@ -12,18 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DonViTinh
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * JPA entity for Don Vi Tinh.
  */
 @Entity
 @Table(name = "don_vi_tinh")

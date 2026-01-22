@@ -3,7 +3,9 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-
+/**
+ * Response payload for Login.
+ */
 @Getter
 @Setter
 public class LoginResponse {

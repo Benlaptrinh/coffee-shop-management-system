@@ -7,18 +7,7 @@ import com.example.demo.payload.dto.ThuChiDto;
 import com.example.demo.payload.form.ChiTieuForm;
 
 /**
- * NganSachService
- *
- * Version 1.0
- *
- * Date: 09-01-2026
- *
- * Copyright
- *
- * Modification Logs:
- * DATE        AUTHOR      DESCRIPTION
- * -----------------------------------
- * 09-01-2026  Việt    Create
+ * Service contract for Ngan Sach.
  */
 public interface NganSachService {
     /**
