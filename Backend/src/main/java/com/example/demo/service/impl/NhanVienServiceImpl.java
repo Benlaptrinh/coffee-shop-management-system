@@ -45,8 +45,6 @@ public class NhanVienServiceImpl implements NhanVienService {
         this.taiKhoanRepository = taiKhoanRepository;
     }
 
-    
-
     /**
      * Find all.
      *
@@ -113,11 +111,6 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @param maTaiKhoan maTaiKhoan
      */
     @Override
-    /**
-     * Delete by tai khoan id.
-     *
-     * @param maTaiKhoan maTaiKhoan
-     */
     @Transactional
     public void deleteByTaiKhoanId(long maTaiKhoan) {
         Optional<NhanVien> target = nhanVienRepository.findByTaiKhoan_MaTaiKhoan(maTaiKhoan);
@@ -139,11 +132,6 @@ public class NhanVienServiceImpl implements NhanVienService {
      * @param id id
      */
     @Override
-    /**
-     * Delete by id.
-     *
-     * @param id id
-     */
     @Transactional
     public void deleteById(long id) {
         Optional<NhanVien> target = nhanVienRepository.findById(id);
