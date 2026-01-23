@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <div>
       <hr />
-      <small>Copyright Demo App</small>
+      <small>Bản quyền Demo App</small>
     </div>
   )
 }

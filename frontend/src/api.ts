@@ -47,7 +47,7 @@ async function requestUrl<T>(url: string, options: RequestOptions = {}): Promise
     ;(error as any).status = res.status
     ;(error as any).body = typeof data === "string" ? data : JSON.stringify(data)
     if ((res.status === 401 || res.status === 403) && token) {
-      localStorage.setItem(AUTH_MESSAGE_KEY, "Phien dang nhap het han. Vui long dang nhap lai.")
+      localStorage.setItem(AUTH_MESSAGE_KEY, "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.")
       setToken(null)
       localStorage.removeItem("auth_user")
       if (window.location.pathname !== "/login") {

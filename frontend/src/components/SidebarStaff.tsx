@@ -10,29 +10,29 @@ export default function SidebarStaff() {
 
   return (
     <div className="sidebar-inner">
-      <h4 className="sidebar-title">Trang chu</h4>
+      <h4 className="sidebar-title">Trang chủ</h4>
       <nav className="sidebar-nav">
         <ul className="sidebar-list">
           <li>
             <NavLink to="/staff/home" className={({ isActive }) => linkClass(isActive)}>
-              Trang chu
+              Trang chủ
             </NavLink>
           </li>
           <li>
             <NavLink to="/profile" className={({ isActive }) => linkClass(isActive)}>
-              Trang ca nhan
+              Trang cá nhân
             </NavLink>
           </li>
           <li>
             <NavLink to="/staff/sales" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly ban hang
+              Quản lý bán hàng
             </NavLink>
           </li>
         </ul>
       </nav>
       <div className="sidebar-logout">
         <button className="sidebar-logout-btn" type="button" onClick={logout}>
-          Logout
+          Đăng xuất
         </button>
       </div>
     </div>

@@ -32,7 +32,7 @@ export default function AdminBudget() {
       const data = await api.chitieu.report(fromDate, toDate)
       setRows(data || [])
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load report")
+      setError(err?.body || err?.message || "Tải báo cáo thất bại")
     } finally {
       setLoading(false)
     }
@@ -56,13 +56,13 @@ export default function AdminBudget() {
   const onSubmitFilter = (event: React.FormEvent) => {
     event.preventDefault()
     const errors: Record<string, string> = {}
-    if (!from) errors.from = "Tu ngay khong duoc de trong"
-    if (!to) errors.to = "Den ngay khong duoc de trong"
+    if (!from) errors.from = "Từ ngày không được để trống"
+    if (!to) errors.to = "Đến ngày không được để trống"
     if (from && to) {
       const fromDate = new Date(from)
       const toDate = new Date(to)
       if (!Number.isNaN(fromDate.getTime()) && !Number.isNaN(toDate.getTime()) && fromDate > toDate) {
-        errors.to = "Den ngay khong duoc truoc tu ngay"
+        errors.to = "Đến ngày không được trước từ ngày"
       }
     }
     setFilterErrors(errors)
@@ -79,9 +79,9 @@ export default function AdminBudget() {
       soTien: Number(form.soTien || 0),
     }
     const errors: Record<string, string> = {}
-    if (!payload.ngayChi) errors.ngayChi = "Ngay chi khong duoc de trong"
-    if (!payload.tenKhoanChi) errors.tenKhoanChi = "Khoan chi khong duoc de trong"
-    if (!payload.soTien || payload.soTien < 1) errors.soTien = "So tien khong hop le"
+    if (!payload.ngayChi) errors.ngayChi = "Ngày chi không được để trống"
+    if (!payload.tenKhoanChi) errors.tenKhoanChi = "Khoản chi không được để trống"
+    if (!payload.soTien || payload.soTien < 1) errors.soTien = "Số tiền không hợp lệ"
     setExpenseErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -90,19 +90,19 @@ export default function AdminBudget() {
       setExpenseErrors({})
       if (from && to) await load(from, to)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      setError(err?.body || err?.message || "Lưu thất bại")
     }
   }
 
   return (
     <div className="content-wrapper">
-      <h1>Quan ly ngan sach</h1>
+      <h1>Quản lý ngân sách</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <form className="action-bar budget-filter" onSubmit={onSubmitFilter}>
         <div className="form-row budget-filter-row">
           <div className="form-group">
-            <label>Tu ngay</label>
+            <label>Từ ngày</label>
             <input
               type="date"
               value={from}
@@ -114,7 +114,7 @@ export default function AdminBudget() {
             {filterErrors.from ? <div className="field-error">{filterErrors.from}</div> : null}
           </div>
           <div className="form-group">
-            <label>Den ngay</label>
+            <label>Đến ngày</label>
             <input
               type="date"
               value={to}
@@ -131,7 +131,7 @@ export default function AdminBudget() {
             </label>
             <div className="form-actions form-actions--equal">
               <button className="btn btn-primary btn-sm" type="submit">
-                View
+                Xem
               </button>
                 <button
                   className="btn btn-sm btn-cancel"
@@ -143,7 +143,7 @@ export default function AdminBudget() {
                     setFilterErrors({})
                   }}
                 >
-                  Reset
+                  Đặt lại
                 </button>
             </div>
           </div>
@@ -154,19 +154,19 @@ export default function AdminBudget() {
         <>
           <div className="budget-summary">
             <div className="budget-summary-card">
-              <div className="budget-summary-label">Tong thu</div>
+              <div className="budget-summary-label">Tổng thu</div>
               <div className="budget-summary-value">{formatNumber(totals.totalThu)}</div>
             </div>
             <div className="budget-summary-card">
-              <div className="budget-summary-label">Tong chi</div>
+              <div className="budget-summary-label">Tổng chi</div>
               <div className="budget-summary-value">{formatNumber(totals.totalChi)}</div>
             </div>
             <div className="budget-summary-card">
               <div className={`budget-summary-value${totals.net < 0 ? " is-negative" : ""}`}>{formatNumber(totals.net)}</div>
-              <div className="budget-summary-label">Chenhlech</div>
+              <div className="budget-summary-label">Chênh lệch</div>
             </div>
             <div className="budget-summary-card">
-              <div className="budget-summary-label">Ty le chi/thu</div>
+              <div className="budget-summary-label">Tỷ lệ chi/thu</div>
               <div className="budget-summary-value">{totals.ratio ? `${totals.ratio.toFixed(2)}%` : "-"}</div>
             </div>
           </div>
@@ -174,12 +174,12 @@ export default function AdminBudget() {
       ) : null}
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table report-table">
           <thead>
             <tr>
-              <th>Ngay</th>
+              <th>Ngày</th>
               <th className="text-right">Thu</th>
               <th className="text-right">Chi</th>
             </tr>
@@ -195,7 +195,7 @@ export default function AdminBudget() {
             {rows.length === 0 ? (
               <tr>
                 <td colSpan={3} className="text-center text-muted">
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}
@@ -205,11 +205,11 @@ export default function AdminBudget() {
       {rows.length > 0 ? <Pagination page={page} pageSize={pageSize} total={rows.length} onPageChange={setPage} /> : null}
 
       <div className="form-box" style={{ marginTop: 16 }}>
-        <h3>Them chi tieu</h3>
+        <h3>Thêm chi tiêu</h3>
         <form onSubmit={onSubmitExpense} noValidate>
           <div className="form-row">
             <div className="form-group">
-              <label>Ngay</label>
+              <label>Ngày</label>
               <input
                 type="date"
                 value={form.ngayChi}
@@ -221,7 +221,7 @@ export default function AdminBudget() {
               {expenseErrors.ngayChi ? <div className="field-error">{expenseErrors.ngayChi}</div> : null}
             </div>
             <div className="form-group" style={{ flex: 1 }}>
-              <label>Khoan chi</label>
+              <label>Khoản chi</label>
               <input
                 value={form.tenKhoanChi}
                 onChange={(event) => {
@@ -232,7 +232,7 @@ export default function AdminBudget() {
               {expenseErrors.tenKhoanChi ? <div className="field-error">{expenseErrors.tenKhoanChi}</div> : null}
             </div>
             <div className="form-group">
-              <label>So tien</label>
+              <label>Số tiền</label>
               <input
                 inputMode="numeric"
                 value={formatNumber(form.soTien)}
@@ -246,7 +246,7 @@ export default function AdminBudget() {
           </div>
           <div className="form-actions form-actions--equal">
             <button className="btn btn-primary btn-sm" type="submit">
-              Save
+              Lưu
             </button>
             <button
               className="btn btn-sm btn-cancel"
@@ -256,7 +256,7 @@ export default function AdminBudget() {
                 setExpenseErrors({})
               }}
             >
-              Cancel
+              Hủy
             </button>
           </div>
         </form>

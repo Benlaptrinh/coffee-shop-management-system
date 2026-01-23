@@ -34,7 +34,7 @@ export default function AdminMarketing() {
       const data = await api.khuyenmai.list()
       setItems(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load promotions")
+      setError(err?.body || err?.message || "Tải khuyến mãi thất bại")
     } finally {
       setLoading(false)
     }
@@ -69,19 +69,19 @@ export default function AdminMarketing() {
       giaTriGiam: Number(form.giaTriGiam || 0),
     }
     const errors: Record<string, string> = {}
-    if (!payload.tenKhuyenMai) errors.tenKhuyenMai = "Ten khuyen mai khong duoc de trong"
-    if (!payload.ngayBatDau) errors.ngayBatDau = "Ngay bat dau khong duoc de trong"
-    if (!payload.ngayKetThuc) errors.ngayKetThuc = "Ngay ket thuc khong duoc de trong"
+    if (!payload.tenKhuyenMai) errors.tenKhuyenMai = "Tên khuyến mãi không được để trống"
+    if (!payload.ngayBatDau) errors.ngayBatDau = "Ngày bắt đầu không được để trống"
+    if (!payload.ngayKetThuc) errors.ngayKetThuc = "Ngày kết thúc không được để trống"
     if (!payload.giaTriGiam) {
-      errors.giaTriGiam = "Phan tram giam gia khong hop le"
+      errors.giaTriGiam = "Phần trăm giảm giá không hợp lệ"
     } else if (payload.giaTriGiam < 1 || payload.giaTriGiam > 100) {
-      errors.giaTriGiam = "Phan tram giam gia tu 1 den 100"
+      errors.giaTriGiam = "Phần trăm giảm giá từ 1 đến 100"
     }
     if (payload.ngayBatDau && payload.ngayKetThuc) {
       const from = new Date(payload.ngayBatDau)
       const to = new Date(payload.ngayKetThuc)
       if (!Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime()) && from > to) {
-        errors.ngayKetThuc = "Ngay ket thuc khong duoc truoc ngay bat dau"
+        errors.ngayKetThuc = "Ngày kết thúc không được trước ngày bắt đầu"
       }
     }
     setFieldErrors(errors)
@@ -94,7 +94,7 @@ export default function AdminMarketing() {
       setFieldErrors({})
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      setError(err?.body || err?.message || "Lưu thất bại")
     }
   }
 
@@ -110,7 +110,7 @@ export default function AdminMarketing() {
   }
 
   const onDelete = async (item: Promotion) => {
-    if (!window.confirm(`Xoa khuyen mai "${item.tenKhuyenMai}"?`)) return
+    if (!window.confirm(`Xóa khuyến mãi "${item.tenKhuyenMai}"?`)) return
     setError(null)
     try {
       await api.khuyenmai.delete(item.maKhuyenMai)
@@ -120,7 +120,7 @@ export default function AdminMarketing() {
       }
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Delete failed")
+      setError(err?.body || err?.message || "Xóa thất bại")
     }
   }
 
@@ -132,14 +132,14 @@ export default function AdminMarketing() {
 
   return (
     <div className="content-wrapper">
-      <h1>Danh sach khuyen mai</h1>
+      <h1>Danh sách khuyến mãi</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="form-box">
-        <h2>{editId ? "Chinh sua khuyen mai" : "Them khuyen mai"}</h2>
+        <h2>{editId ? "Chỉnh sửa khuyến mãi" : "Thêm khuyến mãi"}</h2>
         <form onSubmit={onSubmit} noValidate>
           <div className="form-group">
-            <label>Ten khuyen mai</label>
+            <label>Tên khuyến mãi</label>
             <input
               value={form.tenKhuyenMai}
               onChange={(event) => {
@@ -150,7 +150,7 @@ export default function AdminMarketing() {
             {fieldErrors.tenKhuyenMai ? <div className="field-error">{fieldErrors.tenKhuyenMai}</div> : null}
           </div>
           <div className="form-group">
-            <label>Ngay bat dau</label>
+            <label>Ngày bắt đầu</label>
             <input
               type="date"
               value={form.ngayBatDau}
@@ -162,7 +162,7 @@ export default function AdminMarketing() {
             {fieldErrors.ngayBatDau ? <div className="field-error">{fieldErrors.ngayBatDau}</div> : null}
           </div>
           <div className="form-group">
-            <label>Ngay ket thuc</label>
+            <label>Ngày kết thúc</label>
             <input
               type="date"
               value={form.ngayKetThuc}
@@ -174,7 +174,7 @@ export default function AdminMarketing() {
             {fieldErrors.ngayKetThuc ? <div className="field-error">{fieldErrors.ngayKetThuc}</div> : null}
           </div>
           <div className="form-group">
-            <label>% giam gia</label>
+            <label>% giảm giá</label>
             <input
               type="number"
               min={1}
@@ -189,11 +189,11 @@ export default function AdminMarketing() {
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
-              {editId ? "Save" : "Add"}
+              {editId ? "Lưu" : "Thêm"}
             </button>
             {editId ? (
               <button type="button" className="btn btn-cancel" onClick={onReset}>
-                Cancel
+                Hủy
               </button>
             ) : null}
           </div>
@@ -205,30 +205,30 @@ export default function AdminMarketing() {
           <input
             type="text"
             name="keyword"
-            placeholder="Search promotions..."
+            placeholder="Tìm khuyến mãi..."
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
           />
           <button className="btn btn-sm" type="button" onClick={() => setKeyword(keyword.trim())}>
-            Search
+            Tìm kiếm
           </button>
           <button className="btn btn-sm btn-cancel" type="button" onClick={() => setKeyword("")}>
-            Reset
+            Đặt lại
           </button>
         </form>
       </div>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table table-actions">
           <thead>
             <tr>
-              <th>Ten khuyen mai</th>
-              <th>Ngay bat dau</th>
-              <th>Ngay ket thuc</th>
-              <th className="text-right">% giam gia</th>
-              <th>Hanh dong</th>
+              <th>Tên khuyến mãi</th>
+              <th>Ngày bắt đầu</th>
+              <th>Ngày kết thúc</th>
+              <th className="text-right">% giảm giá</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -240,10 +240,10 @@ export default function AdminMarketing() {
                 <td className="text-right">{km.giaTriGiam}%</td>
                 <td className="action-buttons">
                   <button type="button" className="btn btn-sm btn-edit" onClick={() => onEdit(km)}>
-                    Sua
+                    Sửa
                   </button>
                   <button type="button" className="btn btn-sm btn-delete" onClick={() => onDelete(km)}>
-                    Xoa
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -251,7 +251,7 @@ export default function AdminMarketing() {
             {filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={5} className="text-center text-muted">
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}

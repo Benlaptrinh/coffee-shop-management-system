@@ -40,21 +40,21 @@ export default function InvoicePrint() {
 
   return (
     <div style={{ padding: 16, color: "#000", background: "#fff" }}>
-      <h2 style={{ textAlign: "center" }}>INVOICE</h2>
-      {loading ? <p>Loading...</p> : null}
+      <h2 style={{ textAlign: "center" }}>HÓA ĐƠN</h2>
+      {loading ? <p>Đang tải...</p> : null}
       {invoice ? (
         <>
-          <p>Invoice ID: {invoice.maHoaDon}</p>
-          <p>Date: {invoice.ngayThanhToan ? formatDateTime(invoice.ngayThanhToan) : "-"}</p>
-          <p>Staff: {invoice.tenNhanVien || "-"}</p>
-          <p>Customer: {invoice.tenKhachDat || "-"}</p>
+          <p>Mã hóa đơn: {invoice.maHoaDon}</p>
+          <p>Ngày: {invoice.ngayThanhToan ? formatDateTime(invoice.ngayThanhToan) : "-"}</p>
+          <p>Nhân viên: {invoice.tenNhanVien || "-"}</p>
+          <p>Khách hàng: {invoice.tenKhachDat || "-"}</p>
           <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 12 }}>
             <thead>
               <tr>
-                <th style={{ border: "1px solid #000", padding: 6 }}>Item</th>
-                <th style={{ border: "1px solid #000", padding: 6 }}>Qty</th>
-                <th style={{ border: "1px solid #000", padding: 6 }}>Price</th>
-                <th style={{ border: "1px solid #000", padding: 6 }}>Total</th>
+                <th style={{ border: "1px solid #000", padding: 6 }}>Món</th>
+                <th style={{ border: "1px solid #000", padding: 6 }}>SL</th>
+                <th style={{ border: "1px solid #000", padding: 6 }}>Đơn giá</th>
+                <th style={{ border: "1px solid #000", padding: 6 }}>Thành tiền</th>
               </tr>
             </thead>
             <tbody>
@@ -68,15 +68,15 @@ export default function InvoicePrint() {
               ))}
             </tbody>
           </table>
-          <h3 style={{ textAlign: "right" }}>Total: {formatNumber(invoice.tongTien)}</h3>
+          <h3 style={{ textAlign: "right" }}>Tổng: {formatNumber(invoice.tongTien)}</h3>
           <div style={{ textAlign: "center", marginTop: 12 }}>
             <button type="button" onClick={() => window.close()}>
-              Close
+              Đóng
             </button>
           </div>
         </>
       ) : (
-        <p>No invoice data.</p>
+        <p>Không có dữ liệu hóa đơn.</p>
       )}
     </div>
   )

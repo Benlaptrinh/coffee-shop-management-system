@@ -98,22 +98,22 @@ export default function AdminReports() {
     if (nextType !== "STAFF") {
       if (!fromDate || !toDate) {
         const errors: Record<string, string> = {}
-        if (!fromDate) errors.fromDate = "Tu ngay khong duoc de trong"
-        if (!toDate) errors.toDate = "Den ngay khong duoc de trong"
+        if (!fromDate) errors.fromDate = "Từ ngày không được để trống"
+        if (!toDate) errors.toDate = "Đến ngày không được để trống"
         setFieldErrors(errors)
-        setError("Vui long chon day du ngay")
+        setError("Vui lòng chọn đầy đủ ngày")
         return
       }
       const from = new Date(fromDate)
       const to = new Date(toDate)
       if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
-        setFieldErrors({ fromDate: "Ngay khong hop le", toDate: "Ngay khong hop le" })
-        setError("Ngay khong hop le")
+        setFieldErrors({ fromDate: "Ngày không hợp lệ", toDate: "Ngày không hợp lệ" })
+        setError("Ngày không hợp lệ")
         return
       }
       if (from > to) {
-        setFieldErrors({ toDate: "Den ngay khong duoc truoc tu ngay" })
-        setError("Tu ngay khong duoc sau den ngay")
+        setFieldErrors({ toDate: "Đến ngày không được trước từ ngày" })
+        setError("Từ ngày không được sau đến ngày")
         return
       }
     }
@@ -131,7 +131,7 @@ export default function AdminReports() {
         setStaffRows(data || [])
       }
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load report")
+      setError(err?.body || err?.message || "Tải báo cáo thất bại")
     } finally {
       setLoading(false)
     }
@@ -218,7 +218,7 @@ export default function AdminReports() {
             borderWidth: 1,
           },
           {
-            label: "So hoa don",
+            label: "Số hóa đơn",
             data: hoaDonData,
             type: "line",
             borderColor: "#f97316",
@@ -287,7 +287,7 @@ export default function AdminReports() {
 
   return (
     <div className="content-wrapper report-page">
-      <h1 className="report-title">Thong ke - bao cao</h1>
+      <h1 className="report-title">Thống kê - báo cáo</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <form
@@ -298,7 +298,7 @@ export default function AdminReports() {
         }}
       >
         <fieldset className="report-types">
-          <legend>Loai bao cao</legend>
+          <legend>Loại báo cáo</legend>
           <label className="report-option">
             <input
               type="radio"
@@ -317,7 +317,7 @@ export default function AdminReports() {
               checked={type === "SALES"}
               onChange={() => setType("SALES")}
             />
-            Ban hang
+            Bán hàng
           </label>
           <label className="report-option">
             <input
@@ -327,13 +327,13 @@ export default function AdminReports() {
               checked={type === "STAFF"}
               onChange={() => setType("STAFF")}
             />
-            Nhan vien
+            Nhân viên
           </label>
         </fieldset>
 
         <div className={`report-dates ${type === "STAFF" ? "is-hidden" : ""}`}>
           <label className="report-date">
-            <span>Tu ngay:</span>
+            <span>Từ ngày:</span>
             <input
               type="date"
               value={fromDate}
@@ -347,7 +347,7 @@ export default function AdminReports() {
             {fieldErrors.fromDate ? <div className="field-error">{fieldErrors.fromDate}</div> : null}
           </label>
           <label className="report-date">
-            <span>Den ngay:</span>
+            <span>Đến ngày:</span>
             <input
               type="date"
               value={toDate}
@@ -364,7 +364,7 @@ export default function AdminReports() {
 
         <div className="report-actions">
           <button className="btn btn-primary" type="submit">
-            View
+            Xem
           </button>
           <button className="btn btn-secondary no-print" type="button" onClick={() => window.print()}>
             In
@@ -372,7 +372,7 @@ export default function AdminReports() {
         </div>
       </form>
 
-      {loading ? <div className="page-loading">Loading...</div> : null}
+      {loading ? <div className="page-loading">Đang tải...</div> : null}
 
       {type === "FINANCE" ? (
         <>
@@ -385,7 +385,7 @@ export default function AdminReports() {
             <table className="data-table report-table">
               <thead>
                 <tr>
-                  <th>Ngay</th>
+                  <th>Ngày</th>
                   <th>Thu</th>
                   <th>Chi</th>
                 </tr>
@@ -401,14 +401,14 @@ export default function AdminReports() {
               </tbody>
               <tfoot>
                 <tr>
-                  <th>Tong</th>
+                  <th>Tổng</th>
                   <th>{formatNumber(financeTotals.thu)}</th>
                   <th>{formatNumber(financeTotals.chi)}</th>
                 </tr>
               </tfoot>
             </table>
           ) : (
-            <p className="report-empty">Chua co du lieu</p>
+            <p className="report-empty">Chưa có dữ liệu</p>
           )}
           {financeRows.length > 0 ? (
             <Pagination page={financePage} pageSize={pageSize} total={financeRows.length} onPageChange={setFinancePage} />
@@ -418,7 +418,7 @@ export default function AdminReports() {
 
       {type === "SALES" ? (
         <>
-          <h3 className="report-subtitle">Ban hang theo ngay</h3>
+          <h3 className="report-subtitle">Bán hàng theo ngày</h3>
           {salesRows.length > 0 ? (
             <div className="report-chart">
               <canvas ref={salesCanvasRef} />
@@ -428,8 +428,8 @@ export default function AdminReports() {
             <table className="data-table report-table">
               <thead>
                 <tr>
-                  <th>Ngay</th>
-                  <th>So hoa don</th>
+                  <th>Ngày</th>
+                  <th>Số hóa đơn</th>
                   <th>Doanh thu</th>
                 </tr>
               </thead>
@@ -444,14 +444,14 @@ export default function AdminReports() {
               </tbody>
               <tfoot>
                 <tr>
-                  <th>Tong</th>
+                  <th>Tổng</th>
                   <th>{salesTotals.soHoaDon}</th>
                   <th>{formatNumber(salesTotals.doanhThu)}</th>
                 </tr>
               </tfoot>
             </table>
           ) : (
-            <p className="report-empty">Chua co du lieu ban hang</p>
+            <p className="report-empty">Chưa có dữ liệu bán hàng</p>
           )}
           {salesRows.length > 0 ? (
             <Pagination page={salesPage} pageSize={pageSize} total={salesRows.length} onPageChange={setSalesPage} />
@@ -461,13 +461,13 @@ export default function AdminReports() {
 
       {type === "STAFF" ? (
         <>
-          <h3 className="report-subtitle">Bao cao nhan vien</h3>
+          <h3 className="report-subtitle">Báo cáo nhân viên</h3>
           {staffRows.length > 0 ? (
             <div className="report-chart report-chart--compact">
               <canvas ref={staffCanvasRef} />
             </div>
           ) : null}
-          {staffRows.length === 0 ? <p className="report-empty">Chua co du lieu nhan vien</p> : null}
+          {staffRows.length === 0 ? <p className="report-empty">Chưa có dữ liệu nhân viên</p> : null}
         </>
       ) : null}
     </div>

@@ -55,7 +55,7 @@ export default function AdminWarehouse() {
       const data = await api.hanghoa.kho(search || undefined)
       setItems(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load warehouse")
+      setError(err?.body || err?.message || "Tải kho hàng thất bại")
     } finally {
       setLoading(false)
     }
@@ -94,11 +94,11 @@ export default function AdminWarehouse() {
       ngayNhap: nhapForm.ngayNhap,
     }
     const errors: Record<string, string> = {}
-    if (!payload.tenHangHoa) errors.tenHangHoa = "Ten hang khong duoc de trong"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
-    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Don gia khong hop le"
-    if (!payload.donViTinhId) errors.donViTinhId = "Vui long chon don vi"
-    if (!payload.ngayNhap) errors.ngayNhap = "Ngay nhap khong duoc de trong"
+    if (!payload.tenHangHoa) errors.tenHangHoa = "Tên hàng không được để trống"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Đơn giá không hợp lệ"
+    if (!payload.donViTinhId) errors.donViTinhId = "Vui lòng chọn đơn vị"
+    if (!payload.ngayNhap) errors.ngayNhap = "Ngày nhập không được để trống"
     setNhapErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -107,7 +107,7 @@ export default function AdminWarehouse() {
       setNhapErrors({})
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Nhap hang failed")
+      setError(err?.body || err?.message || "Nhập hàng thất bại")
     }
   }
 
@@ -120,9 +120,9 @@ export default function AdminWarehouse() {
       ngayXuat: xuatForm.ngayXuat,
     }
     const errors: Record<string, string> = {}
-    if (!payload.hangHoaId) errors.hangHoaId = "Vui long chon hang hoa"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
-    if (!payload.ngayXuat) errors.ngayXuat = "Ngay xuat khong duoc de trong"
+    if (!payload.hangHoaId) errors.hangHoaId = "Vui lòng chọn hàng hóa"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!payload.ngayXuat) errors.ngayXuat = "Ngày xuất không được để trống"
     setXuatErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -131,7 +131,7 @@ export default function AdminWarehouse() {
       setXuatErrors({})
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Xuat hang failed")
+      setError(err?.body || err?.message || "Xuất hàng thất bại")
     }
   }
 
@@ -147,10 +147,10 @@ export default function AdminWarehouse() {
       donGia: Number(editForm.donGiaRaw || 0),
     }
     const errors: Record<string, string> = {}
-    if (!payload.tenHangHoa) errors.tenHangHoa = "Ten hang khong duoc de trong"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
-    if (!payload.donViTinhId) errors.donViTinhId = "Vui long chon don vi"
-    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Don gia khong hop le"
+    if (!payload.tenHangHoa) errors.tenHangHoa = "Tên hàng không được để trống"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!payload.donViTinhId) errors.donViTinhId = "Vui lòng chọn đơn vị"
+    if (!payload.donGia || payload.donGia < 1) errors.donGia = "Đơn giá không hợp lệ"
     setEditErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -159,7 +159,7 @@ export default function AdminWarehouse() {
       setEditErrors({})
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Update failed")
+      setError(err?.body || err?.message || "Cập nhật thất bại")
     }
   }
 
@@ -177,27 +177,27 @@ export default function AdminWarehouse() {
   }
 
   const onDelete = async (id: number) => {
-    if (!window.confirm("Delete this item?")) return
+    if (!window.confirm("Xóa mục này?")) return
     try {
       await api.hanghoa.delete(id)
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Delete failed")
+      setError(err?.body || err?.message || "Xóa thất bại")
     }
   }
 
   return (
     <div className="content-wrapper">
-      <h1>Kho hang</h1>
+      <h1>Kho hàng</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="warehouse-panels">
         {!editItem ? (
           <div className="form-box">
-            <h2 style={{ margin: "0 0 10px" }}>Nhap hang hoa</h2>
+            <h2 style={{ margin: "0 0 10px" }}>Nhập hàng hóa</h2>
             <form onSubmit={onNhapSubmit} noValidate>
               <div className="form-group">
-                <label>Ten hang</label>
+                <label>Tên hàng</label>
                 <input
                   value={nhapForm.tenHangHoa}
                   onChange={(event) => {
@@ -209,7 +209,7 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>So luong</label>
+                  <label>Số lượng</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(nhapForm.soLuongRaw)}
@@ -221,7 +221,7 @@ export default function AdminWarehouse() {
                   {nhapErrors.soLuong ? <div className="field-error">{nhapErrors.soLuong}</div> : null}
                 </div>
                 <div className="form-group">
-                  <label>Don gia</label>
+                  <label>Đơn giá</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(nhapForm.donGiaRaw)}
@@ -235,7 +235,7 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Don vi</label>
+                  <label>Đơn vị</label>
                   <select
                     value={nhapForm.donViTinhId}
                     onChange={(event) => {
@@ -243,7 +243,7 @@ export default function AdminWarehouse() {
                       if (nhapErrors.donViTinhId) setNhapErrors((prev) => ({ ...prev, donViTinhId: "" }))
                     }}
                   >
-                    <option value="">-- Select --</option>
+                    <option value="">-- Chọn --</option>
                     {units.map((unit) => (
                       <option key={unit.maDonViTinh} value={unit.maDonViTinh}>
                         {unit.tenDonVi}
@@ -253,7 +253,7 @@ export default function AdminWarehouse() {
                   {nhapErrors.donViTinhId ? <div className="field-error">{nhapErrors.donViTinhId}</div> : null}
                 </div>
                 <div className="form-group">
-                  <label>Ngay nhap</label>
+                  <label>Ngày nhập</label>
                   <input
                     type="datetime-local"
                     value={nhapForm.ngayNhap}
@@ -267,17 +267,17 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
-                  Nhap hang
+                  Nhập hàng
                 </button>
               </div>
             </form>
           </div>
         ) : (
           <div className="form-box">
-            <h2 style={{ margin: "0 0 10px" }}>Chinh sua hang hoa</h2>
+            <h2 style={{ margin: "0 0 10px" }}>Chỉnh sửa hàng hóa</h2>
             <form onSubmit={onEditSubmit} noValidate>
               <div className="form-group">
-                <label>Ten hang</label>
+                <label>Tên hàng</label>
                 <input
                   value={editForm.tenHangHoa}
                   onChange={(event) => {
@@ -289,7 +289,7 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>So luong</label>
+                  <label>Số lượng</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(editForm.soLuongRaw)}
@@ -301,7 +301,7 @@ export default function AdminWarehouse() {
                   {editErrors.soLuong ? <div className="field-error">{editErrors.soLuong}</div> : null}
                 </div>
                 <div className="form-group">
-                  <label>Don gia</label>
+                  <label>Đơn giá</label>
                   <input
                     inputMode="numeric"
                     value={formatNumber(editForm.donGiaRaw)}
@@ -315,7 +315,7 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Don vi</label>
+                  <label>Đơn vị</label>
                   <select
                     value={editForm.donViTinhId}
                     onChange={(event) => {
@@ -323,7 +323,7 @@ export default function AdminWarehouse() {
                       if (editErrors.donViTinhId) setEditErrors((prev) => ({ ...prev, donViTinhId: "" }))
                     }}
                   >
-                    <option value="">-- Select --</option>
+                    <option value="">-- Chọn --</option>
                     {units.map((unit) => (
                       <option key={unit.maDonViTinh} value={unit.maDonViTinh}>
                         {unit.tenDonVi}
@@ -335,7 +335,7 @@ export default function AdminWarehouse() {
               </div>
               <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
-                  Save
+                  Lưu
                 </button>
                 <button
                   type="button"
@@ -345,7 +345,7 @@ export default function AdminWarehouse() {
                     setEditErrors({})
                   }}
                 >
-                  Cancel
+                  Hủy
                 </button>
               </div>
             </form>
@@ -353,10 +353,10 @@ export default function AdminWarehouse() {
         )}
 
         <div className="form-box">
-          <h2 style={{ margin: "0 0 10px" }}>Xuat hang hoa</h2>
+          <h2 style={{ margin: "0 0 10px" }}>Xuất hàng hóa</h2>
           <form onSubmit={onXuatSubmit} noValidate>
             <div className="form-group">
-              <label>Hang hoa</label>
+              <label>Hàng hóa</label>
               <select
                 value={xuatForm.hangHoaId}
                 onChange={(event) => {
@@ -364,10 +364,10 @@ export default function AdminWarehouse() {
                   if (xuatErrors.hangHoaId) setXuatErrors((prev) => ({ ...prev, hangHoaId: "" }))
                 }}
               >
-                <option value="">-- Select --</option>
+                <option value="">-- Chọn --</option>
                 {items.map((item) => (
                   <option key={item.maHangHoa} value={item.maHangHoa}>
-                    {item.tenHangHoa} | {item.donVi} (Ton: {formatNumber(item.soLuong)})
+                    {item.tenHangHoa} | {item.donVi} (Tồn: {formatNumber(item.soLuong)})
                   </option>
                 ))}
               </select>
@@ -375,7 +375,7 @@ export default function AdminWarehouse() {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>So luong xuat</label>
+                <label>Số lượng xuất</label>
                 <input
                   inputMode="numeric"
                   value={formatNumber(xuatForm.soLuongRaw)}
@@ -387,7 +387,7 @@ export default function AdminWarehouse() {
                 {xuatErrors.soLuong ? <div className="field-error">{xuatErrors.soLuong}</div> : null}
               </div>
               <div className="form-group">
-                <label>Ngay xuat</label>
+                <label>Ngày xuất</label>
                 <input
                   type="datetime-local"
                   value={xuatForm.ngayXuat}
@@ -401,7 +401,7 @@ export default function AdminWarehouse() {
             </div>
             <div className="form-actions" style={{ marginTop: 8 }}>
               <button type="submit" className="btn btn-delete">
-                Xuat hang
+                Xuất hàng
               </button>
             </div>
           </form>
@@ -413,32 +413,32 @@ export default function AdminWarehouse() {
           <input
             type="text"
             name="keyword"
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
           />
           <button className="btn btn-secondary" type="submit">
-            Search
+            Tìm kiếm
           </button>
           <button className="btn btn-outline-secondary" type="button" onClick={() => (setKeyword(""), setSearch(""))}>
-            Reset
+            Đặt lại
           </button>
         </div>
       </form>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table table-actions">
           <thead>
             <tr>
-              <th>Ten hang</th>
-              <th>So luong</th>
-              <th>Don vi</th>
-              <th className="text-right">Don gia</th>
-              <th>Ngay nhap gan nhat</th>
-              <th>Ngay xuat gan nhat</th>
-              <th className="text-center">Hanh dong</th>
+              <th>Tên hàng</th>
+              <th>Số lượng</th>
+              <th>Đơn vị</th>
+              <th className="text-right">Đơn giá</th>
+              <th>Ngày nhập gần nhất</th>
+              <th>Ngày xuất gần nhất</th>
+              <th className="text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -452,10 +452,10 @@ export default function AdminWarehouse() {
                 <td>{formatDateTime(item.ngayXuatGanNhat)}</td>
                 <td className="action-buttons">
                   <button type="button" className="btn btn-sm btn-edit" onClick={() => onEdit(item)}>
-                    Sua
+                    Sửa
                   </button>
                   <button type="button" className="btn btn-sm btn-delete" onClick={() => onDelete(item.maHangHoa)}>
-                    Xoa
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -463,7 +463,7 @@ export default function AdminWarehouse() {
             {filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center text-muted">
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}

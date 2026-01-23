@@ -62,7 +62,7 @@ export default function SalesPage() {
       const data = await api.sales.tables()
       setTables(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load tables")
+      setError(err?.body || err?.message || "Tải danh sách bàn thất bại")
     } finally {
       setLoading(false)
     }
@@ -153,7 +153,7 @@ export default function SalesPage() {
       await loadDetail(selectedId)
       setModal("view")
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save menu failed")
+      setError(err?.body || err?.message || "Lưu thực đơn thất bại")
     }
   }
 
@@ -170,7 +170,7 @@ export default function SalesPage() {
       closeModal()
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Reserve failed")
+      setError(err?.body || err?.message || "Đặt bàn thất bại")
     }
   }
 
@@ -178,7 +178,7 @@ export default function SalesPage() {
     if (!selectedId) return
     const amount = Number(toDigits(paymentRaw || "0"))
     if (!amount) {
-      setError("Amount is required")
+      setError("Cần nhập số tiền")
       return
     }
     const invoiceId = detail?.invoice?.maHoaDon
@@ -190,30 +190,30 @@ export default function SalesPage() {
         window.open(`/invoice/${invoiceId}`, "_blank")
       }
     } catch (err: any) {
-      setError(err?.body || err?.message || "Payment failed")
+      setError(err?.body || err?.message || "Thanh toán thất bại")
     }
   }
 
   const onCancelInvoice = async () => {
     if (!selectedId) return
-    if (!window.confirm("Cancel this invoice?")) return
+    if (!window.confirm("Hủy hóa đơn này?")) return
     try {
       await api.sales.cancel(selectedId)
       closeModal()
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Cancel failed")
+      setError(err?.body || err?.message || "Hủy thất bại")
     }
   }
 
   const onCancelReservation = async () => {
     if (!selectedId) return
-    if (!window.confirm("Cancel this reservation?")) return
+    if (!window.confirm("Hủy đặt bàn này?")) return
     try {
       await api.sales.cancelReservation(selectedId)
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Cancel reservation failed")
+      setError(err?.body || err?.message || "Hủy đặt bàn thất bại")
     }
   }
 
@@ -224,7 +224,7 @@ export default function SalesPage() {
       closeModal()
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Move failed")
+      setError(err?.body || err?.message || "Chuyển bàn thất bại")
     }
   }
 
@@ -235,7 +235,7 @@ export default function SalesPage() {
       closeModal()
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Merge failed")
+      setError(err?.body || err?.message || "Gộp bàn thất bại")
     }
   }
 
@@ -246,7 +246,7 @@ export default function SalesPage() {
       .filter((it) => it.soLuong > 0)
       .map((it) => ({ ...it, fromBanId: selectedId }))
     if (!items.length) {
-      setError("Select at least one item to split")
+      setError("Chọn ít nhất một món để tách")
       return
     }
     try {
@@ -254,7 +254,7 @@ export default function SalesPage() {
       closeModal()
       await loadTables()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Split failed")
+      setError(err?.body || err?.message || "Tách bàn thất bại")
     }
   }
 
@@ -269,27 +269,27 @@ export default function SalesPage() {
     if (!invoice && reserved) {
       return (
         <div className="modal-card modal-card--medium">
-          <h3>Xem ban {detail.table.maBan}</h3>
-          <p className="modal-hint">Ban da dat</p>
+          <h3>Xem bàn {detail.table.maBan}</h3>
+          <p className="modal-hint">Bàn đã đặt</p>
           <table className="modal-table">
             <tbody>
               <tr>
-                <th>Khach</th>
+                <th>Khách</th>
                 <td>{reservation?.tenKhach || "-"}</td>
               </tr>
               <tr>
-                <th>So dien thoai</th>
+                <th>Số điện thoại</th>
                 <td>{reservation?.sdt || "-"}</td>
               </tr>
               <tr>
-                <th>Gio den</th>
+                <th>Giờ đến</th>
                 <td>{reservation?.ngayGioDat ? formatDateTime(reservation.ngayGioDat) : "-"}</td>
               </tr>
             </tbody>
           </table>
           <div className="modal-actions">
             <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-              Close
+              Đóng
             </button>
           </div>
         </div>
@@ -299,11 +299,11 @@ export default function SalesPage() {
     if (!invoice && !reserved) {
       return (
         <div className="modal-card modal-card--compact">
-          <h3>Xem ban {detail.table.maBan}</h3>
-          <p className="modal-hint">Chua goi mon</p>
+          <h3>Xem bàn {detail.table.maBan}</h3>
+          <p className="modal-hint">Chưa gọi món</p>
           <div className="modal-actions">
             <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-              Close
+              Đóng
             </button>
           </div>
         </div>
@@ -312,22 +312,22 @@ export default function SalesPage() {
 
     return (
       <div className="modal-card modal-card--medium">
-        <h3>Xem ban {detail.table.maBan}</h3>
+        <h3>Xem bàn {detail.table.maBan}</h3>
         {reservation ? (
           <>
-            <p className="modal-hint">Khach dat truoc</p>
+            <p className="modal-hint">Khách đặt trước</p>
             <table className="modal-table">
               <tbody>
                 <tr>
-                  <th>Khach</th>
+                  <th>Khách</th>
                   <td>{reservation?.tenKhach || "-"}</td>
                 </tr>
                 <tr>
-                  <th>So dien thoai</th>
+                  <th>Số điện thoại</th>
                   <td>{reservation?.sdt || "-"}</td>
                 </tr>
                 <tr>
-                  <th>Gio den</th>
+                  <th>Giờ đến</th>
                   <td>{reservation?.ngayGioDat ? formatDateTime(reservation.ngayGioDat) : "-"}</td>
                 </tr>
               </tbody>
@@ -337,10 +337,10 @@ export default function SalesPage() {
         <table className="modal-table">
           <thead>
             <tr>
-              <th>Ten mon</th>
-              <th>So luong</th>
-              <th>Don gia</th>
-              <th>Thanh tien</th>
+              <th>Tên món</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Thành tiền</th>
             </tr>
           </thead>
           <tbody>
@@ -356,7 +356,7 @@ export default function SalesPage() {
           <tfoot>
             <tr>
               <td colSpan={3} className="text-right">
-                <strong>TONG:</strong>
+                <strong>TỔNG:</strong>
               </td>
               <td className="text-right">
                 <strong>{formatNumber(invoice?.tongTien || 0)}</strong>
@@ -366,22 +366,22 @@ export default function SalesPage() {
         </table>
         <div className="modal-actions">
           <button type="button" className="btn btn-sm" onClick={() => openModal("menu")}>
-            Chon thuc don
+            Chọn thực đơn
           </button>
           <button type="button" className="btn btn-sm btn-primary" onClick={() => openModal("payment")}>
-            Thanh toan
+            Thanh toán
           </button>
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-            Close
+            Đóng
           </button>
           {isNewInvoice ? (
             <button type="button" className="btn btn-sm btn-delete" onClick={onCancelInvoice}>
-              Huy hoa don
+              Hủy hóa đơn
             </button>
           ) : null}
           {isPaid && invoice?.maHoaDon ? (
             <button type="button" className="btn btn-sm btn-secondary" onClick={() => window.open(`/invoice/${invoice.maHoaDon}`, "_blank")}>
-              In hoa don
+              In hóa đơn
             </button>
           ) : null}
         </div>
@@ -392,14 +392,14 @@ export default function SalesPage() {
   const renderMenuModal = () => {
     return (
       <div className="modal-card modal-card--wide">
-        <h3>Chon mon - Ban {selectedId}</h3>
+        <h3>Chọn món - Bàn {selectedId}</h3>
         <form className="modal-form" onSubmit={onMenuSubmit}>
           <table className="modal-table">
             <thead>
               <tr>
-                <th>Ten mon</th>
-                <th className="text-right">Gia</th>
-                <th>So luong</th>
+                <th>Tên món</th>
+                <th className="text-right">Giá</th>
+                <th>Số lượng</th>
               </tr>
             </thead>
             <tbody>
@@ -435,10 +435,10 @@ export default function SalesPage() {
           </table>
           <div className="modal-actions">
             <button type="submit" className="btn btn-sm btn-primary">
-              Save
+              Lưu
             </button>
             <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-              Cancel
+              Hủy
             </button>
           </div>
         </form>
@@ -451,11 +451,11 @@ export default function SalesPage() {
     if (!invoice) {
       return (
         <div className="modal-card modal-card--compact">
-          <h3>Thanh toan - Ban {selectedId}</h3>
-          <p className="modal-hint">Khong co hoa don</p>
+          <h3>Thanh toán - Bàn {selectedId}</h3>
+          <p className="modal-hint">Không có hóa đơn</p>
           <div className="modal-actions">
             <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-              Close
+              Đóng
             </button>
           </div>
         </div>
@@ -463,14 +463,14 @@ export default function SalesPage() {
     }
     return (
       <div className="modal-card modal-card--medium">
-        <h3>Thanh toan - Ban {selectedId}</h3>
+        <h3>Thanh toán - Bàn {selectedId}</h3>
         <table className="modal-table">
           <thead>
             <tr>
-              <th>Ten mon</th>
-              <th>So luong</th>
-              <th>Don gia</th>
-              <th>Thanh tien</th>
+              <th>Tên món</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Thành tiền</th>
             </tr>
           </thead>
           <tbody>
@@ -486,7 +486,7 @@ export default function SalesPage() {
           <tfoot>
             <tr>
               <td colSpan={3} className="text-right">
-                <strong>TONG:</strong>
+                <strong>TỔNG:</strong>
               </td>
               <td className="text-right">
                 <strong>{formatNumber(invoice.tongTien)}</strong>
@@ -496,7 +496,7 @@ export default function SalesPage() {
         </table>
         <div className="modal-form">
           <div className="form-group">
-            <label>Tien khach dua</label>
+            <label>Tiền khách đưa</label>
             <input
               inputMode="numeric"
               value={formatNumber(paymentRaw)}
@@ -506,14 +506,14 @@ export default function SalesPage() {
         </div>
         <label className="modal-check">
           <input type="checkbox" checked={printInvoice} onChange={(event) => setPrintInvoice(event.target.checked)} />
-          Print invoice
+          In hóa đơn
         </label>
         <div className="modal-actions">
           <button type="button" className="btn btn-sm btn-primary" onClick={onPaymentSubmit}>
-            Confirm
+            Xác nhận
           </button>
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-            Cancel
+            Hủy
           </button>
         </div>
       </div>
@@ -523,10 +523,10 @@ export default function SalesPage() {
   const renderReserveModal = () => {
     return (
       <div className="modal-card modal-card--compact">
-        <h3>Dat ban {selectedId}</h3>
+        <h3>Đặt bàn {selectedId}</h3>
         <div className="modal-form">
           <div className="form-group">
-            <label>Ten khach</label>
+            <label>Tên khách</label>
             <input
               value={reserveForm.tenKhach}
               onChange={(event) => {
@@ -548,7 +548,7 @@ export default function SalesPage() {
             {reserveErrors.sdt ? <div className="field-error">{reserveErrors.sdt}</div> : null}
           </div>
           <div className="form-group">
-            <label>Ngay gio den</label>
+            <label>Ngày giờ đến</label>
             <input
               type="datetime-local"
               value={reserveForm.ngayGio}
@@ -562,10 +562,10 @@ export default function SalesPage() {
         </div>
         <div className="modal-actions">
           <button type="button" className="btn btn-sm btn-primary" onClick={onReserveSubmit}>
-            Dat ban
+            Đặt bàn
           </button>
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-            Close
+            Đóng
           </button>
         </div>
       </div>
@@ -576,12 +576,12 @@ export default function SalesPage() {
     const empty = tables.filter((t) => t.tinhTrang === "TRONG" && t.maBan !== selectedId)
     return (
       <div className="modal-card modal-card--compact">
-        <h3>Chuyen ban {selectedId}</h3>
+        <h3>Chuyển bàn {selectedId}</h3>
         <div className="modal-form">
           <div className="form-group">
-            <label>Chon ban can chuyen den</label>
+            <label>Chọn bàn cần chuyển đến</label>
             <select value={moveTo} onChange={(event) => setMoveTo(event.target.value)}>
-              <option value="">-- Select --</option>
+              <option value="">-- Chọn --</option>
               {empty.map((t) => (
                 <option key={t.maBan} value={t.maBan}>
                   {t.tenBan}
@@ -592,10 +592,10 @@ export default function SalesPage() {
         </div>
         <div className="modal-actions">
           <button type="button" className="btn btn-sm btn-primary" onClick={onMove} disabled={!moveTo}>
-            Chuyen
+            Chuyển
           </button>
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-            Cancel
+            Hủy
           </button>
         </div>
       </div>
@@ -606,18 +606,18 @@ export default function SalesPage() {
     const busy = tables.filter((t) => t.tinhTrang === "DANG_SU_DUNG" && t.maBan !== selectedId)
     return (
       <div className="modal-card modal-card--compact">
-        <h3>Gop ban vao {selectedId}</h3>
+        <h3>Gộp bàn vào {selectedId}</h3>
         {busy.length === 0 ? (
           <div className="modal-hint">
-            <em>No table to merge</em>
+            <em>Không có bàn để gộp</em>
           </div>
         ) : (
           <>
             <div className="modal-form">
               <div className="form-group">
-                <label>Chon ban nguon</label>
+                <label>Chọn bàn nguồn</label>
                 <select value={mergeSource} onChange={(event) => setMergeSource(event.target.value)}>
-                  <option value="">-- Select --</option>
+                  <option value="">-- Chọn --</option>
                   {busy.map((t) => (
                     <option key={t.maBan} value={t.maBan}>
                       {t.tenBan}
@@ -628,10 +628,10 @@ export default function SalesPage() {
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-sm btn-primary" onClick={onMerge} disabled={!mergeSource}>
-                Merge
+                Gộp
               </button>
               <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-                Cancel
+                Hủy
               </button>
             </div>
           </>
@@ -646,12 +646,12 @@ export default function SalesPage() {
     if (!invoice) return null
     return (
       <div className="modal-card modal-card--medium">
-        <h3>Tach ban {selectedId}</h3>
+        <h3>Tách bàn {selectedId}</h3>
         <div className="modal-form">
           <div className="form-group">
-            <label>Chon ban dich (trong)</label>
+            <label>Chọn bàn đích (trống)</label>
             <select value={splitTo} onChange={(event) => setSplitTo(event.target.value)}>
-              <option value="">-- Select --</option>
+              <option value="">-- Chọn --</option>
               {empty.map((t) => (
                 <option key={t.maBan} value={t.maBan}>
                   {t.tenBan}
@@ -663,9 +663,9 @@ export default function SalesPage() {
         <table className="modal-table">
           <thead>
             <tr>
-              <th>Ten mon</th>
-              <th>So luong</th>
-              <th>So luong tach</th>
+              <th>Tên món</th>
+              <th>Số lượng</th>
+              <th>Số lượng tách</th>
             </tr>
           </thead>
           <tbody>
@@ -690,10 +690,10 @@ export default function SalesPage() {
         </table>
         <div className="modal-actions">
           <button type="button" className="btn btn-sm btn-primary" onClick={onSplit} disabled={!splitTo}>
-            Confirm
+            Xác nhận
           </button>
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
-            Cancel
+            Hủy
           </button>
         </div>
       </div>
@@ -708,23 +708,23 @@ export default function SalesPage() {
 
   return (
     <div className="content-wrapper">
-      <h1>Quan ly ban hang - Danh sach ban</h1>
+      <h1>Quản lý bán hàng - Danh sách bàn</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="status-legend">
         <span className="legend-item">
-          <span className="legend-swatch table-free"></span> Trong
+          <span className="legend-swatch table-free"></span> Trống
         </span>
         <span className="legend-item">
-          <span className="legend-swatch table-busy"></span> Dang su dung
+          <span className="legend-swatch table-busy"></span> Đang sử dụng
         </span>
         <span className="legend-item">
-          <span className="legend-swatch table-reserved"></span> Da dat
+          <span className="legend-swatch table-reserved"></span> Đã đặt
         </span>
       </div>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <div className="table-grid">
           {tables.map((t) => (
@@ -743,27 +743,27 @@ export default function SalesPage() {
       <div className="action-bar sales-action-bar" style={{ marginTop: 16 }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button type="button" className="btn btn-sm" onClick={() => openModal("view")} disabled={!selectedId}>
-            Xem ban
+            Xem bàn
           </button>
           <button type="button" className="btn btn-sm" onClick={() => openModal("menu")} disabled={!selectedId}>
-            Chon thuc don
+            Chọn thực đơn
           </button>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button type="button" className="btn btn-sm" onClick={() => openModal("move")} disabled={!isBusy}>
-            Chuyen
+            Chuyển
           </button>
           <button type="button" className="btn btn-sm" onClick={() => openModal("merge")} disabled={!isBusy}>
-            Gop
+            Gộp
           </button>
           <button type="button" className="btn btn-sm" onClick={() => openModal("split")} disabled={!isBusy}>
-            Tach
+            Tách
           </button>
           <button type="button" className="btn btn-sm btn-delete" onClick={onCancelReservation} disabled={!isReserved}>
-            Huy dat
+            Hủy đặt
           </button>
           <button type="button" className="btn btn-sm btn-edit" onClick={() => openModal("reserve")} disabled={isBusy || !selectedId}>
-            Dat ban
+            Đặt bàn
           </button>
         </div>
       </div>

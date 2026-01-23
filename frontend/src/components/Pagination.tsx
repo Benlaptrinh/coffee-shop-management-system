@@ -17,7 +17,7 @@ export default function Pagination({ page, pageSize, total, onPageChange }: Prop
   return (
     <div className="pagination">
       <button type="button" className={`btn btn-sm ${currentPage === 1 ? "btn-disabled" : ""}`} onClick={goPrev}>
-        Prev
+        Trước
       </button>
       <span className="pagination-info">
         {start}-{end} / {total} • Trang {currentPage}/{totalPages}
@@ -27,7 +27,7 @@ export default function Pagination({ page, pageSize, total, onPageChange }: Prop
         className={`btn btn-sm ${currentPage === totalPages ? "btn-disabled" : ""}`}
         onClick={goNext}
       >
-        Next
+        Sau
       </button>
     </div>
   )

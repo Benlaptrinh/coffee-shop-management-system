@@ -27,8 +27,8 @@ export default function Login() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     const errors: { username?: string; password?: string } = {}
-    if (!username.trim()) errors.username = "Username khong duoc de trong"
-    if (!password.trim()) errors.password = "Password khong duoc de trong"
+    if (!username.trim()) errors.username = "Tên đăng nhập không được để trống"
+    if (!password.trim()) errors.password = "Mật khẩu không được để trống"
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
     setError(null)
@@ -39,7 +39,7 @@ export default function Login() {
       if (resp.roles.includes("ADMIN")) navigate("/admin/dashboard", { replace: true })
       else navigate("/staff/home", { replace: true })
     } catch (err: any) {
-      setError("Dang nhap that bai. Vui long thu lai.")
+      setError("Đăng nhập thất bại. Vui lòng thử lại.")
     } finally {
       setLoading(false)
     }
@@ -49,12 +49,11 @@ export default function Login() {
     <div className="auth">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>Login</h1>
-          <p>QuanCaPhe Pro dashboard</p>
+          <h1>Đăng nhập</h1>
         </div>
         <form className="auth-form" onSubmit={submit}>
           <label className="auth-field">
-            Username
+            Tên đăng nhập
             <input
               value={username}
               onChange={(event) => {
@@ -66,7 +65,7 @@ export default function Login() {
             {fieldErrors.username ? <span className="field-error">{fieldErrors.username}</span> : null}
           </label>
           <label className="auth-field">
-            Password
+            Mật khẩu
             <input
               type="password"
               value={password}
@@ -80,7 +79,7 @@ export default function Login() {
           </label>
           {error ? <p className="auth-error">{error}</p> : null}
           <button className="btn btn-primary auth-submit" type="submit" disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
       </div>

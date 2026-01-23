@@ -10,64 +10,64 @@ export default function SidebarAdmin() {
 
   return (
     <div className="sidebar-inner">
-      <h4 className="sidebar-title">Trang chu</h4>
+      <h4 className="sidebar-title">Trang chủ</h4>
       <nav className="sidebar-nav">
         <ul className="sidebar-list">
           <li>
             <NavLink to="/admin/dashboard" className={({ isActive }) => linkClass(isActive)}>
-              Trang chu
+              Trang chủ
             </NavLink>
           </li>
           <li>
             <NavLink to="/profile" className={({ isActive }) => linkClass(isActive)}>
-              Trang ca nhan
+              Trang cá nhân
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/employees" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly nhan vien
+              Quản lý nhân viên
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/sales" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly ban hang
+              Quản lý bán hàng
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/equipment" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly trang thiet bi
+              Quản lý trang thiết bị
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/warehouse" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly kho hang
+              Quản lý kho hàng
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/menu" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly thuc don
+              Quản lý thực đơn
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/marketing" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly marketing
+              Quản lý marketing
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/budget" className={({ isActive }) => linkClass(isActive)}>
-              Quan ly ngan sach
+              Quản lý ngân sách
             </NavLink>
           </li>
           <li>
             <NavLink to="/admin/report" className={({ isActive }) => linkClass(isActive)}>
-              Thong ke - bao cao
+              Thống kê - báo cáo
             </NavLink>
           </li>
         </ul>
       </nav>
       <div className="sidebar-logout">
         <button className="sidebar-logout-btn" type="button" onClick={logout}>
-          Logout
+          Đăng xuất
         </button>
       </div>
     </div>

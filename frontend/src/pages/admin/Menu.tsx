@@ -28,7 +28,7 @@ export default function AdminMenu() {
       const data = await api.thucdon.list(q)
       setItems(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load menu")
+      setError(err?.body || err?.message || "Tải thực đơn thất bại")
     } finally {
       setLoading(false)
     }
@@ -52,8 +52,8 @@ export default function AdminMenu() {
     setError(null)
     const price = Number(form.giaRaw || 0)
     const errors: Record<string, string> = {}
-    if (!form.tenMon.trim()) errors.tenMon = "Ten mon khong duoc de trong"
-    if (!price) errors.giaRaw = "Gia tien khong hop le"
+    if (!form.tenMon.trim()) errors.tenMon = "Tên món không được để trống"
+    if (!price) errors.giaRaw = "Giá tiền không hợp lệ"
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -67,7 +67,7 @@ export default function AdminMenu() {
       setFieldErrors({})
       await load(search)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      setError(err?.body || err?.message || "Lưu thất bại")
     }
   }
 
@@ -78,12 +78,12 @@ export default function AdminMenu() {
   }
 
   const onDelete = async (id: number) => {
-    if (!window.confirm("Delete this item?")) return
+    if (!window.confirm("Xóa mục này?")) return
     try {
       await api.thucdon.delete(id)
       await load(search)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Delete failed")
+      setError(err?.body || err?.message || "Xóa thất bại")
     }
   }
 
@@ -95,14 +95,14 @@ export default function AdminMenu() {
 
   return (
     <div className="content-wrapper">
-      <h1>Danh sach thuc don</h1>
+      <h1>Danh sách thực đơn</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="form-box">
-        <h2>{editId ? "Chinh sua mon" : "Them mon"}</h2>
+        <h2>{editId ? "Chỉnh sửa món" : "Thêm món"}</h2>
         <form onSubmit={onSubmit} noValidate>
           <div className="form-group">
-            <label>Ten mon</label>
+            <label>Tên món</label>
             <input
               value={form.tenMon}
               onChange={(event) => {
@@ -113,7 +113,7 @@ export default function AdminMenu() {
             {fieldErrors.tenMon ? <div className="field-error">{fieldErrors.tenMon}</div> : null}
           </div>
           <div className="form-group">
-            <label>Gia tien</label>
+            <label>Giá tiền</label>
             <input
               value={formatNumber(form.giaRaw)}
               inputMode="numeric"
@@ -126,11 +126,11 @@ export default function AdminMenu() {
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
-              {editId ? "Save" : "Add"}
+              {editId ? "Lưu" : "Thêm"}
             </button>
             {editId ? (
               <button type="button" className="btn btn-cancel" onClick={onResetForm}>
-                Cancel
+                Hủy
               </button>
             ) : null}
           </div>
@@ -142,29 +142,29 @@ export default function AdminMenu() {
           <input
             type="text"
             name="keyword"
-            placeholder="Search menu..."
+            placeholder="Tìm thực đơn..."
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
           />
           <button className="btn btn-sm" type="submit">
-            Search
+            Tìm kiếm
           </button>
           <button className="btn btn-sm btn-cancel" type="button" onClick={() => (setKeyword(""), setSearch(""))}>
-            Reset
+            Đặt lại
           </button>
         </form>
       </div>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table table-actions">
           <thead>
             <tr>
               <th>STT</th>
-              <th>Ten mon</th>
-              <th className="text-right">Gia tien</th>
-              <th>Hanh dong</th>
+              <th>Tên món</th>
+              <th className="text-right">Giá tiền</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -175,10 +175,10 @@ export default function AdminMenu() {
                 <td className="text-right">{formatNumber(item.giaHienTai)}</td>
                 <td className="action-buttons">
                   <button type="button" className="btn btn-sm btn-edit" onClick={() => onEdit(item)}>
-                    Sua
+                    Sửa
                   </button>
                   <button type="button" className="btn btn-sm btn-delete" onClick={() => onDelete(item.maThucDon)}>
-                    Xoa
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -186,7 +186,7 @@ export default function AdminMenu() {
             {items.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center text-muted">
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}

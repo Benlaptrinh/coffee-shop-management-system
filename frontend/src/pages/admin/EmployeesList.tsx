@@ -29,7 +29,7 @@ export default function AdminEmployeesList() {
       const data = await api.nhanvien.list(q)
       setItems(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load employees")
+      setError(err?.body || err?.message || "Tải danh sách nhân viên thất bại")
     } finally {
       setLoading(false)
     }
@@ -59,52 +59,52 @@ export default function AdminEmployeesList() {
   }
 
   const onDelete = async (id: number) => {
-    if (!window.confirm("Delete this employee?")) return
+    if (!window.confirm("Xóa nhân viên này?")) return
     try {
       await api.nhanvien.delete(id)
       await load(search)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Delete failed")
+      setError(err?.body || err?.message || "Xóa thất bại")
     }
   }
 
   return (
     <div className="content-wrapper">
-      <h1>Danh sach nhan vien</h1>
+      <h1>Danh sách nhân viên</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="action-bar">
         <Link className="btn btn-primary" to="/admin/employees/create">
-          + Them nhan vien
+          + Thêm nhân viên
         </Link>
         <form className="search-form" onSubmit={onSubmit}>
           <input
             type="text"
             name="q"
-            placeholder="Search by name"
+            placeholder="Tìm theo tên"
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
           />
           <button type="submit" className="btn btn-sm">
-            Search
+            Tìm kiếm
           </button>
           <button type="button" className="btn btn-sm btn-cancel" onClick={onReset}>
-            Reset
+            Đặt lại
           </button>
         </form>
       </div>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table table-wide table-actions">
           <thead>
             <tr>
-              <th>Ho ten</th>
-              <th>So dien thoai</th>
-              <th>Chuc vu</th>
-              <th>Trang thai</th>
-              <th>Hanh dong</th>
+              <th>Họ tên</th>
+              <th>Số điện thoại</th>
+              <th>Chức vụ</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -113,13 +113,13 @@ export default function AdminEmployeesList() {
                 <td>{nv.hoTen}</td>
                 <td>{nv.soDienThoai || "-"}</td>
                 <td>{nv.chucVu || "-"}</td>
-                <td>{nv.enabled ? "Hoat dong" : "Khong hoat dong"}</td>
+                <td>{nv.enabled ? "Hoạt động" : "Không hoạt động"}</td>
                 <td className="action-buttons">
                   <Link className="btn btn-sm btn-edit" to={`/admin/employees/${nv.maNhanVien}/edit`}>
-                    Sua
+                    Sửa
                   </Link>
                   <button className="btn btn-sm btn-delete" type="button" onClick={() => onDelete(nv.maNhanVien)}>
-                    Xoa
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -127,7 +127,7 @@ export default function AdminEmployeesList() {
             {items.length === 0 ? (
               <tr>
                 <td className="text-center text-muted" colSpan={5}>
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}

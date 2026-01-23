@@ -9,7 +9,7 @@ export default function Header() {
         <div className="header-brand">
           <span>QuanCaPhe Pro</span>
         </div>
-        {user ? <div className="header-meta">Signed in: {user.username}</div> : null}
+        {user ? <div className="header-meta">Đã đăng nhập: {user.username}</div> : null}
       </div>
     </div>
   )

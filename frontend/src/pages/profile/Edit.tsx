@@ -32,7 +32,7 @@ export default function ProfileEdit() {
         if (!active) return
         const match = list.find((nv) => nv.taiKhoanId === me.id)
         if (!match) {
-          setError("Employee profile not found")
+          setError("Không tìm thấy hồ sơ nhân viên")
           return
         }
         setEmployeeId(match.maNhanVien)
@@ -47,7 +47,7 @@ export default function ProfileEdit() {
           soDienThoai: match.soDienThoai || "",
         })
       } catch (err: any) {
-        setError(err?.body || err?.message || "Failed to load profile")
+        setError(err?.body || err?.message || "Tải hồ sơ thất bại")
       } finally {
         if (active) setLoading(false)
       }
@@ -63,19 +63,19 @@ export default function ProfileEdit() {
     if (!employeeId) return
     setError(null)
     const errors: Record<string, string> = {}
-    if (!form.hoTen.trim()) errors.hoTen = "Ho va ten khong duoc de trong"
-    if (!form.diaChi.trim()) errors.diaChi = "Dia chi khong duoc de trong"
+    if (!form.hoTen.trim()) errors.hoTen = "Họ và tên không được để trống"
+    if (!form.diaChi.trim()) errors.diaChi = "Địa chỉ không được để trống"
     if (!form.soDienThoai.trim()) {
-      errors.soDienThoai = "So dien thoai khong duoc de trong"
+      errors.soDienThoai = "Số điện thoại không được để trống"
     } else if (!/^\d{9,11}$/.test(form.soDienThoai.trim())) {
-      errors.soDienThoai = "So dien thoai phai tu 9 den 11 so"
+      errors.soDienThoai = "Số điện thoại phải từ 9 đến 11 số"
     }
     const wantsPasswordChange = passwordNew.trim().length > 0
     if (wantsPasswordChange && !passwordCurrent.trim()) {
-      errors.passwordCurrent = "Can nhap mat khau hien tai"
+      errors.passwordCurrent = "Cần nhập mật khẩu hiện tại"
     }
     if (wantsPasswordChange && passwordNew.trim().length < 6) {
-      errors.passwordNew = "Mat khau moi toi thieu 6 ky tu"
+      errors.passwordNew = "Mật khẩu mới tối thiểu 6 ký tự"
     }
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
@@ -108,12 +108,12 @@ export default function ProfileEdit() {
 
   return (
     <div className="content-wrapper">
-      <h2>Chinh sua thong tin ca nhan</h2>
+      <h2>Chỉnh sửa thông tin cá nhân</h2>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
-      {loading ? <div className="page-loading">Loading...</div> : null}
+      {loading ? <div className="page-loading">Đang tải...</div> : null}
       <form className="form-box" onSubmit={onSubmit} noValidate>
         <div className="form-group">
-          <label>Ho va ten</label>
+          <label>Họ và tên</label>
           <input
             value={form.hoTen}
             onChange={(event) => {
@@ -124,7 +124,7 @@ export default function ProfileEdit() {
           {fieldErrors.hoTen ? <div className="field-error">{fieldErrors.hoTen}</div> : null}
         </div>
         <div className="form-group">
-          <label>Dia chi</label>
+          <label>Địa chỉ</label>
           <input
             value={form.diaChi}
             onChange={(event) => {
@@ -135,7 +135,7 @@ export default function ProfileEdit() {
           {fieldErrors.diaChi ? <div className="field-error">{fieldErrors.diaChi}</div> : null}
         </div>
         <div className="form-group">
-          <label>So dien thoai</label>
+          <label>Số điện thoại</label>
           <input
             value={form.soDienThoai}
             onChange={(event) => {
@@ -146,7 +146,7 @@ export default function ProfileEdit() {
           {fieldErrors.soDienThoai ? <div className="field-error">{fieldErrors.soDienThoai}</div> : null}
         </div>
         <div className="form-group">
-          <label>Mat khau hien tai</label>
+          <label>Mật khẩu hiện tại</label>
           <input
             type="password"
             value={passwordCurrent}
@@ -154,12 +154,12 @@ export default function ProfileEdit() {
               setPasswordCurrent(event.target.value)
               if (fieldErrors.passwordCurrent) setFieldErrors((prev) => ({ ...prev, passwordCurrent: "" }))
             }}
-            placeholder="Nhap neu muon doi mat khau"
+            placeholder="Nhập nếu muốn đổi mật khẩu"
           />
           {fieldErrors.passwordCurrent ? <div className="field-error">{fieldErrors.passwordCurrent}</div> : null}
         </div>
         <div className="form-group">
-          <label>Mat khau moi (bo trong neu khong doi)</label>
+          <label>Mật khẩu mới (bỏ trống nếu không đổi)</label>
           <input
             type="password"
             value={passwordNew}
@@ -167,16 +167,16 @@ export default function ProfileEdit() {
               setPasswordNew(event.target.value)
               if (fieldErrors.passwordNew) setFieldErrors((prev) => ({ ...prev, passwordNew: "" }))
             }}
-            placeholder="Nhap mat khau moi"
+            placeholder="Nhập mật khẩu mới"
           />
           {fieldErrors.passwordNew ? <div className="field-error">{fieldErrors.passwordNew}</div> : null}
         </div>
         <div className="form-actions form-actions--equal">
           <button className="btn btn-primary" type="submit" disabled={loading || !employeeId}>
-            Save
+            Lưu
           </button>
           <button className="btn btn-secondary" type="button" onClick={() => navigate("/profile")}>
-            Cancel
+            Hủy
           </button>
         </div>
       </form>

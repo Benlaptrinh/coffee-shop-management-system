@@ -41,8 +41,8 @@ export default function ProfileView() {
 
   return (
     <div className="content-wrapper">
-      <h1>Trang ca nhan</h1>
-      {loading ? <div className="page-loading">Loading...</div> : null}
+      <h1>Trang cá nhân</h1>
+      {loading ? <div className="page-loading">Đang tải...</div> : null}
 
       <div className="profile-card">
         <div className="profile-header">
@@ -56,19 +56,19 @@ export default function ProfileView() {
         </div>
 
         <div className="profile-section">
-          <h3>Thong tin ca nhan</h3>
+          <h3>Thông tin cá nhân</h3>
           <div className="info-row">
-            <span>Dia chi</span>
+            <span>Địa chỉ</span>
             <span>{employee?.diaChi || "-"}</span>
           </div>
           <div className="info-row">
-            <span>So dien thoai</span>
+            <span>Số điện thoại</span>
             <span>{employee?.soDienThoai || "-"}</span>
           </div>
         </div>
 
         <div className="profile-section">
-          <h3>Tai khoan</h3>
+          <h3>Tài khoản</h3>
           <div className="info-row">
             <span>Username</span>
             <span>{user?.username || "-"}</span>
@@ -77,10 +77,10 @@ export default function ProfileView() {
 
         <div className="action-bar">
           <Link className="btn btn-edit" to="/profile/edit">
-            Chinh sua
+            Chỉnh sửa
           </Link>
           <button className="btn btn-delete" type="button" onClick={logout}>
-            Logout
+            Đăng xuất
           </button>
         </div>
       </div>

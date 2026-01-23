@@ -5,8 +5,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="content-wrapper">
-      <h1>Xin chao{user ? `, ${user.username}` : ""}!</h1>
-      <p>Admin dashboard ready.</p>
+      <h1>Xin chào{user ? `, ${user.username}` : ""}!</h1>
+      <p>Bảng điều khiển admin sẵn sàng.</p>
     </div>
   )
 }

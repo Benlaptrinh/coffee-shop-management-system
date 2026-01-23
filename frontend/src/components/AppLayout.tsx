@@ -32,7 +32,7 @@ export default function AppLayout({ sidebar, children }: AppLayoutProps) {
           aria-expanded={sidebarOpen}
           onClick={() => setSidebarOpen((prev) => !prev)}
         >
-          Menu
+          Danh mục
         </button>
         <div className="app-layout">
           <aside className="sidebar" id="app-sidebar">

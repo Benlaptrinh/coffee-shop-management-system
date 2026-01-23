@@ -37,7 +37,7 @@ export default function AdminEquipment() {
       const data = await api.thietbi.list()
       setItems(data)
     } catch (err: any) {
-      setError(err?.body || err?.message || "Failed to load equipment")
+      setError(err?.body || err?.message || "Tải thiết bị thất bại")
     } finally {
       setLoading(false)
     }
@@ -58,10 +58,10 @@ export default function AdminEquipment() {
       ghiChu: form.ghiChu,
     }
     const errors: Record<string, string> = {}
-    if (!payload.tenThietBi) errors.tenThietBi = "Ten thiet bi khong duoc de trong"
-    if (!payload.ngayMua) errors.ngayMua = "Ngay mua khong duoc de trong"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "So luong phai lon hon 0"
-    if (!payload.donGiaMua || payload.donGiaMua < 1) errors.donGiaRaw = "Don gia khong hop le"
+    if (!payload.tenThietBi) errors.tenThietBi = "Tên thiết bị không được để trống"
+    if (!payload.ngayMua) errors.ngayMua = "Ngày mua không được để trống"
+    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!payload.donGiaMua || payload.donGiaMua < 1) errors.donGiaRaw = "Đơn giá không hợp lệ"
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
     try {
@@ -72,7 +72,7 @@ export default function AdminEquipment() {
       setFieldErrors({})
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      setError(err?.body || err?.message || "Lưu thất bại")
     }
   }
 
@@ -89,12 +89,12 @@ export default function AdminEquipment() {
   }
 
   const onDelete = async (id: number) => {
-    if (!window.confirm("Delete this item?")) return
+    if (!window.confirm("Xóa mục này?")) return
     try {
       await api.thietbi.delete(id)
       await load()
     } catch (err: any) {
-      setError(err?.body || err?.message || "Delete failed")
+      setError(err?.body || err?.message || "Xóa thất bại")
     }
   }
 
@@ -111,15 +111,15 @@ export default function AdminEquipment() {
 
   return (
     <div className="content-wrapper">
-      <h1>Quan ly thiet bi</h1>
+      <h1>Quản lý thiết bị</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="form-box">
-        <h2>{editId ? "Chinh sua thiet bi" : "Them thiet bi"}</h2>
+        <h2>{editId ? "Chỉnh sửa thiết bị" : "Thêm thiết bị"}</h2>
         <form onSubmit={onSubmit} noValidate>
           <div className="form-row">
             <div className="form-group">
-              <label>Ten thiet bi</label>
+              <label>Tên thiết bị</label>
               <input
                 value={form.tenThietBi}
                 onChange={(event) => {
@@ -130,7 +130,7 @@ export default function AdminEquipment() {
               {fieldErrors.tenThietBi ? <div className="field-error">{fieldErrors.tenThietBi}</div> : null}
             </div>
             <div className="form-group">
-              <label>Ngay mua</label>
+              <label>Ngày mua</label>
               <input
                 type="date"
                 value={form.ngayMua}
@@ -144,7 +144,7 @@ export default function AdminEquipment() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>So luong</label>
+              <label>Số lượng</label>
               <input
                 type="number"
                 min={1}
@@ -158,7 +158,7 @@ export default function AdminEquipment() {
               {fieldErrors.soLuong ? <div className="field-error">{fieldErrors.soLuong}</div> : null}
             </div>
             <div className="form-group">
-              <label>Don gia mua</label>
+              <label>Đơn giá mua</label>
               <input
                 inputMode="numeric"
                 value={formatNumber(form.donGiaRaw)}
@@ -171,16 +171,16 @@ export default function AdminEquipment() {
             </div>
           </div>
           <div className="form-group">
-            <label>Ghi chu</label>
+            <label>Ghi chú</label>
             <textarea rows={3} value={form.ghiChu} onChange={(event) => setForm((prev) => ({ ...prev, ghiChu: event.target.value }))} />
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
-              {editId ? "Save" : "Add"}
+              {editId ? "Lưu" : "Thêm"}
             </button>
             {editId ? (
               <button type="button" className="btn btn-cancel" onClick={() => setEditId(null)}>
-                Cancel
+                Hủy
               </button>
             ) : null}
           </div>
@@ -192,12 +192,12 @@ export default function AdminEquipment() {
           <input
             type="text"
             name="keyword"
-            placeholder="Search equipment..."
+            placeholder="Tìm thiết bị..."
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
           />
           <button className="btn btn-sm" type="submit">
-            Search
+            Tìm kiếm
           </button>
           <button
             className="btn btn-sm btn-cancel"
@@ -207,23 +207,23 @@ export default function AdminEquipment() {
               setSearch("")
             }}
           >
-            Reset
+            Đặt lại
           </button>
         </form>
       </div>
 
       {loading ? (
-        <div className="page-loading">Loading...</div>
+        <div className="page-loading">Đang tải...</div>
       ) : (
         <table className="data-table table-actions">
           <thead>
             <tr>
-              <th>Ten</th>
-              <th>Ngay mua</th>
-              <th>So luong</th>
-              <th className="text-right">Don gia</th>
-              <th className="text-right">Tong</th>
-              <th>Hanh dong</th>
+              <th>Tên</th>
+              <th>Ngày mua</th>
+              <th>Số lượng</th>
+              <th className="text-right">Đơn giá</th>
+              <th className="text-right">Tổng</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -236,10 +236,10 @@ export default function AdminEquipment() {
                 <td className="text-right">{formatNumber(item.donGiaMua * item.soLuong)}</td>
                 <td className="action-buttons">
                   <button type="button" className="btn btn-sm btn-edit" onClick={() => onEdit(item)}>
-                    Sua
+                    Sửa
                   </button>
                   <button type="button" className="btn btn-sm btn-delete" onClick={() => onDelete(item.maThietBi)}>
-                    Xoa
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -247,7 +247,7 @@ export default function AdminEquipment() {
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center text-muted">
-                  No data
+                  Không có dữ liệu
                 </td>
               </tr>
             ) : null}

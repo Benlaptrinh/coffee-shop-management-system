@@ -38,7 +38,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
     api.chucvu
       .list()
       .then((data) => setChucVus(data || []))
-      .catch((err: any) => setChucVuError(err?.body || err?.message || "Failed to load chuc vu"))
+      .catch((err: any) => setChucVuError(err?.body || err?.message || "Tải chức vụ thất bại"))
       .finally(() => setChucVuLoading(false))
   }, [])
 
@@ -78,7 +78,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
           setAccount({ username: "", password: "" })
         }
       })
-      .catch((err: any) => setError(err?.body || err?.message || "Failed to load employee"))
+      .catch((err: any) => setError(err?.body || err?.message || "Tải nhân viên thất bại"))
       .finally(() => setLoading(false))
   }, [mode, params.id, chucVus])
 
@@ -104,20 +104,20 @@ export default function AdminEmployeesForm({ mode }: Props) {
     const errors: Record<string, string> = {}
     const isCreate = mode === "create"
     const wantsAccount = account.username.trim() !== "" || account.password.trim() !== ""
-    if (!form.hoTen.trim()) errors.hoTen = "Ho ten khong duoc de trong"
-    if (!form.diaChi.trim()) errors.diaChi = "Dia chi khong duoc de trong"
+    if (!form.hoTen.trim()) errors.hoTen = "Họ tên không được để trống"
+    if (!form.diaChi.trim()) errors.diaChi = "Địa chỉ không được để trống"
     if (!form.soDienThoai.trim()) {
-      errors.soDienThoai = "So dien thoai khong duoc de trong"
+      errors.soDienThoai = "Số điện thoại không được để trống"
     } else if (!/^\d{9,11}$/.test(form.soDienThoai.trim())) {
-      errors.soDienThoai = "So dien thoai phai tu 9 den 11 so"
+      errors.soDienThoai = "Số điện thoại phải từ 9 đến 11 số"
     }
-    if (isCreate && !account.username.trim()) errors.username = "Username khong duoc de trong"
-    if (isCreate && !account.password.trim()) errors.password = "Password khong duoc de trong"
+    if (isCreate && !account.username.trim()) errors.username = "Tên đăng nhập không được để trống"
+    if (isCreate && !account.password.trim()) errors.password = "Mật khẩu không được để trống"
     if (!isCreate && wantsAccount && !hasAccount && !account.username.trim()) {
-      errors.username = "Username khong duoc de trong"
+      errors.username = "Tên đăng nhập không được để trống"
     }
     if (!isCreate && wantsAccount && !hasAccount && !account.password.trim()) {
-      errors.password = "Password khong duoc de trong"
+      errors.password = "Mật khẩu không được để trống"
     }
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return
@@ -169,7 +169,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
       }
       navigate("/admin/employees")
     } catch (err: any) {
-      setError(err?.body || err?.message || "Save failed")
+      setError(err?.body || err?.message || "Lưu thất bại")
     } finally {
       setLoading(false)
     }
@@ -189,38 +189,38 @@ export default function AdminEmployeesForm({ mode }: Props) {
       }
       setChucVuNewName("")
     } catch (err: any) {
-      setChucVuError(err?.body || err?.message || "Failed to create chuc vu")
+      setChucVuError(err?.body || err?.message || "Tạo chức vụ thất bại")
     }
   }
 
   return (
     <div className="content-wrapper">
-      <h1>{mode === "create" ? "Them nhan vien" : "Chinh sua nhan vien"}</h1>
+      <h1>{mode === "create" ? "Thêm nhân viên" : "Chỉnh sửa nhân viên"}</h1>
       {error ? <div className="alert alert-error">{String(error)}</div> : null}
 
       <div className="form-box">
         <form onSubmit={onSubmit} noValidate>
           <div className="form-section">
-            <h3>Thong tin ca nhan</h3>
+            <h3>Thông tin cá nhân</h3>
             <div className="form-group">
-              <label>Ho ten</label>
+              <label>Họ tên</label>
               <input value={form.hoTen} onChange={(event) => onChange("hoTen", event.target.value)} />
               {fieldErrors.hoTen ? <div className="field-error">{fieldErrors.hoTen}</div> : null}
             </div>
             <div className="form-group">
-              <label>Dia chi</label>
+              <label>Địa chỉ</label>
               <input value={form.diaChi} onChange={(event) => onChange("diaChi", event.target.value)} />
               {fieldErrors.diaChi ? <div className="field-error">{fieldErrors.diaChi}</div> : null}
             </div>
             <div className="form-group">
-              <label>Vai tro</label>
+              <label>Vai trò</label>
               <select value={form.role} onChange={(event) => onChange("role", event.target.value)}>
-                <option value="NHANVIEN">NHANVIEN</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="NHANVIEN">Nhân viên</option>
+                <option value="ADMIN">Quản trị</option>
               </select>
             </div>
             <div className="form-group">
-              <label>So dien thoai</label>
+              <label>Số điện thoại</label>
               <input
                 value={form.soDienThoai}
                 onChange={(event) => onChange("soDienThoai", event.target.value.replace(/\D/g, ""))}
@@ -228,7 +228,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
               {fieldErrors.soDienThoai ? <div className="field-error">{fieldErrors.soDienThoai}</div> : null}
             </div>
             <div className="form-group">
-              <label>Trang thai</label>
+              <label>Trạng thái</label>
               <div className="radio-group">
                 <label>
                   <input
@@ -237,7 +237,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
                     checked={form.enabled === true}
                     onChange={() => onChange("enabled", true)}
                   />
-                  Hoat dong
+                  Hoạt động
                 </label>
                 <label>
                   <input
@@ -246,16 +246,16 @@ export default function AdminEmployeesForm({ mode }: Props) {
                     checked={form.enabled === false}
                     onChange={() => onChange("enabled", false)}
                   />
-                  Khong hoat dong
+                  Không hoạt động
                 </label>
               </div>
             </div>
           </div>
 
           <div className="form-section">
-            <h3>{mode === "create" ? "Tai khoan (bat buoc)" : "Tai khoan (tuy chon)"}</h3>
+            <h3>{mode === "create" ? "Tài khoản (bắt buộc)" : "Tài khoản (tùy chọn)"}</h3>
             <div className="form-group">
-              <label>Username</label>
+              <label>Tên đăng nhập</label>
               <input
                 value={account.username}
                 onChange={(event) => {
@@ -263,12 +263,12 @@ export default function AdminEmployeesForm({ mode }: Props) {
                   if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: "" }))
                 }}
                 readOnly={hasAccount}
-                placeholder={hasAccount ? "" : "Nhap username"}
+                placeholder={hasAccount ? "" : "Nhập tên đăng nhập"}
               />
               {fieldErrors.username ? <div className="field-error">{fieldErrors.username}</div> : null}
             </div>
             <div className="form-group">
-              <label>{hasAccount ? "Mat khau moi (bo trong neu giu nguyen)" : "Password"}</label>
+              <label>{hasAccount ? "Mật khẩu mới (bỏ trống nếu giữ nguyên)" : "Mật khẩu"}</label>
               <input
                 type="password"
                 value={account.password}
@@ -276,7 +276,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
                   setAccount((prev) => ({ ...prev, password: event.target.value }))
                   if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: "" }))
                 }}
-                placeholder={hasAccount ? "Nhap neu muon doi mat khau" : "Nhap mat khau"}
+                placeholder={hasAccount ? "Nhập nếu muốn đổi mật khẩu" : "Nhập mật khẩu"}
               />
               {fieldErrors.password ? <div className="field-error">{fieldErrors.password}</div> : null}
             </div>
@@ -284,10 +284,10 @@ export default function AdminEmployeesForm({ mode }: Props) {
 
           <div className="form-actions form-actions--equal">
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? "Saving..." : "Save"}
+              {loading ? "Đang lưu..." : "Lưu"}
             </button>
             <button type="button" className="btn btn-cancel" onClick={() => navigate("/admin/employees")}>
-              Cancel
+              Hủy
             </button>
           </div>
         </form>
