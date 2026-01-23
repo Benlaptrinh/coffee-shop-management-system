@@ -38,6 +38,8 @@ export default function ProfileView() {
   }, [])
 
   const avatarSrc = user?.avatar || "/img/default-avatar.png"
+  const roleLabel = employee?.chucVu
+    || (user?.role === "ADMIN" ? "Quản trị" : user?.role === "NHANVIEN" ? "Nhân viên" : user?.role || "")
 
   return (
     <div className="content-wrapper">
@@ -51,7 +53,7 @@ export default function ProfileView() {
           </div>
           <div className="profile-main">
             <h2>{employee?.hoTen || user?.username || "-"}</h2>
-            <p className="muted">{employee?.chucVu || user?.role || ""}</p>
+            <p className="muted">{roleLabel}</p>
           </div>
         </div>
 

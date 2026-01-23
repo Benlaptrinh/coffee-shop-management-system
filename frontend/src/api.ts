@@ -83,11 +83,11 @@ export default {
   },
   nhanvien: {
     list: (q?: string) =>
-      request<Array<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; taiKhoanId?: number; enabled: boolean }>>(
+      request<Array<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; chucVuId?: number; taiKhoanId?: number; enabled: boolean }>>(
         "/nhanvien" + (q ? `?q=${encodeURIComponent(q)}` : "")
       ),
     get: (id: number) =>
-      request<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; taiKhoanId?: number; enabled: boolean }>(
+      request<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; chucVuId?: number; taiKhoanId?: number; enabled: boolean }>(
         `/nhanvien/${id}`
       ),
     create: (payload: any) => request("/nhanvien", { method: "POST", body: payload }),

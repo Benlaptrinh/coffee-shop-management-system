@@ -38,14 +38,22 @@ export default function ProfileEdit() {
         setEmployeeId(match.maNhanVien)
         setTaiKhoanId(match.taiKhoanId || null)
         setEnabled(match.enabled)
-        const chucVus = await api.chucvu.list()
-        const found = chucVus.find((cv) => cv.tenChucVu === match.chucVu)
-        setChucVuId(found ? found.maChucVu : null)
         setForm({
           hoTen: match.hoTen || "",
           diaChi: match.diaChi || "",
           soDienThoai: match.soDienThoai || "",
         })
+        let resolvedChucVuId = match.chucVuId ?? null
+        if (!resolvedChucVuId && match.chucVu && me.role === "ADMIN") {
+          try {
+            const chucVus = await api.chucvu.list()
+            const found = chucVus.find((cv) => cv.tenChucVu === match.chucVu)
+            resolvedChucVuId = found ? found.maChucVu : null
+          } catch {
+            resolvedChucVuId = null
+          }
+        }
+        setChucVuId(resolvedChucVuId)
       } catch (err: any) {
         setError(err?.body || err?.message || "Tải hồ sơ thất bại")
       } finally {

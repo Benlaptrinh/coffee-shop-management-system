@@ -2,11 +2,29 @@ export function toDigits(value: string) {
   return (value || "").toString().replace(/\D/g, "")
 }
 
+export function normalizeDecimal(value: string) {
+  const raw = (value || "").toString().replace(/,/g, ".")
+  const cleaned = raw.replace(/[^0-9.]/g, "")
+  if (!cleaned) return ""
+  const parts = cleaned.split(".")
+  let intPart = parts[0] || ""
+  const fracPart = parts.slice(1).join("")
+  intPart = intPart.replace(/^0+(?=\d)/, "")
+  if (intPart === "") intPart = "0"
+  if (!fracPart) return intPart
+  return `${intPart}.${fracPart}`
+}
+
 export function formatNumber(value: number | string | null | undefined) {
   if (value === null || value === undefined) return ""
   const digits = toDigits(String(value))
   if (!digits) return ""
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+}
+
+export function formatDecimal(value: number | string | null | undefined) {
+  if (value === null || value === undefined) return ""
+  return normalizeDecimal(String(value))
 }
 
 export function formatDate(value?: string | null) {

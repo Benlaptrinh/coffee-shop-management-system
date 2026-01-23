@@ -17,12 +17,11 @@ public class HangHoaKhoDto {
 
     private Long maHangHoa;
     private String tenHangHoa;
-    private Integer soLuong;
+    private BigDecimal soLuong;
     private String donVi;
     private BigDecimal donGia;
 
     private LocalDateTime ngayNhapGanNhat;
     private LocalDateTime ngayXuatGanNhat;
 }
-
 

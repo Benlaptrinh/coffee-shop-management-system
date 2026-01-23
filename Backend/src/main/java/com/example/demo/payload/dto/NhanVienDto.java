@@ -12,6 +12,7 @@ public class NhanVienDto {
     private String soDienThoai;
     private String diaChi;
     private String chucVu;
+    private Long chucVuId;
     private Long taiKhoanId;
     private boolean enabled;
 }

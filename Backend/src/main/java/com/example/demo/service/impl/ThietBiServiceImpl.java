@@ -76,8 +76,8 @@ public class ThietBiServiceImpl implements ThietBiService {
         if (thietBi.getNgayMua() == null) {
             throw new IllegalArgumentException("Ngày mua bắt buộc");
         }
-        if (thietBi.getNgayMua().isBefore(java.time.LocalDate.now())) {
-            throw new IllegalArgumentException("Ngày mua không được trước hôm nay");
+        if (thietBi.getNgayMua().isAfter(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Ngày mua không được sau hôm nay");
         }
         ThietBi saved = thietBiRepository.save(thietBi);
         log.info("Saved thietBi id={} soLuong={}", saved.getMaThietBi(), saved.getSoLuong());

@@ -35,7 +35,8 @@ public class HangHoa {
 
     private String tenHangHoa;
 
-    private Integer soLuong;
+    @Column(precision = 13, scale = 2)
+    private BigDecimal soLuong;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_don_vi_tinh")
@@ -44,4 +45,3 @@ public class HangHoa {
     @Column(precision = 13, scale = 2)
     private BigDecimal donGia;
 }
-

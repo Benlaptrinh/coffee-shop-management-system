@@ -172,6 +172,7 @@ public class SalesServiceImpl implements SalesService {
         }
         int requestedQty = quantity;
         HoaDon hd = getOrCreateInvoice(tableId, true);
+        assignCurrentNhanVien(hd);
         ThucDon item = thucDonRepository.findById(itemId).orElseThrow();
 
         ChiTietHoaDon existing = findExistingDetail(hd, item.getMaThucDon());
@@ -221,7 +222,7 @@ public class SalesServiceImpl implements SalesService {
             return;
         }
         HoaDon hd = hdOpt.get();
-        findCurrentNhanVien().ifPresent(hd::setNhanVien);
+        assignCurrentNhanVien(hd);
         if (hd.getTenKhachDat() == null && hd.getBan() != null) {
             chiTietDatBanRepository.findTopByBanOrderById_NgayGioDatDesc(hd.getBan())
                 .ifPresent(res -> {
@@ -301,7 +302,7 @@ public class SalesServiceImpl implements SalesService {
     @Override
     public void saveSelectedMenu(long banId, Map<String, String> params) {
         HoaDon hd = getOrCreateInvoice(banId, false);
-        findCurrentNhanVien().ifPresent(hd::setNhanVien);
+        assignCurrentNhanVien(hd);
 
         List<ThucDon> menu = thucDonRepository.findAll();
 
@@ -448,7 +449,15 @@ public class SalesServiceImpl implements SalesService {
         hd.setBan(toBan);
         hoaDonRepository.save(hd);
 
-        List<ChiTietDatBan> reservationsToMove = chiTietDatBanRepository.findByBan(fromBan);
+        List<ChiTietDatBan> reservations = chiTietDatBanRepository.findByBan(fromBan);
+        List<ChiTietDatBan> reservationsToMove = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (ChiTietDatBan res : reservations) {
+            LocalDateTime time = res.getNgayGioDat();
+            if (time != null && !now.isBefore(time.minusMinutes(5))) {
+                reservationsToMove.add(res);
+            }
+        }
         int movedReservations = reservationsToMove.size();
         if (!reservationsToMove.isEmpty()) {
             for (ChiTietDatBan res : reservationsToMove) {
@@ -859,6 +868,22 @@ public class SalesServiceImpl implements SalesService {
         }
         return taiKhoanRepository.findByTenDangNhap(auth.getName())
                 .flatMap(tk -> nhanVienRepository.findByTaiKhoan_MaTaiKhoan(tk.getMaTaiKhoan()));
+    }
+
+    private void assignCurrentNhanVien(HoaDon hoaDon) {
+        if (hoaDon == null) return;
+        Optional<NhanVien> nvOpt = findCurrentNhanVien();
+        if (nvOpt.isPresent()) {
+            hoaDon.setNhanVien(nvOpt.get());
+            return;
+        }
+        try {
+            NhanVien nv = getOrCreateCurrentNhanVien();
+            hoaDon.setNhanVien(nv);
+        } catch (Exception ex) {
+            log.warn("Không thể gắn nhân viên cho hóa đơn id={} reason={}",
+                    hoaDon.getMaHoaDon(), ex.getMessage());
+        }
     }
 
     private NhanVien getOrCreateCurrentNhanVien() {

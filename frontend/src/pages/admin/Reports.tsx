@@ -285,6 +285,13 @@ export default function AdminReports() {
     })
   }, [type, staffRows])
 
+  const onChangeType = (nextType: ReportType) => {
+    setType(nextType)
+    if (nextType === "STAFF") {
+      load("STAFF")
+    }
+  }
+
   return (
     <div className="content-wrapper report-page">
       <h1 className="report-title">Thống kê - báo cáo</h1>
@@ -305,7 +312,7 @@ export default function AdminReports() {
               name="type"
               value="FINANCE"
               checked={type === "FINANCE"}
-              onChange={() => setType("FINANCE")}
+              onChange={() => onChangeType("FINANCE")}
             />
             Thu - Chi
           </label>
@@ -315,7 +322,7 @@ export default function AdminReports() {
               name="type"
               value="SALES"
               checked={type === "SALES"}
-              onChange={() => setType("SALES")}
+              onChange={() => onChangeType("SALES")}
             />
             Bán hàng
           </label>
@@ -325,7 +332,7 @@ export default function AdminReports() {
               name="type"
               value="STAFF"
               checked={type === "STAFF"}
-              onChange={() => setType("STAFF")}
+              onChange={() => onChangeType("STAFF")}
             />
             Nhân viên
           </label>
@@ -363,9 +370,11 @@ export default function AdminReports() {
         </div>
 
         <div className="report-actions">
-          <button className="btn btn-primary" type="submit">
-            Xem
-          </button>
+          {type !== "STAFF" ? (
+            <button className="btn btn-primary" type="submit">
+              Xem
+            </button>
+          ) : null}
           <button className="btn btn-secondary no-print" type="button" onClick={() => window.print()}>
             In
           </button>

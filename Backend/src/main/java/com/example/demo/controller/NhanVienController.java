@@ -41,7 +41,21 @@ public class NhanVienController {
         d.setHoTen(nv.getHoTen());
         d.setSoDienThoai(nv.getSoDienThoai());
         d.setDiaChi(nv.getDiaChi());
-        d.setChucVu(nv.getChucVu() == null ? null : nv.getChucVu().getTenChucVu());
+        d.setChucVuId(nv.getChucVu() == null ? null : nv.getChucVu().getMaChucVu());
+        String chucVu = nv.getChucVu() == null ? null : nv.getChucVu().getTenChucVu();
+        if (chucVu == null || chucVu.isBlank()) {
+            if (nv.getTaiKhoan() != null && nv.getTaiKhoan().getQuyenHan() != null) {
+                String role = nv.getTaiKhoan().getQuyenHan().name();
+                if ("ADMIN".equals(role)) {
+                    chucVu = "Quản trị";
+                } else if ("NHANVIEN".equals(role)) {
+                    chucVu = "Nhân viên";
+                } else {
+                    chucVu = role;
+                }
+            }
+        }
+        d.setChucVu(chucVu);
         d.setTaiKhoanId(nv.getTaiKhoan() == null ? null : nv.getTaiKhoan().getMaTaiKhoan());
         d.setEnabled(nv.getEnabled() == null ? true : nv.getEnabled());
         return d;

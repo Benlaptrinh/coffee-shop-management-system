@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class HangHoaController {
      */
     @PostMapping("/xuat")
     public ResponseEntity<?> xuatHang(@RequestParam long hangHoaId,
-                                      @RequestParam int soLuong,
+                                      @RequestParam BigDecimal soLuong,
                                       @RequestParam String ngayXuat) {
         LocalDateTime when = LocalDateTime.parse(ngayXuat);
         hangHoaService.xuatHang(hangHoaId, soLuong, when, null);

@@ -1,7 +1,9 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,8 +42,8 @@ public class DonNhap {
     @JoinColumn(name = "ma_hang_hoa")
     private HangHoa hangHoa;
 
-    private Integer soLuong;
+    @Column(precision = 13, scale = 2)
+    private BigDecimal soLuong;
 
     private LocalDateTime ngayNhap;
 }
-

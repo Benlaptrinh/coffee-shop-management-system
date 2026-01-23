@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface HangHoaService {
      * @param ngayXuat ngayXuat
      * @param nhanVien nhanVien
      */
-    void xuatHang(long hangHoaId, int soLuong, LocalDateTime ngayXuat, NhanVien nhanVien);
+    void xuatHang(long hangHoaId, BigDecimal soLuong, LocalDateTime ngayXuat, NhanVien nhanVien);
     /**
      * Update hang hoa.
      *
@@ -54,4 +55,3 @@ public interface HangHoaService {
      */
     List<HangHoaKhoDto> searchHangHoa(String keyword);
 }
-

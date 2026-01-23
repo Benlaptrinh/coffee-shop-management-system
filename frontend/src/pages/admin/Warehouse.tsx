@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
-import { formatDateTime, formatNumber, toDigits } from "../../utils/format"
+import { formatDateTime, formatDecimal, formatNumber, normalizeDecimal, toDigits } from "../../utils/format"
 import Pagination from "../../components/Pagination"
 
 type Unit = { maDonViTinh: number; tenDonVi: string }
@@ -95,7 +95,7 @@ export default function AdminWarehouse() {
     }
     const errors: Record<string, string> = {}
     if (!payload.tenHangHoa) errors.tenHangHoa = "Tên hàng không được để trống"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!Number.isFinite(payload.soLuong) || payload.soLuong <= 0) errors.soLuong = "Số lượng phải lớn hơn 0"
     if (!payload.donGia || payload.donGia < 1) errors.donGia = "Đơn giá không hợp lệ"
     if (!payload.donViTinhId) errors.donViTinhId = "Vui lòng chọn đơn vị"
     if (!payload.ngayNhap) errors.ngayNhap = "Ngày nhập không được để trống"
@@ -121,7 +121,7 @@ export default function AdminWarehouse() {
     }
     const errors: Record<string, string> = {}
     if (!payload.hangHoaId) errors.hangHoaId = "Vui lòng chọn hàng hóa"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!Number.isFinite(payload.soLuong) || payload.soLuong <= 0) errors.soLuong = "Số lượng phải lớn hơn 0"
     if (!payload.ngayXuat) errors.ngayXuat = "Ngày xuất không được để trống"
     setXuatErrors(errors)
     if (Object.keys(errors).length > 0) return
@@ -148,7 +148,7 @@ export default function AdminWarehouse() {
     }
     const errors: Record<string, string> = {}
     if (!payload.tenHangHoa) errors.tenHangHoa = "Tên hàng không được để trống"
-    if (!payload.soLuong || payload.soLuong < 1) errors.soLuong = "Số lượng phải lớn hơn 0"
+    if (!Number.isFinite(payload.soLuong) || payload.soLuong <= 0) errors.soLuong = "Số lượng phải lớn hơn 0"
     if (!payload.donViTinhId) errors.donViTinhId = "Vui lòng chọn đơn vị"
     if (!payload.donGia || payload.donGia < 1) errors.donGia = "Đơn giá không hợp lệ"
     setEditErrors(errors)
@@ -169,7 +169,7 @@ export default function AdminWarehouse() {
     setEditForm({
       id: String(item.maHangHoa),
       tenHangHoa: item.tenHangHoa,
-      soLuongRaw: toDigits(String(item.soLuong)),
+      soLuongRaw: item.soLuong == null ? "" : String(item.soLuong),
       donGiaRaw: toDigits(String(item.donGia)),
       donViTinhId: matchUnit ? String(matchUnit.maDonViTinh) : "",
     })
@@ -211,10 +211,10 @@ export default function AdminWarehouse() {
                 <div className="form-group">
                   <label>Số lượng</label>
                   <input
-                    inputMode="numeric"
-                    value={formatNumber(nhapForm.soLuongRaw)}
+                    inputMode="decimal"
+                    value={formatDecimal(nhapForm.soLuongRaw)}
                     onChange={(event) => {
-                      setNhapForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
+                      setNhapForm((prev) => ({ ...prev, soLuongRaw: normalizeDecimal(event.target.value) }))
                       if (nhapErrors.soLuong) setNhapErrors((prev) => ({ ...prev, soLuong: "" }))
                     }}
                   />
@@ -291,10 +291,10 @@ export default function AdminWarehouse() {
                 <div className="form-group">
                   <label>Số lượng</label>
                   <input
-                    inputMode="numeric"
-                    value={formatNumber(editForm.soLuongRaw)}
+                    inputMode="decimal"
+                    value={formatDecimal(editForm.soLuongRaw)}
                     onChange={(event) => {
-                      setEditForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
+                      setEditForm((prev) => ({ ...prev, soLuongRaw: normalizeDecimal(event.target.value) }))
                       if (editErrors.soLuong) setEditErrors((prev) => ({ ...prev, soLuong: "" }))
                     }}
                   />
@@ -367,7 +367,7 @@ export default function AdminWarehouse() {
                 <option value="">-- Chọn --</option>
                 {items.map((item) => (
                   <option key={item.maHangHoa} value={item.maHangHoa}>
-                    {item.tenHangHoa} | {item.donVi} (Tồn: {formatNumber(item.soLuong)})
+                    {item.tenHangHoa} | {item.donVi} (Tồn: {formatDecimal(item.soLuong)})
                   </option>
                 ))}
               </select>
@@ -376,14 +376,14 @@ export default function AdminWarehouse() {
             <div className="form-row">
               <div className="form-group">
                 <label>Số lượng xuất</label>
-                <input
-                  inputMode="numeric"
-                  value={formatNumber(xuatForm.soLuongRaw)}
-                  onChange={(event) => {
-                    setXuatForm((prev) => ({ ...prev, soLuongRaw: toDigits(event.target.value) }))
-                    if (xuatErrors.soLuong) setXuatErrors((prev) => ({ ...prev, soLuong: "" }))
-                  }}
-                />
+                  <input
+                    inputMode="decimal"
+                    value={formatDecimal(xuatForm.soLuongRaw)}
+                    onChange={(event) => {
+                      setXuatForm((prev) => ({ ...prev, soLuongRaw: normalizeDecimal(event.target.value) }))
+                      if (xuatErrors.soLuong) setXuatErrors((prev) => ({ ...prev, soLuong: "" }))
+                    }}
+                  />
                 {xuatErrors.soLuong ? <div className="field-error">{xuatErrors.soLuong}</div> : null}
               </div>
               <div className="form-group">
@@ -445,7 +445,7 @@ export default function AdminWarehouse() {
             {filteredItems.slice((page - 1) * pageSize, page * pageSize).map((item) => (
               <tr key={item.maHangHoa}>
                 <td>{item.tenHangHoa}</td>
-                <td>{formatNumber(item.soLuong)}</td>
+                <td>{formatDecimal(item.soLuong)}</td>
                 <td>{item.donVi}</td>
                 <td className="text-right">{formatNumber(item.donGia)}</td>
                 <td>{formatDateTime(item.ngayNhapGanNhat)}</td>

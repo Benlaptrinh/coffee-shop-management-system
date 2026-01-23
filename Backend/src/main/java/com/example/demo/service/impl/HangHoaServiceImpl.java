@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class HangHoaServiceImpl implements HangHoaService {
             throw new IllegalArgumentException("Tên hàng hóa bắt buộc");
         }
         String tenHangHoa = normalizeTenHangHoa(form.getTenHangHoa());
-        if (form.getSoLuong() == null || form.getSoLuong() <= 0) {
+        if (form.getSoLuong() == null || form.getSoLuong().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Số lượng phải > 0");
         }
         if (form.getDonGia() == null || form.getDonGia().compareTo(java.math.BigDecimal.ZERO) < 0) {
@@ -165,7 +166,8 @@ public class HangHoaServiceImpl implements HangHoaService {
             hangHoa.setDonGia(form.getDonGia());
             hangHoa.setDonViTinh(donVi);
         } else {
-            hangHoa.setSoLuong(hangHoa.getSoLuong() + form.getSoLuong());
+            BigDecimal current = hangHoa.getSoLuong() == null ? BigDecimal.ZERO : hangHoa.getSoLuong();
+            hangHoa.setSoLuong(current.add(form.getSoLuong()));
             hangHoa.setDonGia(form.getDonGia());
         }
 
@@ -193,8 +195,8 @@ public class HangHoaServiceImpl implements HangHoaService {
      */
     @Override
     @Transactional
-    public void xuatHang(long hangHoaId, int soLuong, LocalDateTime ngayXuat, NhanVien nhanVien) {
-        if (soLuong <= 0) {
+    public void xuatHang(long hangHoaId, BigDecimal soLuong, LocalDateTime ngayXuat, NhanVien nhanVien) {
+        if (soLuong == null || soLuong.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Số lượng xuất phải > 0");
         }
         if (ngayXuat == null) {
@@ -205,12 +207,12 @@ public class HangHoaServiceImpl implements HangHoaService {
         }
         HangHoa hh = hangHoaRepo.findById(hangHoaId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hàng hóa"));
-        if (hh.getSoLuong() == null || hh.getSoLuong() < soLuong) {
+        if (hh.getSoLuong() == null || hh.getSoLuong().compareTo(soLuong) < 0) {
             throw new RuntimeException("Số lượng tồn kho không đủ");
         }
 
         
-        hh.setSoLuong(hh.getSoLuong() - soLuong);
+        hh.setSoLuong(hh.getSoLuong().subtract(soLuong));
         hangHoaRepo.save(hh);
 
         
