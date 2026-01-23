@@ -211,6 +211,6 @@ export default {
         tenKhachDat?: string
         items: Array<{ maThucDon: number; tenMon: string; soLuong: number; giaTaiThoiDiemBan: number; thanhTien: number }>
       }>(`/sales/invoices/${id}`),
-    cancelReservation: (tableId: number) => requestRoot(`/sales/ban/${tableId}/cancel-reservation`, { method: "POST" }),
+    cancelReservation: (tableId: number) => request(`/sales/tables/${tableId}/cancel-reservation`, { method: "POST" }),
   },
 }

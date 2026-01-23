@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
-import { formatDate, formatNumber } from "../../utils/format"
+import { formatDate, formatNumber, toDigits } from "../../utils/format"
 import Pagination from "../../components/Pagination"
 
 type Row = { ngay: string; thu: number; chi: number }
@@ -234,11 +234,10 @@ export default function AdminBudget() {
             <div className="form-group">
               <label>So tien</label>
               <input
-                type="number"
-                min={1}
-                value={form.soTien}
+                inputMode="numeric"
+                value={formatNumber(form.soTien)}
                 onChange={(event) => {
-                  setForm((prev) => ({ ...prev, soTien: event.target.value }))
+                  setForm((prev) => ({ ...prev, soTien: toDigits(event.target.value) }))
                   if (expenseErrors.soTien) setExpenseErrors((prev) => ({ ...prev, soTien: "" }))
                 }}
               />

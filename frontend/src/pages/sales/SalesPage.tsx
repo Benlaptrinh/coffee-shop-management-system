@@ -37,6 +37,7 @@ export default function SalesPage() {
   const [detail, setDetail] = useState<TableDetail | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [menuQty, setMenuQty] = useState<Record<number, string>>({})
+  const [menuErrors, setMenuErrors] = useState<Record<number, string>>({})
   const [modal, setModal] = useState<ModalType | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -93,6 +94,7 @@ export default function SalesPage() {
         })
       }
       setMenuQty(qtyMap)
+      setMenuErrors({})
     }
     if (type === "view" || type === "payment" || type === "split") {
       const tableDetail = await loadDetail(selectedId)
@@ -103,7 +105,7 @@ export default function SalesPage() {
       if (type === "split") {
         const next: Record<number, string> = {}
         tableDetail.invoice?.items?.forEach((it) => {
-          next[it.maThucDon] = "0"
+          next[it.maThucDon] = ""
         })
         setSplitQty(next)
       }
@@ -132,12 +134,18 @@ export default function SalesPage() {
     event.preventDefault()
     if (!selectedId) return
     const params: Record<string, string> = {}
+    const errors: Record<number, string> = {}
     menuItems.forEach((item) => {
       const raw = menuQty[item.maThucDon] ?? ""
       const normalized = toDigits(raw)
       const qty = normalized ? Number(normalized) : 0
+      if (qty > 10) {
+        errors[item.maThucDon] = "Tối đa 10"
+      }
       params[`qty_${item.maThucDon}`] = String(qty)
     })
+    setMenuErrors(errors)
+    if (Object.keys(errors).length) return
     try {
       await api.sales.menuSelection(selectedId, params)
       // Refresh data and show view modal for the same table
@@ -152,9 +160,9 @@ export default function SalesPage() {
   const onReserveSubmit = async () => {
     if (!selectedId) return
     const errors: Record<string, string> = {}
-    if (!reserveForm.tenKhach.trim()) errors.tenKhach = "Required"
-    if (!reserveForm.sdt.trim()) errors.sdt = "Required"
-    if (!reserveForm.ngayGio) errors.ngayGio = "Required"
+    if (!reserveForm.tenKhach.trim()) errors.tenKhach = "Không được để trống tên khách hàng"
+    if (!reserveForm.sdt.trim()) errors.sdt = "Không được để trống số điện thoại khách hàng"
+    if (!reserveForm.ngayGio) errors.ngayGio = "Không được để trống ngày đặt"
     setReserveErrors(errors)
     if (Object.keys(errors).length) return
     try {
@@ -407,8 +415,19 @@ export default function SalesPage() {
                         const digits = toDigits(event.target.value)
                         const normalized = digits === "" ? "" : digits.replace(/^0+(?=\d)/, "")
                         setMenuQty((prev) => ({ ...prev, [item.maThucDon]: normalized }))
+                        const qty = normalized ? Number(normalized) : 0
+                        if (qty > 10) {
+                          setMenuErrors((prev) => ({ ...prev, [item.maThucDon]: "Tối đa 10" }))
+                        } else if (menuErrors[item.maThucDon]) {
+                          setMenuErrors((prev) => {
+                            const next = { ...prev }
+                            delete next[item.maThucDon]
+                            return next
+                          })
+                        }
                       }}
                     />
+                    {menuErrors[item.maThucDon] ? <div className="field-error">{menuErrors[item.maThucDon]}</div> : null}
                   </td>
                 </tr>
               ))}
@@ -508,20 +527,36 @@ export default function SalesPage() {
         <div className="modal-form">
           <div className="form-group">
             <label>Ten khach</label>
-            <input value={reserveForm.tenKhach} onChange={(event) => setReserveForm((prev) => ({ ...prev, tenKhach: event.target.value }))} />
+            <input
+              value={reserveForm.tenKhach}
+              onChange={(event) => {
+                setReserveForm((prev) => ({ ...prev, tenKhach: event.target.value }))
+                if (reserveErrors.tenKhach) setReserveErrors((prev) => ({ ...prev, tenKhach: "" }))
+              }}
+            />
             {reserveErrors.tenKhach ? <div className="field-error">{reserveErrors.tenKhach}</div> : null}
           </div>
           <div className="form-group">
             <label>SDT</label>
             <input
               value={reserveForm.sdt}
-              onChange={(event) => setReserveForm((prev) => ({ ...prev, sdt: event.target.value.replace(/\\D/g, "") }))}
+              onChange={(event) => {
+                setReserveForm((prev) => ({ ...prev, sdt: event.target.value.replace(/\\D/g, "") }))
+                if (reserveErrors.sdt) setReserveErrors((prev) => ({ ...prev, sdt: "" }))
+              }}
             />
             {reserveErrors.sdt ? <div className="field-error">{reserveErrors.sdt}</div> : null}
           </div>
           <div className="form-group">
             <label>Ngay gio den</label>
-            <input type="datetime-local" value={reserveForm.ngayGio} onChange={(event) => setReserveForm((prev) => ({ ...prev, ngayGio: event.target.value }))} />
+            <input
+              type="datetime-local"
+              value={reserveForm.ngayGio}
+              onChange={(event) => {
+                setReserveForm((prev) => ({ ...prev, ngayGio: event.target.value }))
+                if (reserveErrors.ngayGio) setReserveErrors((prev) => ({ ...prev, ngayGio: "" }))
+              }}
+            />
             {reserveErrors.ngayGio ? <div className="field-error">{reserveErrors.ngayGio}</div> : null}
           </div>
         </div>
@@ -640,13 +675,13 @@ export default function SalesPage() {
                 <td className="text-center">{it.soLuong}</td>
                 <td className="text-center">
                   <input
-                    type="number"
-                    min={0}
-                    max={it.soLuong}
-                    value={splitQty[it.maThucDon] || "0"}
-                    onChange={(event) =>
-                      setSplitQty((prev) => ({ ...prev, [it.maThucDon]: event.target.value }))
-                    }
+                    inputMode="numeric"
+                    value={splitQty[it.maThucDon] ?? ""}
+                    onChange={(event) => {
+                      const digits = toDigits(event.target.value)
+                      const normalized = digits === "" ? "" : digits.replace(/^0+(?=\d)/, "")
+                      setSplitQty((prev) => ({ ...prev, [it.maThucDon]: normalized }))
+                    }}
                   />
                 </td>
               </tr>

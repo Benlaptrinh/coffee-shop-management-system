@@ -9149,3 +9149,134 @@ Caused by: org.hibernate.NonUniqueResultException: Query did not return a unique
 2026-01-22 19:43:58.432 INFO  [http-nio-8080-exec-6] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
 2026-01-22 19:43:58.434 INFO  [http-nio-8080-exec-6] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
 2026-01-22 19:44:09.660 INFO  [http-nio-8080-exec-9] c.e.d.r.s.i.SalesReportServiceImpl - Sales report from 2026-01-01 to 2026-01-22 rows=8
+2026-01-22 19:48:21.468 INFO  [http-nio-8080-exec-7] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:48:21.469 INFO  [http-nio-8080-exec-7] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:18.271 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-01-22 19:59:18.272 INFO  [Thread-131] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-22 19:59:18.272 INFO  [tomcat-shutdown] o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8080"]
+2026-01-22 19:59:18.274 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-22 19:59:18.274 INFO  [Thread-131] o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8080"]
+2026-01-22 19:59:18.276 INFO  [Thread-131] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22 19:59:18.276 INFO  [Thread-131] com.zaxxer.hikari.HikariDataSource - HikariPool-33 - Shutdown initiated...
+2026-01-22 19:59:18.279 INFO  [Thread-131] com.zaxxer.hikari.HikariDataSource - HikariPool-33 - Shutdown completed.
+2026-01-22 19:59:18.406 INFO  [restartedMain] com.example.demo.DemoApplication - Starting DemoApplication using Java 17.0.16 with PID 36107 (/Users/nguyenhuuviet/Work/Project_Git/QuanCaphePro/Backend/target/classes started by root in /Users/nguyenhuuviet/Work/Project_Git/QuanCaphePro)
+2026-01-22 19:59:18.406 DEBUG [restartedMain] com.example.demo.DemoApplication - Running with Spring Boot v3.5.9, Spring v6.2.15
+2026-01-22 19:59:18.408 INFO  [restartedMain] com.example.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-22 19:59:18.484 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-22 19:59:18.494 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 9 ms. Found 15 JPA repository interfaces.
+2026-01-22 19:59:18.523 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-22 19:59:18.523 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-01-22 19:59:18.523 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-22 19:59:18.523 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-01-22 19:59:18.534 INFO  [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-01-22 19:59:18.534 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 126 ms
+2026-01-22 19:59:18.547 INFO  [restartedMain] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-22 19:59:18.548 INFO  [restartedMain] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-01-22 19:59:18.550 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-22 19:59:18.550 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-34 - Starting...
+2026-01-22 19:59:18.561 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-34 - Added connection com.mysql.cj.jdbc.ConnectionImpl@64238c46
+2026-01-22 19:59:18.561 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-34 - Start completed.
+2026-01-22 19:59:18.563 WARN  [restartedMain] org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-22 19:59:18.563 INFO  [restartedMain] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-34)']
+	Database driver: undefined/unknown
+	Database version: 8.0.44
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-22 19:59:18.605 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-22 19:59:18.660 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22 19:59:18.674 DEBUG [restartedMain] c.e.d.s.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-01-22 19:59:18.684 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-01-22 19:59:18.743 WARN  [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-22 19:59:18.765 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-01-22 19:59:18.781 WARN  [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration - Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2026-01-22 19:59:18.794 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-01-22 19:59:18.797 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-01-22 19:59:18.798 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-22 19:59:18.802 INFO  [restartedMain] com.example.demo.DemoApplication - Started DemoApplication in 0.402 seconds (process running for 8571.111)
+2026-01-22 19:59:18.806 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-22 19:59:24.838 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-22 19:59:24.838 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-22 19:59:24.839 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-01-22 19:59:25.006 INFO  [http-nio-8080-exec-1] c.e.demo.controller.AuthController - User logged in: admin
+2026-01-22 19:59:26.485 INFO  [http-nio-8080-exec-2] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:26.487 INFO  [http-nio-8080-exec-2] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:30.261 INFO  [http-nio-8080-exec-3] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:30.264 INFO  [http-nio-8080-exec-3] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.283 INFO  [http-nio-8080-exec-4] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.287 INFO  [http-nio-8080-exec-4] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.651 INFO  [http-nio-8080-exec-5] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.652 INFO  [http-nio-8080-exec-5] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.842 INFO  [http-nio-8080-exec-6] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:31.843 INFO  [http-nio-8080-exec-6] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.022 INFO  [http-nio-8080-exec-7] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.025 INFO  [http-nio-8080-exec-7] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.190 INFO  [http-nio-8080-exec-8] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.192 INFO  [http-nio-8080-exec-8] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.381 INFO  [http-nio-8080-exec-9] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:32.382 INFO  [http-nio-8080-exec-9] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 19:59:45.188 INFO  [http-nio-8080-exec-1] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-22 to 2026-01-22 rows=1
+2026-01-22 19:59:45.190 INFO  [http-nio-8080-exec-1] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-22 to 2026-01-22 rows=1
+2026-01-22 20:00:06.473 INFO  [http-nio-8080-exec-3] c.e.d.r.s.i.SalesReportServiceImpl - Sales report from 2026-01-22 to 2026-01-22 rows=1
+2026-01-22 20:00:22.437 INFO  [http-nio-8080-exec-5] c.e.d.r.s.i.StaffReportServiceImpl - Staff summary rows=2
+2026-01-22 20:00:26.271 INFO  [http-nio-8080-exec-7] c.e.d.r.s.i.SalesReportServiceImpl - Sales report from 2026-01-01 to 2026-01-31 rows=8
+2026-01-22 20:00:38.921 INFO  [http-nio-8080-exec-9] c.e.d.r.s.i.SalesReportServiceImpl - Sales report from 2025-01-01 to 2026-01-31 rows=10
+2026-01-22 20:00:50.511 INFO  [http-nio-8080-exec-1] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2025-01-01 to 2026-01-31 rows=13
+2026-01-22 20:00:50.513 INFO  [http-nio-8080-exec-1] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2025-01-01 to 2026-01-31 rows=13
+2026-01-22 20:01:01.032 INFO  [http-nio-8080-exec-2] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 20:01:01.033 INFO  [http-nio-8080-exec-2] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 20:01:01.503 INFO  [http-nio-8080-exec-3] c.e.d.s.impl.NganSachServiceImpl - ThuChi summary from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 20:01:01.504 INFO  [http-nio-8080-exec-3] c.e.d.r.s.i.FinanceReportServiceImpl - Finance report from 2026-01-01 to 2026-01-22 rows=10
+2026-01-22 20:01:04.710 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-01-22 20:01:04.712 INFO  [Thread-135] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-22 20:01:04.713 INFO  [tomcat-shutdown] o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8080"]
+2026-01-22 20:01:04.714 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-22 20:01:04.714 INFO  [Thread-135] o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8080"]
+2026-01-22 20:01:04.716 INFO  [Thread-135] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22 20:01:04.716 INFO  [Thread-135] com.zaxxer.hikari.HikariDataSource - HikariPool-34 - Shutdown initiated...
+2026-01-22 20:01:04.718 INFO  [Thread-135] com.zaxxer.hikari.HikariDataSource - HikariPool-34 - Shutdown completed.
+2026-01-22 20:01:04.869 INFO  [restartedMain] com.example.demo.DemoApplication - Starting DemoApplication using Java 17.0.16 with PID 36107 (/Users/nguyenhuuviet/Work/Project_Git/QuanCaphePro/Backend/target/classes started by root in /Users/nguyenhuuviet/Work/Project_Git/QuanCaphePro)
+2026-01-22 20:01:04.869 DEBUG [restartedMain] com.example.demo.DemoApplication - Running with Spring Boot v3.5.9, Spring v6.2.15
+2026-01-22 20:01:04.869 INFO  [restartedMain] com.example.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-22 20:01:04.972 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-22 20:01:04.982 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 9 ms. Found 15 JPA repository interfaces.
+2026-01-22 20:01:05.017 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-22 20:01:05.017 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-01-22 20:01:05.017 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-22 20:01:05.017 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-01-22 20:01:05.028 INFO  [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-01-22 20:01:05.028 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 158 ms
+2026-01-22 20:01:05.044 INFO  [restartedMain] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-22 20:01:05.044 INFO  [restartedMain] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-01-22 20:01:05.046 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-22 20:01:05.046 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-35 - Starting...
+2026-01-22 20:01:05.058 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-35 - Added connection com.mysql.cj.jdbc.ConnectionImpl@66fa35df
+2026-01-22 20:01:05.058 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-35 - Start completed.
+2026-01-22 20:01:05.059 WARN  [restartedMain] org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-22 20:01:05.059 INFO  [restartedMain] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-35)']
+	Database driver: undefined/unknown
+	Database version: 8.0.44
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-22 20:01:05.104 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-22 20:01:05.162 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22 20:01:05.176 DEBUG [restartedMain] c.e.d.s.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-01-22 20:01:05.186 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-01-22 20:01:05.246 WARN  [restartedMain] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-22 20:01:05.269 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-01-22 20:01:05.285 WARN  [restartedMain] o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration - Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2026-01-22 20:01:05.297 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-01-22 20:01:05.300 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-01-22 20:01:05.301 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-22 20:01:05.305 INFO  [restartedMain] com.example.demo.DemoApplication - Started DemoApplication in 0.444 seconds (process running for 8677.615)
+2026-01-22 20:01:05.338 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-22 20:01:18.543 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-22 20:01:18.545 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-22 20:01:18.546 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-22 20:01:18.546 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-35 - Shutdown initiated...
+2026-01-22 20:01:18.548 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-35 - Shutdown completed.

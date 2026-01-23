@@ -234,6 +234,24 @@ public class SalesController {
         }
     }
     /**
+     * Cancels a reservation.
+     * @param tableId table id
+     * @return response entity
+     */
+    @PostMapping("/tables/{tableId}/cancel-reservation")
+    public ResponseEntity<?> cancelReservation(@PathVariable long tableId) {
+        try {
+            salesService.cancelReservation(tableId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
+        }
+    }
+    /**
      * Moves a table.
      * @param payload payload
      * @return response entity
