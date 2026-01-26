@@ -1,6 +1,15 @@
+// @ts-ignore
+import axios from "axios"
+import type { UserDto, NhanVienDto } from "./types/api"
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"
-const API_ROOT = API_BASE.replace(/\/api\/?$/, "")
 const AUTH_MESSAGE_KEY = "auth_message"
+
+const instance = axios.create({
+  baseURL: API_BASE,
+  headers: { "Content-Type": "application/json" },
+  timeout: 15000,
+})
 
 let token: string | null = localStorage.getItem("token")
 
@@ -8,55 +17,54 @@ function setToken(t: string | null) {
   token = t
   if (t) localStorage.setItem("token", t)
   else localStorage.removeItem("token")
+  instance.defaults.headers.common["Authorization"] = t ? `Bearer ${t}` : undefined
 }
 
-type RequestOptions = Omit<RequestInit, "body"> & { body?: any }
+instance.interceptors.request.use((config: any) => {
+  if (token) config.headers = { ...config.headers, Authorization: `Bearer ${token}` }
+  return config
+})
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  return requestUrl<T>(API_BASE + path, options)
-}
-
-async function requestRoot<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  return requestUrl<T>(API_ROOT + path, options)
-}
-
-async function requestUrl<T>(url: string, options: RequestOptions = {}): Promise<T> {
-  const headers = new Headers(options.headers || {})
-  if (token) headers.set("Authorization", `Bearer ${token}`)
-
-  let body = options.body
-  const isFormData = typeof FormData !== "undefined" && body instanceof FormData
-  if (body !== undefined && body !== null && !isFormData) {
-    if (typeof body === "object") {
-      body = JSON.stringify(body)
-    }
-    if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json")
-  }
-
-  const res = await fetch(url, { ...options, headers, body })
-  const txt = await res.text()
-  let data: any = null
-  try {
-    data = txt ? JSON.parse(txt) : null
-  } catch (err) {
-    data = txt
-  }
-  if (!res.ok) {
-    const msg = (data && (data.message || data.error)) || res.statusText
-    const error = new Error(typeof msg === "string" ? msg : JSON.stringify(msg))
-    ;(error as any).status = res.status
-    ;(error as any).body = typeof data === "string" ? data : JSON.stringify(data)
-    if ((res.status === 401 || res.status === 403) && token) {
+instance.interceptors.response.use(
+  (res: any) => res,
+  (err: any) => {
+    const res = err.response
+    // Do NOT perform direct navigation here — emit event for UI to handle
+    if (res && (res.status === 401 || res.status === 403)) {
+      // store a message for UI if needed
       localStorage.setItem(AUTH_MESSAGE_KEY, "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.")
-      setToken(null)
-      localStorage.removeItem("auth_user")
-      if (window.location.pathname !== "/login") {
-        window.location.replace("/login")
-      }
+      // emit unauthorized event
+      apiEvents.emit("unauthorized")
     }
-    throw error
+    return Promise.reject(err)
   }
-  return data as T
+)
+
+// simple event emitter for api events (unauthorized)
+const apiEvents = {
+  handlers: {} as Record<string, Array<() => void>>,
+  on(event: string, fn: () => void) {
+    if (!this.handlers[event]) this.handlers[event] = []
+    this.handlers[event].push(fn)
+    return () => {
+      this.handlers[event] = this.handlers[event].filter((h) => h !== fn)
+    }
+  },
+  emit(event: string) {
+    ;(this.handlers[event] || []).forEach((fn) => {
+      try { fn() } catch (_) {}
+    })
+  },
+}
+
+async function request<T = any>(path: string, options: any = {}): Promise<T> {
+  const method = (options.method || "GET").toUpperCase()
+  const url = path
+  const config: any = { method, url }
+  if (options.body) config.data = options.body
+  if (options.params) config.params = options.params
+  const res = await instance.request(config)
+  return res.data
 }
 
 export default {
@@ -69,9 +77,9 @@ export default {
       ),
   },
   users: {
-    me: () => request<{ id: number; username: string; role: string; avatar: string | null; enabled: boolean }>("/users/me"),
-    list: () => request<Array<{ id: number; username: string; role: string; avatar: string | null; enabled: boolean }>>("/users"),
-    get: (id: number) => request<{ id: number; username: string; role: string; avatar: string | null; enabled: boolean }>(`/users/${id}`),
+    me: () => request<UserDto>("/users/me"),
+    list: () => request<UserDto[]>("/users"),
+    get: (id: number) => request<UserDto>(`/users/${id}`),
     create: (payload: { username: string; password: string; role: string; avatar?: string; enabled?: boolean }) =>
       request("/users", { method: "POST", body: payload }),
     update: (id: number, payload: { password?: string; role?: string; avatar?: string; enabled?: boolean }) =>
@@ -82,10 +90,8 @@ export default {
       request("/users/me/change-password", { method: "POST", body: payload }),
   },
   nhanvien: {
-    list: (q?: string) =>
-      request<Array<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; chucVuId?: number; taiKhoanId?: number; enabled: boolean }>>(
-        "/nhanvien" + (q ? `?q=${encodeURIComponent(q)}` : "")
-      ),
+    list: (params?: { q?: string }) =>
+      request<NhanVienDto[]>("/nhanvien", { method: "GET", params }),
     get: (id: number) =>
       request<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; chucVuId?: number; taiKhoanId?: number; enabled: boolean }>(
         `/nhanvien/${id}`
