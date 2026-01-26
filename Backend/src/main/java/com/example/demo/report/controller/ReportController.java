@@ -59,10 +59,10 @@ public class ReportController {
             from = LocalDate.parse(fromStr, DATE_FORMAT);
             to = LocalDate.parse(toStr, DATE_FORMAT);
         } catch (DateTimeParseException ex) {
-            return ResponseEntity.badRequest().body("Ngay khong hop le");
+            throw new IllegalArgumentException("Ngày không hợp lệ");
         }
         if (from.isAfter(to)) {
-            return ResponseEntity.badRequest().body("Tu ngay khong duoc sau den ngay");
+            throw new IllegalArgumentException("Từ ngày không được sau đến ngày");
         }
         List<ReportRowDto> data = financeReportService.getFinanceReport(from, to);
         return ResponseEntity.ok(data);
@@ -82,10 +82,10 @@ public class ReportController {
             from = LocalDate.parse(fromStr, DATE_FORMAT);
             to = LocalDate.parse(toStr, DATE_FORMAT);
         } catch (DateTimeParseException ex) {
-            return ResponseEntity.badRequest().body("Ngay khong hop le");
+            throw new IllegalArgumentException("Ngày không hợp lệ");
         }
         if (from.isAfter(to)) {
-            return ResponseEntity.badRequest().body("Tu ngay khong duoc sau den ngay");
+            throw new IllegalArgumentException("Từ ngày không được sau đến ngày");
         }
         List<SalesByDayRowDto> data = salesReportService.getSalesByDay(from, to);
         return ResponseEntity.ok(data);

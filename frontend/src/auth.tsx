@@ -46,6 +46,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [token])
 
+  // subscribe to api unauthorized events to handle logout+redirect in UI
+  useEffect(() => {
+    const unsub = api.onUnauthorized(() => {
+      setToken(null)
+      setUser(null)
+      localStorage.removeItem(USER_KEY)
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login")
+      }
+    })
+    return () => unsub && unsub()
+  }, [])
+
   const login = (payload: { token: string; username: string; roles: string[] }) => {
     setToken(payload.token)
     const nextUser = { username: payload.username, roles: payload.roles }

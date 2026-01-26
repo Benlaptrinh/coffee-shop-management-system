@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,12 +63,14 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Unauthorized");
+        }
         String username = authentication.getName();
         return taiKhoanService.findByUsername(username)
                 .map(UserController::toDto)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
     }
     /**
      * Changes the user password.
@@ -77,12 +80,16 @@ public class UserController {
      */
     @PostMapping("/me/change-password")
     public ResponseEntity<?> changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest req) {
-        if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Unauthorized");
+        }
         String username = authentication.getName();
         TaiKhoan tk = taiKhoanService.findByUsername(username).orElse(null);
-        if (tk == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        if (tk == null) {
+            throw new java.util.NoSuchElementException("User not found");
+        }
         if (!passwordEncoder.matches(req.getOldPassword(), tk.getMatKhau())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password is incorrect");
+            throw new IllegalArgumentException("Old password is incorrect");
         }
         // encode new password before saving
         tk.setMatKhau(passwordEncoder.encode(req.getNewPassword()));
@@ -103,7 +110,7 @@ public class UserController {
         try {
             if (req.getRole() != null) tk.setQuyenHan(com.example.demo.enums.Role.valueOf(req.getRole()));
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().build();
+            throw new IllegalArgumentException("Invalid role: " + req.getRole());
         }
         tk.setAnh(req.getAvatar());
         tk.setEnabled(req.getEnabled() == null ? true : req.getEnabled());
@@ -127,7 +134,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable long id) {
         return taiKhoanService.findById(id).map(UserController::toDto).map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
     }
     /**
      * Updates user.
@@ -138,10 +145,16 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable long id, @Valid @RequestBody UpdateUserRequest req) {
         TaiKhoan existing = taiKhoanService.findById(id).orElse(null);
-        if (existing == null) return ResponseEntity.notFound().build();
+        if (existing == null) {
+            throw new java.util.NoSuchElementException("User not found");
+        }
         if (req.getPassword() != null && !req.getPassword().isBlank()) existing.setMatKhau(passwordEncoder.encode(req.getPassword()));
         if (req.getRole() != null) {
-            try { existing.setQuyenHan(com.example.demo.enums.Role.valueOf(req.getRole())); } catch (IllegalArgumentException ex) {}
+            try {
+                existing.setQuyenHan(com.example.demo.enums.Role.valueOf(req.getRole()));
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Invalid role: " + req.getRole());
+            }
         }
         if (req.getAvatar() != null) existing.setAnh(req.getAvatar());
         if (req.getEnabled() != null) existing.setEnabled(req.getEnabled());
@@ -161,7 +174,9 @@ public class UserController {
             Object val = body.get("enabled");
             boolean enabled = Boolean.parseBoolean(String.valueOf(val));
             TaiKhoan tk = taiKhoanService.findById(id).orElse(null);
-            if (tk == null) return ResponseEntity.notFound().build();
+            if (tk == null) {
+                throw new java.util.NoSuchElementException("User not found");
+            }
             tk.setEnabled(enabled);
             taiKhoanService.save(tk);
             return ResponseEntity.ok().build();

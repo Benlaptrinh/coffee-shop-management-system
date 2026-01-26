@@ -50,7 +50,9 @@ export default function AdminEmployeesForm({ mode }: Props) {
     api.nhanvien
       .get(id)
       .then(async (nv) => {
-        const matched = chucVus.find((cv) => cv.tenChucVu === nv.chucVu)
+        const matched = nv.chucVuId
+          ? chucVus.find((cv) => cv.maChucVu === nv.chucVuId)
+          : chucVus.find((cv) => cv.tenChucVu === nv.chucVu)
         setForm({
           hoTen: nv.hoTen || "",
           diaChi: nv.diaChi || "",
@@ -128,7 +130,10 @@ export default function AdminEmployeesForm({ mode }: Props) {
       enabled: form.enabled,
     }
     if (form.chucVuId) {
-      payload.chucVu = { maChucVu: Number(form.chucVuId) }
+      payload.chucVuId = Number(form.chucVuId)
+    }
+    if (hasAccount && taiKhoanId) {
+      payload.taiKhoanId = taiKhoanId
     }
     setLoading(true)
     try {
@@ -142,7 +147,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
         })
         newUserId = created?.id || null
         if (newUserId) {
-          payload.taiKhoan = { maTaiKhoan: newUserId }
+          payload.taiKhoanId = newUserId
         }
         await api.nhanvien.create(payload)
       } else {
@@ -162,7 +167,7 @@ export default function AdminEmployeesForm({ mode }: Props) {
           })
           const newUserId = created?.id || null
           if (newUserId) {
-            payload.taiKhoan = { maTaiKhoan: newUserId }
+            payload.taiKhoanId = newUserId
           }
         }
         await api.nhanvien.update(id, payload)

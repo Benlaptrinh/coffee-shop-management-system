@@ -29,6 +29,17 @@ instance.interceptors.response.use(
   (res: any) => res,
   (err: any) => {
     const res = err.response
+    if (res) {
+      const data = res.data
+      if (data && typeof data === "object") {
+        err.body = data.message || data.error || err.message
+        err.status = data.status || res.status
+        err.errors = data.errors
+      } else if (typeof data === "string") {
+        err.body = data
+        err.status = res.status
+      }
+    }
     // Do NOT perform direct navigation here — emit event for UI to handle
     if (res && (res.status === 401 || res.status === 403)) {
       // store a message for UI if needed
@@ -57,6 +68,21 @@ const apiEvents = {
   },
 }
 
+type ApiEnvelope<T> = {
+  timestamp?: string
+  status?: number
+  message?: string
+  path?: string
+  data: T
+}
+
+function unwrapResponse<T>(payload: any): T {
+  if (payload && typeof payload === "object" && "data" in payload && "status" in payload && "path" in payload) {
+    return (payload as ApiEnvelope<T>).data
+  }
+  return payload as T
+}
+
 async function request<T = any>(path: string, options: any = {}): Promise<T> {
   const method = (options.method || "GET").toUpperCase()
   const url = path
@@ -64,7 +90,7 @@ async function request<T = any>(path: string, options: any = {}): Promise<T> {
   if (options.body) config.data = options.body
   if (options.params) config.params = options.params
   const res = await instance.request(config)
-  return res.data
+  return unwrapResponse<T>(res.data)
 }
 
 export default {
@@ -96,8 +122,10 @@ export default {
       request<{ maNhanVien: number; hoTen: string; soDienThoai?: string; diaChi?: string; chucVu?: string; chucVuId?: number; taiKhoanId?: number; enabled: boolean }>(
         `/nhanvien/${id}`
       ),
-    create: (payload: any) => request("/nhanvien", { method: "POST", body: payload }),
-    update: (id: number, payload: any) => request(`/nhanvien/${id}`, { method: "PUT", body: payload }),
+    create: (payload: { hoTen: string; diaChi?: string; soDienThoai?: string; enabled?: boolean; chucVuId?: number; taiKhoanId?: number }) =>
+      request("/nhanvien", { method: "POST", body: payload }),
+    update: (id: number, payload: { hoTen: string; diaChi?: string; soDienThoai?: string; enabled?: boolean; chucVuId?: number; taiKhoanId?: number }) =>
+      request(`/nhanvien/${id}`, { method: "PUT", body: payload }),
     delete: (id: number) => request(`/nhanvien/${id}`, { method: "DELETE" }),
   },
   thucdon: {
@@ -203,7 +231,7 @@ export default {
       request(`/sales/tables/${tableId}/reserve`, { method: "POST", body: payload }),
     move: (payload: { fromBanId: number; toBanId: number }) => request("/sales/move", { method: "POST", body: payload }),
     merge: (payload: { targetBanId: number; sourceBanId: number }) => request("/sales/merge", { method: "POST", body: payload }),
-    split: (payload: { toBanId: number; items: Array<{ fromBanId: number; thucDonId: number; soLuong: number }> }) =>
+    split: (payload: { fromBanId: number; toBanId: number; items: Array<{ thucDonId: number; soLuong: number }> }) =>
       request("/sales/split", { method: "POST", body: payload }),
     invoice: (id: number) =>
       request<{
@@ -219,4 +247,5 @@ export default {
       }>(`/sales/invoices/${id}`),
     cancelReservation: (tableId: number) => request(`/sales/tables/${tableId}/cancel-reservation`, { method: "POST" }),
   },
+  onUnauthorized: (fn: () => void) => apiEvents.on("unauthorized", fn),
 }

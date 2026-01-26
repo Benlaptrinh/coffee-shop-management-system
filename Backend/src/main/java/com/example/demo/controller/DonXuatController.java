@@ -42,6 +42,7 @@ public class DonXuatController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<DonXuat> get(@PathVariable long id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return repo.findById(id).map(ResponseEntity::ok)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy đơn xuất"));
     }
 }

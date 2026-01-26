@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
 import Modal from "../../components/Modal"
 import { formatDateTime, formatNumber, toDigits } from "../../utils/format"
+import { useForm } from "react-hook-form"
 
 type Table = { maBan: number; tenBan: string; tinhTrang: string }
 type MenuItem = { maThucDon: number; tenMon: string; giaHienTai: number }
@@ -36,8 +37,10 @@ export default function SalesPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detail, setDetail] = useState<TableDetail | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
-  const [menuQty, setMenuQty] = useState<Record<number, string>>({})
   const [menuErrors, setMenuErrors] = useState<Record<number, string>>({})
+  const { register, handleSubmit, reset, getValues } = useForm<Record<string, string>>({
+    defaultValues: {},
+  })
   const [modal, setModal] = useState<ModalType | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -87,13 +90,17 @@ export default function SalesPage() {
     if (type === "menu") {
       const [menu, tableDetail] = await Promise.all([api.sales.menu(), loadDetail(selectedId)])
       setMenuItems(menu)
-      const qtyMap: Record<number, string> = {}
+      const defaults: Record<string, string> = {}
       if (tableDetail.invoice?.items) {
         tableDetail.invoice.items.forEach((it) => {
-          qtyMap[it.maThucDon] = String(it.soLuong)
+          defaults[`qty_${it.maThucDon}`] = String(it.soLuong)
         })
       }
-      setMenuQty(qtyMap)
+      menu.forEach((m) => {
+        const k = `qty_${m.maThucDon}`
+        if (!(k in defaults)) defaults[k] = ""
+      })
+      reset(defaults)
       setMenuErrors({})
     }
     if (type === "view" || type === "payment" || type === "split") {
@@ -130,14 +137,13 @@ export default function SalesPage() {
 
   const closeModal = () => setModal(null)
 
-  const onMenuSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
+  const onMenuSubmit = handleSubmit(async (data) => {
     if (!selectedId) return
     const params: Record<string, string> = {}
     const errors: Record<number, string> = {}
     menuItems.forEach((item) => {
-      const raw = menuQty[item.maThucDon] ?? ""
-      const normalized = toDigits(raw)
+      const raw = data[`qty_${item.maThucDon}`] ?? ""
+      const normalized = toDigits(String(raw))
       const qty = normalized ? Number(normalized) : 0
       if (qty > 10) {
         errors[item.maThucDon] = "Tối đa 10"
@@ -155,7 +161,7 @@ export default function SalesPage() {
     } catch (err: any) {
       setError(err?.body || err?.message || "Lưu thực đơn thất bại")
     }
-  }
+  })
 
   const onReserveSubmit = async () => {
     if (!selectedId) return
@@ -244,13 +250,12 @@ export default function SalesPage() {
     const items = Object.entries(splitQty)
       .map(([id, qty]) => ({ thucDonId: Number(id), soLuong: Number(toDigits(qty || "0")) }))
       .filter((it) => it.soLuong > 0)
-      .map((it) => ({ ...it, fromBanId: selectedId }))
     if (!items.length) {
       setError("Chọn ít nhất một món để tách")
       return
     }
     try {
-      await api.sales.split({ toBanId: Number(splitTo), items })
+      await api.sales.split({ fromBanId: selectedId, toBanId: Number(splitTo), items })
       closeModal()
       await loadTables()
     } catch (err: any) {
@@ -410,22 +415,20 @@ export default function SalesPage() {
                   <td className="text-center">
                     <input
                       inputMode="numeric"
-                      value={menuQty[item.maThucDon] ?? ""}
-                      onChange={(event) => {
-                        const digits = toDigits(event.target.value)
-                        const normalized = digits === "" ? "" : digits.replace(/^0+(?=\d)/, "")
-                        setMenuQty((prev) => ({ ...prev, [item.maThucDon]: normalized }))
-                        const qty = normalized ? Number(normalized) : 0
-                        if (qty > 10) {
-                          setMenuErrors((prev) => ({ ...prev, [item.maThucDon]: "Tối đa 10" }))
-                        } else if (menuErrors[item.maThucDon]) {
-                          setMenuErrors((prev) => {
-                            const next = { ...prev }
-                            delete next[item.maThucDon]
-                            return next
-                          })
-                        }
-                      }}
+                      {...register(`qty_${item.maThucDon}`, {
+                        onChange: (e: any) => {
+                          const digits = toDigits(e.target.value)
+                          const normalized = digits === "" ? "" : digits.replace(/^0+(?=\d)/, "")
+                          e.target.value = normalized
+                          if (menuErrors[item.maThucDon]) {
+                            setMenuErrors((prev) => {
+                              const next = { ...prev }
+                              delete next[item.maThucDon]
+                              return next
+                            })
+                          }
+                        },
+                      })}
                     />
                     {menuErrors[item.maThucDon] ? <div className="field-error">{menuErrors[item.maThucDon]}</div> : null}
                   </td>

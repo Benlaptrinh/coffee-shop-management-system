@@ -4,7 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.demo.entity.NhanVien;
+import com.example.demo.entity.ChucVu;
+import com.example.demo.entity.TaiKhoan;
 import com.example.demo.payload.dto.NhanVienDto;
+import com.example.demo.payload.request.NhanVienRequest;
+import com.example.demo.repository.ChucVuRepository;
+import com.example.demo.repository.TaiKhoanRepository;
 import com.example.demo.service.NhanVienService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +31,18 @@ import jakarta.validation.Valid;
 public class NhanVienController {
 
     private final NhanVienService nhanVienService;
+    private final ChucVuRepository chucVuRepository;
+    private final TaiKhoanRepository taiKhoanRepository;
     /**
      * Creates a new Nhan Vien Controller.
      * @param nhanVienService nhan vien service
      */
-    public NhanVienController(NhanVienService nhanVienService) {
+    public NhanVienController(NhanVienService nhanVienService,
+                              ChucVuRepository chucVuRepository,
+                              TaiKhoanRepository taiKhoanRepository) {
         this.nhanVienService = nhanVienService;
+        this.chucVuRepository = chucVuRepository;
+        this.taiKhoanRepository = taiKhoanRepository;
     }
 
     private static NhanVienDto toDto(NhanVien nv) {
@@ -78,7 +89,7 @@ public class NhanVienController {
     @GetMapping("/{id}")
     public ResponseEntity<NhanVienDto> get(@PathVariable long id) {
         return nhanVienService.findById(id).map(NhanVienController::toDto).map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy nhân viên"));
     }
     /**
      * Creates a new entry.
@@ -86,7 +97,9 @@ public class NhanVienController {
      * @return response entity
      */
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody NhanVien nv) {
+    public ResponseEntity<?> create(@Valid @RequestBody NhanVienRequest req) {
+        NhanVien nv = new NhanVien();
+        applyRequest(nv, req);
         nhanVienService.save(nv);
         return ResponseEntity.status(201).build();
     }
@@ -97,9 +110,12 @@ public class NhanVienController {
      * @return response entity
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody NhanVien nv) {
-        nv.setMaNhanVien(id);
-        nhanVienService.save(nv);
+    public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody NhanVienRequest req) {
+        NhanVien existing = nhanVienService.findById(id)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy nhân viên"));
+        existing.setMaNhanVien(id);
+        applyRequest(existing, req);
+        nhanVienService.save(existing);
         return ResponseEntity.ok().build();
     }
     /**
@@ -111,5 +127,29 @@ public class NhanVienController {
     public ResponseEntity<?> delete(@PathVariable long id) {
         nhanVienService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private void applyRequest(NhanVien target, NhanVienRequest req) {
+        target.setHoTen(req.getHoTen());
+        target.setSoDienThoai(req.getSoDienThoai());
+        target.setDiaChi(req.getDiaChi());
+        target.setEnabled(req.getEnabled() == null ? true : req.getEnabled());
+        target.setLuong(req.getLuong());
+
+        if (req.getChucVuId() != null) {
+            ChucVu chucVu = chucVuRepository.findById(req.getChucVuId())
+                    .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy chức vụ"));
+            target.setChucVu(chucVu);
+        } else {
+            target.setChucVu(null);
+        }
+
+        if (req.getTaiKhoanId() != null) {
+            TaiKhoan taiKhoan = taiKhoanRepository.findById(req.getTaiKhoanId())
+                    .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy tài khoản"));
+            target.setTaiKhoan(taiKhoan);
+        } else {
+            target.setTaiKhoan(null);
+        }
     }
 }

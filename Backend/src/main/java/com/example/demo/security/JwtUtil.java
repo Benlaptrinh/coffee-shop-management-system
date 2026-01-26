@@ -16,20 +16,20 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.config.JwtProperties;
 /**
  * JWT utility for token creation and validation.
  */
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:changeit}")
-    private String jwtSecret;
+    private final JwtProperties jwtProperties;
 
-    @Value("${jwt.expiration.seconds:3600}")
-    private long jwtExpirationSeconds;
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
     /**
      * Generates a JWT token.
      * @param username username
@@ -39,7 +39,7 @@ public class JwtUtil {
     public String generateToken(String username, List<String> roles) {
         Instant now = Instant.now();
         Date issuedAt = Date.from(now);
-        Date exp = Date.from(now.plusSeconds(jwtExpirationSeconds));
+        Date exp = Date.from(now.plusSeconds(jwtProperties.getExpirationSeconds()));
         return Jwts.builder()
             .setSubject(username)
             .claim("roles", String.join(",", roles))
@@ -99,7 +99,7 @@ public class JwtUtil {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
             keyBytes = sha256(keyBytes);
         }

@@ -18,7 +18,7 @@ Mục tiêu: người chưa biết Java vẫn làm theo và chạy được ứn
 - Database: MySQL 8.x
 - Java: JDK 17 (khuyến nghị)
 - Port mặc định: `8080`
-- Ứng dụng tự tạo bảng trong MySQL từ Entity (KHÔNG cần import schema SQL)
+- Dev profile vẫn tự tạo bảng từ Entity (`ddl-auto=update`). Prod khuyến nghị dùng Flyway migration.
 
 ---
 
@@ -94,38 +94,36 @@ Mở MySQL Workbench hoặc command line và chạy:
 CREATE DATABASE quancaphe;
 ```
 
-Lưu ý: Tên database đang được cấu hình trong `application.properties`.  
+Lưu ý: Tên database đang được cấu hình trong `application-dev.properties` hoặc biến môi trường `DB_URL`.  
 Nếu bạn muốn đổi sang `quancaphe`, hãy đổi ở file cấu hình và tạo DB theo đúng tên mới.
 
 ---
 
-## 4) Cấu hình kết nối database (application.properties)
+## 4) Cấu hình kết nối database (profiles + env)
 
 Mở file:
 ```
-src/main/resources/application.properties
+src/main/resources/application-dev.properties
 ```
 
-Cập nhật đúng theo máy bạn:
+Bạn có thể **sửa trực tiếp** file dev hoặc **dùng biến môi trường**:
 ```properties
 # DATABASE
-spring.datasource.url=jdbc:mysql://localhost:3306/tiemchung?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-spring.datasource.username=YOUR_MYSQL_USERNAME
-spring.datasource.password=YOUR_MYSQL_PASSWORD
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/tiemchung}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD:123456}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA / HIBERNATE
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
-
-# THYMELEAF
-spring.thymeleaf.cache=false
 ```
 
 Ghi chú:
 - `ddl-auto=update`: tự tạo bảng nếu chưa có, và cập nhật nhẹ schema.
 - Nếu muốn reset DB mỗi lần chạy: dùng `create-drop` (không khuyến nghị khi nộp).
+ - Đổi profile bằng biến môi trường `SPRING_PROFILES_ACTIVE=prod` khi deploy.
 
 ---
 

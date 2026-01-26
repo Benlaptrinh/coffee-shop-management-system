@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.example.demo.payload.request.LoginRequest;
 import com.example.demo.payload.response.LoginResponse;
 import com.example.demo.security.JwtUtil;
+import com.example.demo.config.JwtProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,16 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final JwtProperties jwtProperties;
     /**
      * Creates a new Auth Controller.
      * @param authenticationManager authentication manager
      * @param jwtUtil JWT utility
      */
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, JwtProperties jwtProperties) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.jwtProperties = jwtProperties;
     }
     /**
      * Authenticates the user.
@@ -56,7 +59,7 @@ public class AuthController {
         String token = jwtUtil.generateToken(req.getUsername(), roles);
         LoginResponse resp = new LoginResponse();
         resp.setToken(token);
-        resp.setExpiresIn(Long.parseLong(System.getProperty("jwt.expiration.seconds", "3600")));
+        resp.setExpiresIn(jwtProperties.getExpirationSeconds());
         resp.setUsername(req.getUsername());
         resp.setRoles(roles);
         log.info("User logged in: {}", req.getUsername());

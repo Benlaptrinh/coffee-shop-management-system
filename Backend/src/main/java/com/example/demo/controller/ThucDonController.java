@@ -67,7 +67,7 @@ public class ThucDonController {
     @GetMapping("/{id}")
     public ResponseEntity<ThucDonDto> get(@PathVariable long id) {
         return thucDonService.findById(id).map(ThucDonController::toDto).map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy thực đơn"));
     }
     /**
      * Creates a new entry.

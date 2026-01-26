@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import com.example.demo.entity.ThietBi;
+import com.example.demo.payload.request.ThietBiRequest;
 import com.example.demo.service.ThietBiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,8 @@ public class ThietBiController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ThietBi> get(@PathVariable long id) {
-        return service.findById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return service.findById(id).map(ResponseEntity::ok)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy thiết bị"));
     }
     /**
      * Creates a new entry.
@@ -53,7 +55,9 @@ public class ThietBiController {
      * @return response entity
      */
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ThietBi thietBi) {
+    public ResponseEntity<?> create(@Valid @RequestBody ThietBiRequest req) {
+        ThietBi thietBi = new ThietBi();
+        applyRequest(thietBi, req);
         service.save(thietBi);
         return ResponseEntity.status(201).build();
     }
@@ -64,9 +68,12 @@ public class ThietBiController {
      * @return response entity
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody ThietBi thietBi) {
-        thietBi.setMaThietBi(id);
-        service.save(thietBi);
+    public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody ThietBiRequest req) {
+        ThietBi existing = service.findById(id)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy thiết bị"));
+        existing.setMaThietBi(id);
+        applyRequest(existing, req);
+        service.save(existing);
         return ResponseEntity.ok().build();
     }
     /**
@@ -78,5 +85,13 @@ public class ThietBiController {
     public ResponseEntity<?> delete(@PathVariable long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private void applyRequest(ThietBi target, ThietBiRequest req) {
+        target.setTenThietBi(req.getTenThietBi());
+        target.setSoLuong(req.getSoLuong());
+        target.setDonGiaMua(req.getDonGiaMua());
+        target.setNgayMua(req.getNgayMua());
+        target.setGhiChu(req.getGhiChu());
     }
 }

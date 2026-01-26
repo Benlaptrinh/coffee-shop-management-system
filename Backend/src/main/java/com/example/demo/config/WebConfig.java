@@ -13,6 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig {
+    private final CorsProperties corsProperties;
+
+    public WebConfig(CorsProperties corsProperties) {
+        this.corsProperties = corsProperties;
+    }
     /**
      * Creates the CORS configurer.
      * @return CORS configurer
@@ -26,11 +31,14 @@ public class WebConfig {
              */
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5174")
-                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                String[] origins = corsProperties.getAllowedOrigins().toArray(new String[0]);
+                String[] methods = corsProperties.getAllowedMethods().toArray(new String[0]);
+                String[] headers = corsProperties.getAllowedHeaders().toArray(new String[0]);
+                registry.addMapping(corsProperties.getPathPattern())
+                        .allowedOrigins(origins)
+                        .allowedMethods(methods)
+                        .allowedHeaders(headers)
+                        .allowCredentials(corsProperties.isAllowCredentials());
             }
         };
     }

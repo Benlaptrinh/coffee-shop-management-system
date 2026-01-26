@@ -5,6 +5,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.example.demo.exception.ApiError;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Configuration for Security.
@@ -43,14 +51,25 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+                                           JwtAuthenticationFilter jwtAuthenticationFilter,
+                                           ObjectMapper objectMapper) throws Exception {
         return http
             .cors(withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) ->
+                        writeError(response, objectMapper, HttpStatus.UNAUTHORIZED,
+                                authException.getMessage(), request))
+                .accessDeniedHandler((request, response, accessDeniedException) ->
+                        writeError(response, objectMapper, HttpStatus.FORBIDDEN,
+                                accessDeniedException.getMessage(), request))
+            )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
                 .requestMatchers("/api/report/**").hasRole("ADMIN")
                 .requestMatchers("/api/khuyenmai/**").hasRole("ADMIN")
                 .requestMatchers("/api/chucvu/**").hasRole("ADMIN")
@@ -89,4 +108,18 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    private void writeError(HttpServletResponse response,
+                            ObjectMapper objectMapper,
+                            HttpStatus status,
+                            String message,
+                            HttpServletRequest request) throws java.io.IOException {
+        ApiError err = new ApiError();
+        err.setStatus(status.value());
+        err.setError(status.getReasonPhrase());
+        err.setMessage(message);
+        err.setPath(request.getRequestURI());
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        objectMapper.writeValue(response.getOutputStream(), err);
+    }
 }

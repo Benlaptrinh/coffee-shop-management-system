@@ -1,18 +1,15 @@
 package com.example.demo.security;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.example.demo.entity.TaiKhoan;
-import com.example.demo.service.TaiKhoanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -30,15 +27,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtil jwtUtil;
-    private final TaiKhoanService taiKhoanService;
+    private final UserDetailsService userDetailsService;
     /**
      * Creates a new JWT authentication filter.
      * @param jwtUtil JWT utility
-     * @param taiKhoanService account service
+     * @param userDetailsService user details service
      */
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, TaiKhoanService taiKhoanService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
-        this.taiKhoanService = taiKhoanService;
+        this.userDetailsService = userDetailsService;
     }
     /**
      * Filters requests and sets the authentication context.
@@ -57,14 +54,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(token)) {
                 String username = jwtUtil.getUsername(token);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    TaiKhoan taiKhoan = taiKhoanService.findByUsername(username).orElse(null);
-                    if (taiKhoan != null && taiKhoan.isEnabled()) {
-                        List<String> roles = jwtUtil.getRoles(token);
-                        var authorities = roles.stream()
-                                .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
-                                .collect(Collectors.toList());
-                        var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    try {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        if (userDetails.isEnabled()
+                                && userDetails.isAccountNonExpired()
+                                && userDetails.isAccountNonLocked()
+                                && userDetails.isCredentialsNonExpired()) {
+                            var auth = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        }
+                    } catch (Exception ex) {
+                        log.debug("JWT authentication failed for user {}: {}", username, ex.getMessage());
                     }
                 }
             } else {

@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +16,14 @@ import com.example.demo.payload.dto.MenuItemDto;
 import com.example.demo.payload.dto.ReservationDto;
 import com.example.demo.payload.dto.TableDto;
 import com.example.demo.payload.request.AddItemRequest;
+import com.example.demo.payload.request.MergeTableRequest;
 import com.example.demo.payload.request.MenuSelectionRequest;
+import com.example.demo.payload.request.MoveTableRequest;
 import com.example.demo.payload.request.PayRequest;
+import com.example.demo.payload.request.ReserveTableRequest;
+import com.example.demo.payload.request.SplitItem;
 import com.example.demo.payload.request.SplitRequest;
 import com.example.demo.service.SalesService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 /**
  * SalesController
@@ -39,8 +42,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/sales")
 public class SalesController {
-
-    private static final Logger log = LoggerFactory.getLogger(SalesController.class);
 
     private final SalesService salesService;
     /**
@@ -121,7 +122,9 @@ public class SalesController {
     @GetMapping("/tables/{id}")
     public ResponseEntity<?> getTable(@PathVariable long id) {
         Optional<Ban> b = salesService.findTableById(id);
-        if (b.isEmpty()) return ResponseEntity.notFound().build();
+        if (b.isEmpty()) {
+            throw new java.util.NoSuchElementException("Không tìm thấy bàn");
+        }
         var table = toTableDto(b.get());
         var reservation = toReservationDto(salesService.findLatestReservation(id).orElse(null));
         var invoice = salesService.findUnpaidInvoiceByTable(id).orElse(null);
@@ -147,18 +150,10 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/tables/{tableId}/items")
-    public ResponseEntity<?> addItem(@PathVariable long tableId, @RequestBody AddItemRequest req) {
-        if (req == null || req.getThucDonId() == null || req.getSoLuong() == null || req.getSoLuong() <= 0) {
-            return ResponseEntity.badRequest().body("Invalid payload");
-        }
-        try {
-            salesService.addItemToInvoice(tableId, req.getThucDonId(), req.getSoLuong());
-            var invoice = salesService.findUnpaidInvoiceByTable(tableId).orElse(null);
-            return ResponseEntity.ok(toInvoiceDto(invoice));
-        } catch (Exception ex) {
-            log.warn("Add item failed tableId={} itemId={} qty={} msg={}", tableId, req.getThucDonId(), req.getSoLuong(), ex.getMessage());
-            return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> addItem(@PathVariable long tableId, @Valid @RequestBody AddItemRequest req) {
+        salesService.addItemToInvoice(tableId, req.getThucDonId(), req.getSoLuong());
+        var invoice = salesService.findUnpaidInvoiceByTable(tableId).orElse(null);
+        return ResponseEntity.ok(toInvoiceDto(invoice));
     }
     /**
      * Saves menu selection.
@@ -167,15 +162,10 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/tables/{tableId}/menu-selection")
-    public ResponseEntity<?> menuSelection(@PathVariable long tableId, @RequestBody MenuSelectionRequest req) {
-        if (req == null || req.getParams() == null) return ResponseEntity.badRequest().body("Missing params");
-        try {
-            salesService.saveSelectedMenu(tableId, req.getParams());
-            var invoice = salesService.findUnpaidInvoiceByTable(tableId).orElse(null);
-            return ResponseEntity.ok(toInvoiceDto(invoice));
-        } catch (Exception ex) {
-            return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> menuSelection(@PathVariable long tableId, @Valid @RequestBody MenuSelectionRequest req) {
+        salesService.saveSelectedMenu(tableId, req.getParams());
+        var invoice = salesService.findUnpaidInvoiceByTable(tableId).orElse(null);
+        return ResponseEntity.ok(toInvoiceDto(invoice));
     }
     /**
      * Processes payment.
@@ -184,17 +174,10 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/tables/{tableId}/pay")
-    public ResponseEntity<?> pay(@PathVariable long tableId, @RequestBody PayRequest req) {
-        if (req == null || req.getAmountPaid() == null) return ResponseEntity.badRequest().body("Missing amountPaid");
-        try {
-            salesService.payInvoice(tableId, req.getAmountPaid(),
-                req.getReleaseTable() == null ? true : req.getReleaseTable());
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> pay(@PathVariable long tableId, @Valid @RequestBody PayRequest req) {
+        salesService.payInvoice(tableId, req.getAmountPaid(),
+            req.getReleaseTable() == null ? true : req.getReleaseTable());
+        return ResponseEntity.ok().build();
     }
     /**
      * Cancels the invoice.
@@ -203,12 +186,8 @@ public class SalesController {
      */
     @PostMapping("/tables/{tableId}/cancel")
     public ResponseEntity<?> cancel(@PathVariable long tableId) {
-        try {
-            salesService.cancelInvoice(tableId);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
-        }
+        salesService.cancelInvoice(tableId);
+        return ResponseEntity.ok().build();
     }
     /**
      * Creates a reservation.
@@ -217,21 +196,9 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/tables/{tableId}/reserve")
-    public ResponseEntity<?> reserve(@PathVariable long tableId, @RequestBody Map<String, Object> body) {
-        try {
-            String ten = (String) body.get("tenKhach");
-            String sdt = (String) body.get("sdt");
-            String ngayGio = (String) body.get("ngayGio");
-            LocalDateTime when = ngayGio == null ? null : LocalDateTime.parse(ngayGio);
-            salesService.reserveTable(tableId, ten, sdt, when);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
-        } catch (IllegalStateException ex) {
-            return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> reserve(@PathVariable long tableId, @Valid @RequestBody ReserveTableRequest req) {
+        salesService.reserveTable(tableId, req.getTenKhach(), req.getSdt(), req.getNgayGio());
+        return ResponseEntity.ok().build();
     }
     /**
      * Cancels a reservation.
@@ -240,16 +207,8 @@ public class SalesController {
      */
     @PostMapping("/tables/{tableId}/cancel-reservation")
     public ResponseEntity<?> cancelReservation(@PathVariable long tableId) {
-        try {
-            salesService.cancelReservation(tableId);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
-        } catch (IllegalStateException ex) {
-            return ResponseEntity.status(409).body("ERROR:" + ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("ERROR:" + ex.getMessage());
-        }
+        salesService.cancelReservation(tableId);
+        return ResponseEntity.ok().build();
     }
     /**
      * Moves a table.
@@ -257,15 +216,9 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/move")
-    public ResponseEntity<?> move(@RequestBody Map<String, Object> payload) {
-        try {
-            long from = ((Number) payload.get("fromBanId")).longValue();
-            long to = ((Number) payload.get("toBanId")).longValue();
-            salesService.moveTable(from, to);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> move(@Valid @RequestBody MoveTableRequest payload) {
+        salesService.moveTable(payload.getFromBanId(), payload.getToBanId());
+        return ResponseEntity.ok().build();
     }
     /**
      * Merges tables.
@@ -273,15 +226,9 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/merge")
-    public ResponseEntity<?> merge(@RequestBody Map<String, Object> payload) {
-        try {
-            long target = ((Number) payload.get("targetBanId")).longValue();
-            long source = ((Number) payload.get("sourceBanId")).longValue();
-            salesService.mergeTables(target, source);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
-        }
+    public ResponseEntity<?> merge(@Valid @RequestBody MergeTableRequest payload) {
+        salesService.mergeTables(payload.getTargetBanId(), payload.getSourceBanId());
+        return ResponseEntity.ok().build();
     }
     /**
      * Splits a table.
@@ -289,25 +236,21 @@ public class SalesController {
      * @return response entity
      */
     @PostMapping("/split")
-    public ResponseEntity<?> split(@RequestBody SplitRequest req) {
-        try {
-            if (req == null || req.getToBanId() == null || req.getItems() == null) {
-                return ResponseEntity.badRequest().body("Invalid payload");
-            }
-            Long fromBanId = null;
-            Map<Long, Integer> map = req.getItems().stream().collect(Collectors.toMap(
-                    i -> ((Number) i.get("thucDonId")).longValue(),
-                    i -> ((Number) i.get("soLuong")).intValue()
-            ));
-            if (!req.getItems().isEmpty() && req.getItems().get(0).containsKey("fromBanId")) {
-                fromBanId = ((Number) req.getItems().get(0).get("fromBanId")).longValue();
-            }
-            if (fromBanId == null) return ResponseEntity.badRequest().body("Missing fromBanId");
-            salesService.splitTable(fromBanId, req.getToBanId(), map);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
-            return ResponseEntity.status(400).body("ERROR:" + ex.getMessage());
+    public ResponseEntity<?> split(@Valid @RequestBody SplitRequest req) {
+        Long fromBanId = req.getFromBanId();
+        if (fromBanId == null && req.getItems() != null && !req.getItems().isEmpty()) {
+            SplitItem first = req.getItems().get(0);
+            fromBanId = first.getFromBanId();
         }
+        if (fromBanId == null) {
+            throw new IllegalArgumentException("Missing fromBanId");
+        }
+        Map<Long, Integer> map = req.getItems().stream().collect(Collectors.toMap(
+                SplitItem::getThucDonId,
+                SplitItem::getSoLuong
+        ));
+        salesService.splitTable(fromBanId, req.getToBanId(), map);
+        return ResponseEntity.ok().build();
     }
     /**
      * Returns invoice.
@@ -316,8 +259,10 @@ public class SalesController {
      */
     @GetMapping("/invoices/{id}")
     public ResponseEntity<?> getInvoice(@PathVariable long id) {
-        return salesService.findInvoiceById(id).map(SalesController::toInvoiceDto).map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return salesService.findInvoiceById(id)
+                .map(SalesController::toInvoiceDto)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy hóa đơn"));
     }
 
 }

@@ -1,24 +1,18 @@
 package com.example.demo.payload.request;
 
-import java.util.List;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
 /**
- * Request payload for Split.
+ * Request payload for moving a table.
  */
 @Getter
 @Setter
-public class SplitRequest {
+public class MoveTableRequest {
+    @NotNull(message = "Bàn nguồn bắt buộc")
     private Long fromBanId;
 
     @NotNull(message = "Bàn đích bắt buộc")
     private Long toBanId;
-
-    @NotEmpty(message = "Danh sách món bắt buộc")
-    @Valid
-    private List<SplitItem> items;
 }
