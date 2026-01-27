@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.cache.annotation.EnableCaching;
@@ -42,6 +43,7 @@ public class DemoApplication {
      * @return result
      */
     @Bean
+    @ConditionalOnBean({TaiKhoanRepository.class, PasswordEncoder.class})
     public CommandLineRunner seedAdmin(TaiKhoanRepository taiKhoanRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             boolean adminExists = taiKhoanRepository.findAll()
