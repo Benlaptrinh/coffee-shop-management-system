@@ -48,6 +48,12 @@ export default function AppLayout({ sidebar, children }: AppLayoutProps) {
                   : "-translate-x-full opacity-0 pointer-events-none"
               } min-[901px]:translate-x-0 min-[901px]:opacity-100 min-[901px]:pointer-events-auto`}
               id="app-sidebar"
+              onClick={(e) => {
+                const link = (e.target as HTMLElement)?.closest("a")
+                if (link && window.innerWidth < 901) {
+                  setSidebarOpen(false)
+                }
+              }}
             >
               {sidebar}
             </aside>
@@ -57,7 +63,9 @@ export default function AppLayout({ sidebar, children }: AppLayoutProps) {
       </main>
       <div
         id="sidebar-overlay"
-        className={`sidebar-overlay ${sidebarOpen ? "block" : "hidden"} fixed inset-0 z-40 bg-black/40 min-[901px]:hidden`}
+        className={`sidebar-overlay fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 min-[901px]:hidden ${
+          sidebarOpen ? "block opacity-100 pointer-events-auto" : "hidden opacity-0 pointer-events-none"
+        }`}
         aria-hidden={!sidebarOpen}
         onClick={() => setSidebarOpen(false)}
       />
