@@ -7,12 +7,10 @@ import './styles/app.css'
 import App from './App.tsx'
 // @ts-ignore
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { startWsDebug } from './wsDebug'
 
 document.body.classList.add('app-body')
 
 const queryClient = new QueryClient()
-startWsDebug()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

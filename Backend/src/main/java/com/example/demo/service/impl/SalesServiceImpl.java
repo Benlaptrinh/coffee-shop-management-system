@@ -26,7 +26,6 @@ import com.example.demo.repository.HoaDonRepository;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.repository.TaiKhoanRepository;
 import com.example.demo.repository.ThucDonRepository;
-import com.example.demo.realtime.WsEventPublisher;
 import com.example.demo.service.SalesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,6 @@ public class SalesServiceImpl implements SalesService {
     private final ChiTietDatBanRepository chiTietDatBanRepository;
     private final TaiKhoanRepository taiKhoanRepository;
     private final NhanVienRepository nhanVienRepository;
-    private final WsEventPublisher wsEventPublisher;
 
     /**
      * Creates SalesServiceImpl.
@@ -71,8 +69,7 @@ public class SalesServiceImpl implements SalesService {
                             ChiTietHoaDonRepository chiTietHoaDonRepository,
                             ChiTietDatBanRepository chiTietDatBanRepository,
                             TaiKhoanRepository taiKhoanRepository,
-                            NhanVienRepository nhanVienRepository,
-                            WsEventPublisher wsEventPublisher) {
+                            NhanVienRepository nhanVienRepository) {
         this.banRepository = banRepository;
         this.hoaDonRepository = hoaDonRepository;
         this.thucDonRepository = thucDonRepository;
@@ -80,7 +77,6 @@ public class SalesServiceImpl implements SalesService {
         this.chiTietDatBanRepository = chiTietDatBanRepository;
         this.taiKhoanRepository = taiKhoanRepository;
         this.nhanVienRepository = nhanVienRepository;
-        this.wsEventPublisher = wsEventPublisher;
     }
 
     /**
@@ -209,8 +205,6 @@ public class SalesServiceImpl implements SalesService {
         }
 
         updateInvoiceTotal(hd);
-        wsEventPublisher.publishInvoiceEvent("INVOICE_UPDATED", hd.getMaHoaDon(), tableId);
-        wsEventPublisher.publishTableEvent("TABLE_UPDATED", tableId);
         log.info("Add item to invoice tableId={} invoiceId={} itemId={} requestedQty={} finalQty={} existed={}",
                 tableId, hd.getMaHoaDon(), itemId, requestedQty, finalQty, existed);
     }
@@ -256,8 +250,6 @@ public class SalesServiceImpl implements SalesService {
             banRepository.save(ban);
             log.info("Released table and cleared reservations after payment tableId={}", tableId);
         }
-        wsEventPublisher.publishInvoiceEvent("INVOICE_PAID", hd.getMaHoaDon(), tableId);
-        wsEventPublisher.publishTableEvent("TABLE_UPDATED", tableId);
     }
 
     /**
@@ -299,7 +291,6 @@ public class SalesServiceImpl implements SalesService {
         chiTietDatBanRepository.save(d);
         ban.setTinhTrang(TinhTrangBan.DA_DAT);
         banRepository.save(ban);
-        wsEventPublisher.publishTableEvent("RESERVATION_CREATED", banId);
         log.info("Reserve table ok banId={} ngayGioDat={} nhanVienId={}",
                 banId, ngayGioDat, nv.getMaNhanVien());
     }
@@ -378,8 +369,6 @@ public class SalesServiceImpl implements SalesService {
             }
             banRepository.save(b);
         }
-        wsEventPublisher.publishInvoiceEvent("INVOICE_UPDATED", hd.getMaHoaDon(), banId);
-        wsEventPublisher.publishTableEvent("TABLE_UPDATED", banId);
         log.info("Save selected menu banId={} invoiceId={} itemsSelected={} totalQty={} hasItems={}",
                 banId, hd.getMaHoaDon(), selectedItems, totalQty, hasItems);
     }
@@ -413,7 +402,6 @@ public class SalesServiceImpl implements SalesService {
             b.setTinhTrang(TinhTrangBan.TRONG);
             banRepository.save(b);
         }
-        wsEventPublisher.publishTableEvent("TABLE_UPDATED", banId);
         log.info("Cancel invoice ok banId={} invoiceId={}", banId, hoaDonId);
     }
 
@@ -501,8 +489,6 @@ public class SalesServiceImpl implements SalesService {
         toBan.setTinhTrang(TinhTrangBan.DANG_SU_DUNG);
         banRepository.save(fromBan);
         banRepository.save(toBan);
-        wsEventPublisher.publishTableEvent("TABLE_MOVED", fromBanId);
-        wsEventPublisher.publishTableEvent("TABLE_MOVED", toBanId);
         log.info("Move table ok fromBanId={} toBanId={} invoiceId={} reservationsMoved={}",
                 fromBanId, toBanId, hd.getMaHoaDon(), movedReservations);
     }
@@ -622,8 +608,6 @@ public class SalesServiceImpl implements SalesService {
         banRepository.save(sourceBan);
         targetBan.setTinhTrang(TinhTrangBan.DANG_SU_DUNG);
         banRepository.save(targetBan);
-        wsEventPublisher.publishTableEvent("TABLE_MERGED", targetBanId);
-        wsEventPublisher.publishTableEvent("TABLE_MERGED", sourceBanId);
         log.info("Merge tables ok targetBanId={} sourceBanId={} targetInvoiceId={} sourceInvoiceId={} sourceItems={} sourceTotalQty={}",
                 targetBanId, sourceBanId, targetHd.getMaHoaDon(), sourceHd.getMaHoaDon(), sourceItemCount, sourceTotalQty);
     }
@@ -805,8 +789,6 @@ public class SalesServiceImpl implements SalesService {
 
         toBan.setTinhTrang(TinhTrangBan.DANG_SU_DUNG);
         banRepository.save(toBan);
-        wsEventPublisher.publishTableEvent("TABLE_SPLIT", fromBanId);
-        wsEventPublisher.publishTableEvent("TABLE_SPLIT", toBanId);
         log.info("Split table ok fromBanId={} toBanId={} fromInvoiceId={} toInvoiceId={} fromDeleted={}",
                 fromBanId, toBanId, fromHd.getMaHoaDon(), toHd.getMaHoaDon(), fromEmpty);
     }
@@ -835,7 +817,6 @@ public class SalesServiceImpl implements SalesService {
 
         ban.setTinhTrang(TinhTrangBan.TRONG);
         banRepository.save(ban);
-        wsEventPublisher.publishTableEvent("RESERVATION_CANCELED", banId);
         log.info("Cancel reservation ok banId={}", banId);
     }
 

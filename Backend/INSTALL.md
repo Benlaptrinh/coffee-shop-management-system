@@ -161,10 +161,6 @@ mvnw.cmd spring-boot:run
 
 ## 6) Truy cập web
 
-## 7) WebSocket (realtime)
-- Endpoint: `ws://localhost:8080/ws`
-- Topic: `/topic/tables`, `/topic/invoices`
-- Payload: `{ type, tableId, invoiceId, timestamp }`
 
 Mở trình duyệt:
 - Trang chủ: `http://localhost:8080/`
