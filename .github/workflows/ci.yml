@@ -9,28 +9,6 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: tiemchung
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,24 +20,10 @@ jobs:
           java-version: "17"
           cache: "maven"
 
-      - name: Wait for MySQL
-        run: |
-          for i in {1..30}; do
-            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
-              echo "MySQL is up"; exit 0; fi
-            sleep 2
-          done
-          echo "MySQL did not start"; exit 1
-
       - name: Run backend tests
         working-directory: Backend
         env:
-          SPRING_PROFILES_ACTIVE: dev
-          DB_URL: jdbc:mysql://127.0.0.1:3306/tiemchung
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
+          SPRING_PROFILES_ACTIVE: test
         run: ./mvnw -q test
 
   frontend-build:

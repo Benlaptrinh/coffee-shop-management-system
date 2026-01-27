@@ -38,7 +38,7 @@ export default function SalesPage() {
   const [detail, setDetail] = useState<TableDetail | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [menuErrors, setMenuErrors] = useState<Record<number, string>>({})
-  const { register, handleSubmit, reset, getValues } = useForm<Record<string, string>>({
+  const { register, handleSubmit, reset } = useForm<Record<string, string>>({
     defaultValues: {},
   })
   const [modal, setModal] = useState<ModalType | null>(null)

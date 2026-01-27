@@ -12,9 +12,6 @@ export default function AdminEmployeesForm({ mode }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [chucVus, setChucVus] = useState<Array<{ maChucVu: number; tenChucVu: string }>>([])
-  const [chucVuLoading, setChucVuLoading] = useState(false)
-  const [chucVuError, setChucVuError] = useState<string | null>(null)
-  const [chucVuNewName, setChucVuNewName] = useState("")
   const [pendingChucVuName, setPendingChucVuName] = useState<string | null>(null)
   const [taiKhoanId, setTaiKhoanId] = useState<number | null>(null)
   const [hasAccount, setHasAccount] = useState(false)
@@ -33,13 +30,12 @@ export default function AdminEmployeesForm({ mode }: Props) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    setChucVuLoading(true)
-    setChucVuError(null)
     api.chucvu
       .list()
       .then((data) => setChucVus(data || []))
-      .catch((err: any) => setChucVuError(err?.body || err?.message || "Tải chức vụ thất bại"))
-      .finally(() => setChucVuLoading(false))
+      .catch(() => {
+        setChucVus([])
+      })
   }, [])
 
   useEffect(() => {
@@ -177,24 +173,6 @@ export default function AdminEmployeesForm({ mode }: Props) {
       setError(err?.body || err?.message || "Lưu thất bại")
     } finally {
       setLoading(false)
-    }
-  }
-
-  const onCreateChucVu = async () => {
-    const name = chucVuNewName.trim()
-    if (!name) return
-    setChucVuError(null)
-    try {
-      await api.chucvu.create({ tenChucVu: name })
-      const data = await api.chucvu.list()
-      setChucVus(data || [])
-      const matched = (data || []).find((cv) => cv.tenChucVu === name)
-      if (matched) {
-        setForm((prev) => ({ ...prev, chucVuId: String(matched.maChucVu) }))
-      }
-      setChucVuNewName("")
-    } catch (err: any) {
-      setChucVuError(err?.body || err?.message || "Tạo chức vụ thất bại")
     }
   }
 

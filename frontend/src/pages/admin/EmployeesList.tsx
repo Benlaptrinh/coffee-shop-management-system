@@ -26,7 +26,7 @@ export default function AdminEmployeesList() {
     setLoading(true)
     setError(null)
     try {
-      const data = await api.nhanvien.list(q)
+      const data = await api.nhanvien.list(q ? { q } : undefined)
       setItems(data)
     } catch (err: any) {
       setError(err?.body || err?.message || "Tải danh sách nhân viên thất bại")
