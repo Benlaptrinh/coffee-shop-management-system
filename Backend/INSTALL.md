@@ -64,6 +64,11 @@ Kiểm tra MySQL đang chạy:
 - Windows: mở Services xem MySQL80 có “Running”
 - macOS (brew): `brew services list`
 
+### 1.4 Cài Redis (cache)
+- macOS (brew): `brew install redis` và `brew services start redis`
+- Windows: dùng Redis on Windows (WSL hoặc Docker)
+- Docker: `docker run -p 6379:6379 redis:7`
+
 ### 1.4 Git (nếu clone source)
 - https://git-scm.com/downloads
 
@@ -155,6 +160,11 @@ mvnw.cmd spring-boot:run
 ---
 
 ## 6) Truy cập web
+
+## 7) WebSocket (realtime)
+- Endpoint: `ws://localhost:8080/ws`
+- Topic: `/topic/tables`, `/topic/invoices`
+- Payload: `{ type, tableId, invoiceId, timestamp }`
 
 Mở trình duyệt:
 - Trang chủ: `http://localhost:8080/`

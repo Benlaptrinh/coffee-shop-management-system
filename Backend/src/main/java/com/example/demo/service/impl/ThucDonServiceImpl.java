@@ -9,6 +9,7 @@ import com.example.demo.repository.ThucDonRepository;
 import com.example.demo.service.ThucDonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 /**
@@ -47,6 +48,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @param giaTien giaTien
      */
     @Override
+    @CacheEvict(cacheNames = "menu", allEntries = true)
     public void create(String tenMon, BigDecimal giaTien) {
         if (tenMon == null || tenMon.isBlank() || giaTien == null) {
             throw new IllegalArgumentException("Chưa nhập các trường bắt buộc");
@@ -73,6 +75,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @param giaTien giaTien
      */
     @Override
+    @CacheEvict(cacheNames = "menu", allEntries = true)
     public void update(long id, String tenMon, BigDecimal giaTien) {
         if (tenMon == null || tenMon.isBlank() || giaTien == null) {
             throw new IllegalArgumentException("Chưa nhập các trường bắt buộc");
@@ -111,6 +114,7 @@ public class ThucDonServiceImpl implements ThucDonService {
      * @param id id
      */
     @Override
+    @CacheEvict(cacheNames = "menu", allEntries = true)
     public void deleteById(long id) {
         ThucDon thucDon = thucDonRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy món"));
