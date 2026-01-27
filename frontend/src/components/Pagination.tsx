@@ -15,11 +15,11 @@ export default function Pagination({ page, pageSize, total, onPageChange }: Prop
   const goNext = () => onPageChange(Math.min(totalPages, currentPage + 1))
 
   return (
-    <div className="pagination">
+    <div className="pagination flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
       <button type="button" className={`btn btn-sm ${currentPage === 1 ? "btn-disabled" : ""}`} onClick={goPrev}>
         Trước
       </button>
-      <span className="pagination-info">
+      <span className="pagination-info text-center text-sm text-muted">
         {start}-{end} / {total} • Trang {currentPage}/{totalPages}
       </span>
       <button

@@ -9,8 +9,8 @@ export default function SidebarAdmin() {
   const { logout } = useAuth()
 
   return (
-    <div className="sidebar-inner">
-      <h4 className="sidebar-title">Trang chủ</h4>
+    <div className="sidebar-inner flex flex-col gap-4">
+      <h4 className="sidebar-title text-base font-semibold">Trang chủ</h4>
       <nav className="sidebar-nav">
         <ul className="sidebar-list">
           <li>
@@ -66,7 +66,7 @@ export default function SidebarAdmin() {
         </ul>
       </nav>
       <div className="sidebar-logout">
-        <button className="sidebar-logout-btn" type="button" onClick={logout}>
+        <button className="sidebar-logout-btn w-full" type="button" onClick={logout}>
           Đăng xuất
         </button>
       </div>
