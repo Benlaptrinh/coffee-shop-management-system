@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #6F4E37;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .highlight {
+            background-color: #fff8e1;
+            border-left: 4px solid #6F4E37;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #6F4E37;
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☕ Chào mừng bạn!</h1>
+        </div>
+        <div class="content">
+            <p>Xin chào <strong th:text="${username}">User</strong>,</p>
+            
+            <p>Cảm ơn bạn đã đăng nhập bằng <strong th:text="${provider}">Google</strong>!</p>
+            
+            <div class="highlight">
+                <p>Tài khoản của bạn đã được tạo thành công và sẵn sàng sử dụng.</p>
+            </div>
+            
+            <p>Với tài khoản QuanCaPhe Pro, bạn có thể:</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">☕</div>
+                    <p>Đặt món nhanh chóng</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <p>Theo dõi đơn hàng</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💳</div>
+                    <p>Thanh toán tiện lợi</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎁</div>
+                    <p>Nhận ưu đãi đặc biệt</p>
+                </div>
+            </div>
+            
+            <p style="text-align: center;">
+                <a th:href="${loginUrl}" class="button">Bắt đầu ngay</a>
+            </p>
+            
+            <p>Nếu có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với đội ngũ hỗ trợ của chúng tôi.</p>
+            
+            <p>Trân trọng,<br>Đội ngũ QuanCaPhe Pro</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 QuanCaPhe Pro. Tất cả các quyền được bảo lời.</p>
+        </div>
+    </div>
+</body>
+</html>
+

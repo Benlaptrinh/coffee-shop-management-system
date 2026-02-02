@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận đơn hàng</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background-color: #6F4E37; color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .order-info { background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .button { display: inline-block; background-color: #6F4E37; color: white; padding: 14px 28px; text-decoration: none; border-radius: 4px; margin: 20px 0; font-weight: bold; }
+        .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☕ QuanCaPhe Pro</h1>
+            <p>Xác nhận đơn hàng</p>
+        </div>
+        <div class="content">
+            <h2>Đơn hàng #<span th:text="${orderId}">12345</span></h2>
+            
+            <div class="order-info">
+                <p><strong>Ngày đặt:</strong> <span th:text="${orderDate}">01/01/2024 10:00</span></p>
+                <p><strong>Thời gian dự kiến:</strong> <span th:text="${estimatedTime}">15</span> phút</p>
+            </div>
+            
+            <p>Cảm ơn bạn đã đặt hàng tại QuanCaPhe Pro!</p>
+            <p>Đơn hàng của bạn đang được chuẩn bị và sẽ sẵn sàng trong <strong th:text="${estimatedTime}">15</strong> phút.</p>
+            
+            <p style="text-align: center;">
+                <a href="http://localhost:5173/staff/sales" class="button">Xem đơn hàng</a>
+            </p>
+            
+            <p>Trân trọng,<br>QuanCaPhe Pro</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 QuanCaPhe Pro</p>
+        </div>
+    </div>
+</body>
+</html>
+

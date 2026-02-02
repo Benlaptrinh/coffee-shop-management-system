@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import api from "../../api"
 import Modal from "../../components/Modal"
+import PayPalPayment from "../../components/PayPalPayment"
 import { formatDateTime, formatNumber, toDigits } from "../../utils/format"
 import { useForm } from "react-hook-form"
 
@@ -50,6 +51,7 @@ export default function SalesPage() {
 
   const [paymentRaw, setPaymentRaw] = useState("")
   const [printInvoice, setPrintInvoice] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "paypal">("cash")
 
   const [moveTo, setMoveTo] = useState("")
   const [mergeSource, setMergeSource] = useState("")
@@ -182,6 +184,10 @@ export default function SalesPage() {
 
   const onPaymentSubmit = async () => {
     if (!selectedId) return
+    if (paymentMethod === "paypal") {
+      // PayPal payment is handled by the PayPalPayment component
+      return
+    }
     const amount = Number(toDigits(paymentRaw || "0"))
     if (!amount) {
       setError("Cần nhập số tiền")
@@ -198,6 +204,30 @@ export default function SalesPage() {
     } catch (err: any) {
       setError(err?.body || err?.message || "Thanh toán thất bại")
     }
+  }
+
+  const onPayPalSuccess = async (transactionId: string) => {
+    if (!selectedId || !detail?.invoice) return
+    const invoiceId = detail.invoice.maHoaDon
+    try {
+      // Mark invoice as paid (in real app, you'd update the invoice status via API)
+      await api.sales.pay(selectedId, { amountPaid: detail.invoice.tongTien, releaseTable: true })
+      closeModal()
+      await loadTables()
+      if (printInvoice && invoiceId) {
+        window.open(`/invoice/${invoiceId}`, "_blank")
+      }
+    } catch (err: any) {
+      setError(err?.body || err?.message || "Cập nhật trạng thái thất bại")
+    }
+  }
+
+  const onPayPalError = (error: string) => {
+    setError(error)
+  }
+
+  const onPayPalCancel = () => {
+    // User cancelled PayPal payment
   }
 
   const onCancelInvoice = async () => {
@@ -464,6 +494,34 @@ export default function SalesPage() {
         </div>
       )
     }
+
+    // Show PayPal payment component
+    if (paymentMethod === "paypal") {
+      return (
+        <div className="modal-card modal-card--medium">
+          <h3>Thanh toán PayPal - Bàn {selectedId}</h3>
+          <PayPalPayment
+            amount={invoice.tongTien}
+            description={`Thanh toán hóa đơn bàn ${selectedId}`}
+            invoiceId={String(invoice.maHoaDon)}
+            onSuccess={onPayPalSuccess}
+            onError={onPayPalError}
+            onCancel={onPayPalCancel}
+          />
+          <div className="modal-actions" style={{ marginTop: 16 }}>
+            <button
+              type="button"
+              className="btn btn-sm btn-secondary"
+              onClick={() => setPaymentMethod("cash")}
+            >
+              ← Quay lại
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    // Show cash payment form
     return (
       <div className="modal-card modal-card--medium">
         <h3>Thanh toán - Bàn {selectedId}</h3>
@@ -511,10 +569,20 @@ export default function SalesPage() {
           <input type="checkbox" checked={printInvoice} onChange={(event) => setPrintInvoice(event.target.checked)} />
           In hóa đơn
         </label>
-        <div className="modal-actions">
+        <div className="payment-methods" style={{ marginTop: 16, display: "flex", gap: 8 }}>
           <button type="button" className="btn btn-sm btn-primary" onClick={onPaymentSubmit}>
-            Xác nhận
+            Tiền mặt
           </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-paypal"
+            onClick={() => setPaymentMethod("paypal")}
+            style={{ background: "#0070ba", color: "white", border: "none" }}
+          >
+            PayPal
+          </button>
+        </div>
+        <div className="modal-actions">
           <button type="button" className="btn btn-sm btn-secondary" onClick={closeModal}>
             Hủy
           </button>

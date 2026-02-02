@@ -247,5 +247,18 @@ export default {
       }>(`/sales/invoices/${id}`),
     cancelReservation: (tableId: number) => request(`/sales/tables/${tableId}/cancel-reservation`, { method: "POST" }),
   },
+  paypal: {
+    createOrder: (payload: { amount: number; currency?: string; description: string; invoiceId: string }) =>
+      request<{ orderId: string; approvalUrl: string; status: string }>("/paypal/create-order", {
+        method: "POST",
+        body: payload,
+      }),
+    captureOrder: (orderId: string) =>
+      request<{ orderId: string; status: string; transactionId?: string }>(`/paypal/capture-order/${orderId}`, {
+        method: "POST",
+      }),
+    getOrder: (orderId: string) =>
+      request<{ orderId: string; status: string }>(`/paypal/order/${orderId}`),
+  },
   onUnauthorized: (fn: () => void) => apiEvents.on("unauthorized", fn),
 }

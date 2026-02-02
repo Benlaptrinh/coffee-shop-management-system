@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo tồn kho</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background-color: #dc3545; color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .alert-box { background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f5f5f5; }
+        .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Cảnh báo tồn kho thấp</h1>
+            <p>QuanCaPhe Pro - <span th:text="${alertDate}">01/01/2024</span></p>
+        </div>
+        <div class="content">
+            <p>Xin chào Admin,</p>
+            
+            <div class="alert-box">
+                <p>Các mặt hàng sau đang ở mức tồn kho thấp:</p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mặt hàng</th>
+                        <th>Số lượng còn</th>
+                        <th>Ngưỡng tối thiểu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${lowStockItems}">
+                        <td th:text="${item.tenHangHoa}">Cà phê rang</td>
+                        <td th:text="${item.soLuong}">5</td>
+                        <td th:text="${item.nguongToiThieu}">10</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>Vui lòng kiểm tra và nhập thêm hàng để đảm bảo hoạt động kinh doanh không bị gián đoạn.</p>
+            
+            <p>Trân trọng,<br>QuanCaPhe Pro</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 QuanCaPhe Pro</p>
+        </div>
+    </div>
+</body>
+</html>
+

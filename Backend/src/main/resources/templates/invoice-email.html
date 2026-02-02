@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa đơn thanh toán</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #6F4E37;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .invoice-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .invoice-info p {
+            margin: 8px 0;
+        }
+        .invoice-info strong {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            padding: 20px 0;
+            border-top: 2px solid #6F4E37;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .button {
+            display: inline-block;
+            background-color: #6F4E37;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☕ QuanCaPhe Pro</h1>
+            <p>Hóa đơn thanh toán</p>
+        </div>
+        <div class="content">
+            <p>Xin chào <strong th:text="${customerName}">Khách hàng</strong>,</p>
+            
+            <p>Cảm ơn bạn đã ghé thăm QuanCaPhe Pro! Dưới đây là thông tin hóa đơn của bạn:</p>
+            
+            <div class="invoice-info">
+                <p><strong>Mã hóa đơn:</strong> #<span th:text="${invoiceId}">12345</span></p>
+                <p><strong>Ngày:</strong> <span th:text="${invoiceDate}">01/01/2024 10:00</span></p>
+                <p><strong>Bàn:</strong> <span th:text="${tableName}">Bàn 1</span></p>
+                <p><strong>Nhân viên phục vụ:</strong> <span th:text="${staffName}">Nguyễn Văn A</span></p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Món</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td th:text="${item.thucDon.tenMon}">Cà phê sữa đá</td>
+                        <td th:text="${item.soLuong}">2</td>
+                        <td th:text="${#numbers.formatDecimal(item.giaTaiThoiDiemBan, 0, 'COMMA', 0, 'POINT')} + ' đ'">25.000 đ</td>
+                        <td th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">50.000 đ</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="total">
+                Tổng cộng: <span th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">100.000</span> đ
+            </div>
+            
+            <p style="text-align: center;">
+                <a th:href="${loginUrl}" class="button">Đặt món ngay</a>
+            </p>
+            
+            <p>Nếu có bất kỳ thắc mắc nào, xin vui lòng liên hệ với chúng tôi.</p>
+            
+            <p>Trân trọng,<br>QuanCaPhe Pro</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 QuanCaPhe Pro. Tất cả các quyền được bảo lời.</p>
+            <p>Email: contact@quancafepro.com | Điện thoại: 0123 456 789</p>
+        </div>
+    </div>
+</body>
+</html>
+

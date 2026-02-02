@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react"
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react"
 import api from "./api"
 
 type AuthUser = {
@@ -33,8 +33,14 @@ function loadUser(): AuthUser | null {
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"))
-  const [user, setUser] = useState<AuthUser | null>(loadUser())
+  const [token, setToken] = useState<string | null>(() => {
+    // Only read from localStorage once on mount
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token")
+    }
+    return null
+  })
+  const [user, setUser] = useState<AuthUser | null>(() => loadUser())
 
   useEffect(() => {
     if (token) {
@@ -59,23 +65,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsub && unsub()
   }, [])
 
-  const login = (payload: { token: string; username: string; roles: string[] }) => {
+  const login = useCallback((payload: { token: string; username: string; roles: string[] }) => {
     setToken(payload.token)
     const nextUser = { username: payload.username, roles: payload.roles }
     setUser(nextUser)
     localStorage.setItem(USER_KEY, JSON.stringify(nextUser))
-  }
+  }, [])
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null)
     setUser(null)
     localStorage.removeItem(USER_KEY)
-  }
+  }, [])
 
-  const value = useMemo(() => ({ token, user, login, logout }), [token, user])
+  const value = useMemo(() => ({ token, user, login, logout }), [token, user, login, logout])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => useContext(AuthContext)
-

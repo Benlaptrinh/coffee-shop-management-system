@@ -6,6 +6,8 @@ import RequireRole from "./components/RequireRole"
 import SidebarAdmin from "./components/SidebarAdmin"
 import SidebarStaff from "./components/SidebarStaff"
 import Login from "./pages/Login"
+import OAuth2Callback from "./pages/OAuth2Callback"
+import PayPalCallback from "./pages/PayPalCallback"
 import NotFound from "./pages/NotFound"
 import AdminDashboard from "./pages/admin/Dashboard"
 import AdminEmployeesList from "./pages/admin/EmployeesList"
@@ -68,6 +70,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomeRedirect />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+          <Route path="/paypal/callback" element={<PayPalCallback />} />
           <Route element={<RequireAuth />}>
             <Route path="/invoice/:id" element={<InvoicePrint />} />
             <Route element={<ProfileShell />}>

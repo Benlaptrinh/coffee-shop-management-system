@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.example.demo.exception.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,18 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+                          CustomOAuth2UserService customOAuth2UserService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     /**
      * Password encoder.
@@ -45,28 +58,27 @@ public class SecurityConfig {
      * Filter chain.
      *
      * @param http http
-     * @param jwtAuthenticationFilter jwt authentication filter
      * @return result
      * @throws Exception if an error occurs
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-                                           JwtAuthenticationFilter jwtAuthenticationFilter,
-                                           ObjectMapper objectMapper) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .cors(withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) ->
-                        writeError(response, objectMapper, HttpStatus.UNAUTHORIZED,
+                        writeError(response, null, HttpStatus.UNAUTHORIZED,
                                 authException.getMessage(), request))
                 .accessDeniedHandler((request, response, accessDeniedException) ->
-                        writeError(response, objectMapper, HttpStatus.FORBIDDEN,
+                        writeError(response, null, HttpStatus.FORBIDDEN,
                                 accessDeniedException.getMessage(), request))
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/login/oauth2/**").permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
@@ -95,6 +107,25 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureUrl("/login?error=oauth2")
+            )
+            .logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpStatus.OK.value());
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    if (response.getWriter() != null) {
+                        response.getWriter().write("{\"message\":\"Logged out successfully\"}");
+                    }
+                })
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+            )
             .build();
     }
 
@@ -120,6 +151,10 @@ public class SecurityConfig {
         err.setPath(request.getRequestURI());
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), err);
+        if (objectMapper != null) {
+            objectMapper.writeValue(response.getOutputStream(), err);
+        } else {
+            response.getWriter().write("{\"status\":" + status.value() + ",\"message\":\"" + message + "\"}");
+        }
     }
 }

@@ -149,7 +149,6 @@ public class SalesServiceImpl implements SalesService {
      * @return result
      */
     @Override
-    @Cacheable(cacheNames = "menu")
     public List<ThucDon> findMenuItems() {
         List<ThucDon> items = thucDonRepository.findAll();
         items.sort(java.util.Comparator.comparing(
