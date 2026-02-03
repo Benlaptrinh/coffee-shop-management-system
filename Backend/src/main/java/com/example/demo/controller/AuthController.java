@@ -55,7 +55,7 @@ public class AuthController {
         );
         List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .map(a -> a.replace("ROLE_", ""))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); //převede seznam rolí na seznam stringů
         String token = jwtUtil.generateToken(req.getUsername(), roles);
         LoginResponse resp = new LoginResponse();
         resp.setToken(token);
