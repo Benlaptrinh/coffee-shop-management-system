@@ -26,9 +26,9 @@
 		<tag/>
 		<url/>
 	</scm>
-	<properties>
+		<properties>
 		<java.version>17</java.version>
-		<lombok.version>1.18.30</lombok.version>
+		<lombok.version>1.18.36</lombok.version>
 	</properties>
 	<dependencies>
 
@@ -165,12 +165,6 @@
 
         <!-- PayPal - use HTTP client instead of SDK (recommended by PayPal) -->
         <!-- The old SDK is deprecated, we'll use direct HTTP calls -->
-
-        <!-- Email -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
 
         <!-- Redis (already present, but ensure version) -->
         <dependency>
