@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,6 +44,9 @@ class AuthControllerTest {
 
     @MockBean
     private JwtProperties jwtProperties;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     @Test
     void login_success() throws Exception {
