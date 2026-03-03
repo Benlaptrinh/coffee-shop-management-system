@@ -5,7 +5,6 @@ type PayPalPaymentProps = {
   amount: number
   description: string
   invoiceId: string
-  onSuccess: (transactionId: string) => void
   onError: (error: string) => void
   onCancel: () => void
 }
@@ -14,12 +13,10 @@ export default function PayPalPayment({
   amount,
   description,
   invoiceId,
-  onSuccess,
   onError,
   onCancel,
 }: PayPalPaymentProps) {
   const [loading, setLoading] = useState(false)
-  const [orderId, setOrderId] = useState<string | null>(null)
 
   const handlePayPalPayment = async () => {
     setLoading(true)
@@ -32,8 +29,6 @@ export default function PayPalPayment({
       })
 
       if (orderResult.approvalUrl) {
-        // Store orderId for later capture
-        setOrderId(orderResult.orderId)
         // Redirect to PayPal for approval
         window.location.href = orderResult.approvalUrl
       } else {
@@ -87,4 +82,3 @@ export default function PayPalPayment({
     </div>
   )
 }
-

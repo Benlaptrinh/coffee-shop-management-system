@@ -206,22 +206,6 @@ export default function SalesPage() {
     }
   }
 
-  const onPayPalSuccess = async (transactionId: string) => {
-    if (!selectedId || !detail?.invoice) return
-    const invoiceId = detail.invoice.maHoaDon
-    try {
-      // Mark invoice as paid (in real app, you'd update the invoice status via API)
-      await api.sales.pay(selectedId, { amountPaid: detail.invoice.tongTien, releaseTable: true })
-      closeModal()
-      await loadTables()
-      if (printInvoice && invoiceId) {
-        window.open(`/invoice/${invoiceId}`, "_blank")
-      }
-    } catch (err: any) {
-      setError(err?.body || err?.message || "Cập nhật trạng thái thất bại")
-    }
-  }
-
   const onPayPalError = (error: string) => {
     setError(error)
   }
@@ -504,7 +488,6 @@ export default function SalesPage() {
             amount={invoice.tongTien}
             description={`Thanh toán hóa đơn bàn ${selectedId}`}
             invoiceId={String(invoice.maHoaDon)}
-            onSuccess={onPayPalSuccess}
             onError={onPayPalError}
             onCancel={onPayPalCancel}
           />

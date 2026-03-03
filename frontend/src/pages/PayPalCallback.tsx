@@ -21,7 +21,7 @@ export default function PayPalCallback() {
     // Capture the PayPal order
     api.paypal
       .captureOrder(token)
-      .then((result) => {
+      .then(() => {
         setStatus("success")
         // Redirect to sales page after 2 seconds
         setTimeout(() => {
@@ -80,4 +80,3 @@ export default function PayPalCallback() {
     </div>
   )
 }
-
