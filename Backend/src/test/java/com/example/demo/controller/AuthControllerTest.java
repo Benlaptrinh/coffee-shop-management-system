@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -36,16 +36,16 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AuthenticationManager authenticationManager;
 
-    @MockBean
+    @MockitoBean
     private JwtUtil jwtUtil;
 
-    @MockBean
+    @MockitoBean
     private JwtProperties jwtProperties;
 
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
 
     @Test
@@ -60,7 +60,7 @@ class AuthControllerTest {
         when(jwtProperties.getExpirationSeconds()).thenReturn(3600L);
 
         mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"username\":\"admin\",\"password\":\"admin123\"}"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.token").value("token-123"))
@@ -71,7 +71,7 @@ class AuthControllerTest {
     @Test
     void login_validationError() throws Exception {
         mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{}"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.error").value("Bad Request"));
